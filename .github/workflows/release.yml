@@ -1,0 +1,42 @@
+name: 'Release'
+
+on:
+  workflow_call:
+    inputs:
+      changelog-config:
+        description: 'Path to changelog configuration file'
+        type: 'string'
+        required: false
+        default: '.github/changelog-config.json'
+
+permissions:
+  contents: 'write'
+
+jobs:
+  release:
+    name: 'GitHub Release'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Check out'
+        uses: 'actions/checkout@v6'
+        with:
+          fetch-depth: '0'
+
+      - name: 'Build Changelog'
+        id: 'changelog'
+        uses: 'mikepenz/release-changelog-builder-action@v6'
+        with:
+          configuration: '${{ inputs.changelog-config }}'
+          toTag: '${{ github.ref_name }}'
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+
+      - name: 'Create Release'
+        uses: 'softprops/action-gh-release@v2'
+        with:
+          body: '${{ steps.changelog.outputs.changelog }}'
+          name: '${{ github.ref_name }}'
+          tag_name: '${{ github.ref_name }}'
+          draft: false
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'

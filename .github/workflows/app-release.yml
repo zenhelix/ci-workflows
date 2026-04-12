@@ -1,0 +1,16 @@
+name: 'Application Release'
+
+on:
+  workflow_call:
+    inputs:
+      changelog-config:
+        description: 'Path to changelog configuration file'
+        type: 'string'
+        required: false
+        default: '.github/changelog-config.json'
+
+jobs:
+  release:
+    uses: 'zenhelix/ci-workflows/.github/workflows/release.yml@v2'
+    with:
+      changelog-config: '${{ inputs.changelog-config }}'

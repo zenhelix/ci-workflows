@@ -1,18 +1,18 @@
-name: 'Gradle Create Tag'
+name: 'Go Create Tag'
 
 on:
   workflow_call:
     inputs:
-      java-version:
-        description: 'JDK version to use'
+      go-version:
+        description: 'Go version to use'
         type: 'string'
         required: false
-        default: '17'
-      gradle-command:
-        description: 'Gradle validation command'
+        default: '1.22'
+      check-command:
+        description: 'Go validation command'
         type: 'string'
         required: false
-        default: './gradlew check'
+        default: 'make test'
       default-bump:
         description: 'Default version bump type (major, minor, patch)'
         type: 'string'
@@ -22,7 +22,7 @@ on:
         description: 'Prefix for the tag'
         type: 'string'
         required: false
-        default: ''
+        default: 'v'
       release-branches:
         description: 'Comma-separated branch patterns for releases'
         type: 'string'
@@ -38,9 +38,9 @@ jobs:
   create-tag:
     uses: 'zenhelix/ci-workflows/.github/workflows/create-tag.yml@v2'
     with:
-      setup-action: 'gradle'
-      setup-params: '{"java-version": "${{ inputs.java-version }}"}'
-      check-command: '${{ inputs.gradle-command }}'
+      setup-action: 'go'
+      setup-params: '{"go-version": "${{ inputs.go-version }}"}'
+      check-command: '${{ inputs.check-command }}'
       default-bump: '${{ inputs.default-bump }}'
       tag-prefix: '${{ inputs.tag-prefix }}'
       release-branches: '${{ inputs.release-branches }}'

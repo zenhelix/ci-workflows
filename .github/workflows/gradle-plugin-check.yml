@@ -1,0 +1,23 @@
+name: 'Gradle Plugin Check'
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        description: 'JDK version to use'
+        type: 'string'
+        required: false
+        default: '17'
+      gradle-command:
+        description: 'Gradle check command'
+        type: 'string'
+        required: false
+        default: './gradlew check'
+
+jobs:
+  check:
+    uses: 'zenhelix/ci-workflows/.github/workflows/check.yml@v2'
+    with:
+      setup-action: 'gradle'
+      setup-params: '{"java-version": "${{ inputs.java-version }}"}'
+      check-command: '${{ inputs.gradle-command }}'
