@@ -67,6 +67,14 @@ workflow(
                 "MAVEN_SONATYPE_SIGNING_PASSWORD" to WorkflowCall.Secret(
                     description = "GPG signing key passphrase",
                     required = false
+                ),
+                "MAVEN_SONATYPE_USERNAME" to WorkflowCall.Secret(
+                    description = "Maven Central (Sonatype) username",
+                    required = false
+                ),
+                "MAVEN_SONATYPE_TOKEN" to WorkflowCall.Secret(
+                    description = "Maven Central (Sonatype) token",
+                    required = false
                 )
             )
         )
@@ -111,7 +119,9 @@ workflow(
                 "ORG_GRADLE_PROJECT_signingKeyId" to expr { "secrets.MAVEN_SONATYPE_SIGNING_KEY_ID" },
                 "ORG_GRADLE_PROJECT_signingPublicKey" to expr { "secrets.MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED" },
                 "ORG_GRADLE_PROJECT_signingKey" to expr { "secrets.MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED" },
-                "ORG_GRADLE_PROJECT_signingPassword" to expr { "secrets.MAVEN_SONATYPE_SIGNING_PASSWORD" }
+                "ORG_GRADLE_PROJECT_signingPassword" to expr { "secrets.MAVEN_SONATYPE_SIGNING_PASSWORD" },
+                "MAVEN_SONATYPE_USERNAME" to expr { "secrets.MAVEN_SONATYPE_USERNAME" },
+                "MAVEN_SONATYPE_TOKEN" to expr { "secrets.MAVEN_SONATYPE_TOKEN" }
             )
         )
     }

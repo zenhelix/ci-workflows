@@ -34,6 +34,12 @@ on:
       MAVEN_SONATYPE_SIGNING_PASSWORD:
         description: 'GPG signing key passphrase'
         required: false
+      MAVEN_SONATYPE_USERNAME:
+        description: 'Maven Central (Sonatype) username'
+        required: false
+      MAVEN_SONATYPE_TOKEN:
+        description: 'Maven Central (Sonatype) token'
+        required: false
 permissions:
   contents: 'read'
 jobs:
@@ -74,4 +80,6 @@ jobs:
         ORG_GRADLE_PROJECT_signingPublicKey: '${{ secrets.MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED }}'
         ORG_GRADLE_PROJECT_signingKey: '${{ secrets.MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED }}'
         ORG_GRADLE_PROJECT_signingPassword: '${{ secrets.MAVEN_SONATYPE_SIGNING_PASSWORD }}'
+        MAVEN_SONATYPE_USERNAME: '${{ secrets.MAVEN_SONATYPE_USERNAME }}'
+        MAVEN_SONATYPE_TOKEN: '${{ secrets.MAVEN_SONATYPE_TOKEN }}'
       run: '${{ inputs.publish-command }}'
