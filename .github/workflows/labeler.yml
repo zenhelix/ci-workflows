@@ -1,0 +1,27 @@
+# This file was generated using Kotlin DSL (.github/workflows/.github/workflows/workflow.labeler.main.kts).
+# If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
+
+name: 'PR Labeler'
+on:
+  workflow_call:
+    inputs:
+      config-path:
+        description: 'Path to labeler configuration file'
+        type: 'string'
+        required: false
+        default: '.github/labeler.yml'
+permissions:
+  contents: 'write'
+  pull-requests: 'write'
+jobs:
+  label:
+    name: 'Label PR'
+    runs-on: 'ubuntu-latest'
+    steps:
+    - id: 'step-0'
+      name: 'Label PR based on file paths'
+      uses: 'actions/labeler@v6'
+      with:
+        repo-token: '${{ secrets.GITHUB_TOKEN }}'
+        sync-labels: 'true'
