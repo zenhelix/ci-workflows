@@ -7,6 +7,11 @@ source:
       - any-glob-to-any-file:
           - 'src/main/**/*.kt'
           - 'src/main/**/*.java'
+          - '**/*.go'
+          - '!**/*_test.go'
+          - '**/*.py'
+          - '!**/test_*.py'
+          - '!**/*_test.py'
 
 # Test changes
 tests:
@@ -14,6 +19,10 @@ tests:
       - any-glob-to-any-file:
           - 'src/test/**/*'
           - 'src/functionalTest/**/*'
+          - '**/*_test.go'
+          - '**/test_*.py'
+          - '**/*_test.py'
+          - 'tests/**/*'
 
 # Build configuration
 build:
@@ -45,3 +54,8 @@ dependencies:
       - any-glob-to-any-file:
           - 'build.gradle.kts'
           - 'gradle/libs.versions.toml'
+          - 'go.mod'
+          - 'go.sum'
+          - 'requirements*.txt'
+          - 'pyproject.toml'
+          - 'setup.cfg'

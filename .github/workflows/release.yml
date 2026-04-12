@@ -8,6 +8,11 @@ on:
         type: 'string'
         required: false
         default: '.github/changelog-config.json'
+      draft:
+        description: 'Create release as draft'
+        type: 'boolean'
+        required: false
+        default: false
 
 permissions:
   contents: 'write'
@@ -37,6 +42,6 @@ jobs:
           body: '${{ steps.changelog.outputs.changelog }}'
           name: '${{ github.ref_name }}'
           tag_name: '${{ github.ref_name }}'
-          draft: false
+          draft: '${{ inputs.draft }}'
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'

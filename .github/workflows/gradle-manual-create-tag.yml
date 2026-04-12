@@ -1,0 +1,42 @@
+name: 'Gradle Manual Create Tag'
+
+on:
+  workflow_call:
+    inputs:
+      tag-version:
+        description: 'Version to tag (e.g. 1.2.3)'
+        type: 'string'
+        required: true
+      java-version:
+        description: 'JDK version to use'
+        type: 'string'
+        required: false
+        default: '17'
+      gradle-command:
+        description: 'Gradle validation command'
+        type: 'string'
+        required: false
+        default: './gradlew check'
+      tag-prefix:
+        description: 'Prefix for the tag'
+        type: 'string'
+        required: false
+        default: ''
+    secrets:
+      app-id:
+        required: true
+      app-private-key:
+        required: true
+
+jobs:
+  manual-tag:
+    uses: 'zenhelix/ci-workflows/.github/workflows/manual-create-tag.yml@v2'
+    with:
+      tag-version: '${{ inputs.tag-version }}'
+      tag-prefix: '${{ inputs.tag-prefix }}'
+      setup-action: 'gradle'
+      setup-params: '{"java-version": "${{ inputs.java-version }}"}'
+      check-command: '${{ inputs.gradle-command }}'
+    secrets:
+      app-id: '${{ secrets.app-id }}'
+      app-private-key: '${{ secrets.app-private-key }}'

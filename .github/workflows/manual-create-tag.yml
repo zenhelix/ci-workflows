@@ -1,10 +1,19 @@
-name: 'Create Tag'
+name: 'Manual Create Tag'
 
 on:
   workflow_call:
     inputs:
+      tag-version:
+        description: 'Version to tag (e.g. 1.2.3)'
+        type: 'string'
+        required: true
+      tag-prefix:
+        description: 'Prefix for the tag (e.g. v)'
+        type: 'string'
+        required: false
+        default: ''
       setup-action:
-        description: 'Setup action to use: gradle, go'
+        description: 'Setup action to use: gradle, go, python'
         type: 'string'
         required: true
       setup-params:
@@ -16,21 +25,6 @@ on:
         description: 'Validation command to run before tagging'
         type: 'string'
         required: true
-      default-bump:
-        description: 'Default version bump type (major, minor, patch)'
-        type: 'string'
-        required: false
-        default: 'patch'
-      tag-prefix:
-        description: 'Prefix for the tag (e.g. v)'
-        type: 'string'
-        required: false
-        default: ''
-      release-branches:
-        description: 'Comma-separated branch patterns for releases'
-        type: 'string'
-        required: false
-        default: 'main,[0-9]+\.x'
     secrets:
       app-id:
         description: 'GitHub App ID for generating commit token'
@@ -43,10 +37,18 @@ permissions:
   contents: 'write'
 
 jobs:
-  create_tag:
-    name: 'Create Tag'
+  manual_tag:
+    name: 'Manual Tag'
     runs-on: 'ubuntu-latest'
     steps:
+      - name: 'Validate version format'
+        run: |
+          VERSION="${{ inputs.tag-version }}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
+            echo "::error::Version must be in semver format (e.g. 1.2.3 or 1.2.3-rc.1)"
+            exit 1
+          fi
+
       - name: 'Setup Gradle'
         if: inputs.setup-action == 'gradle'
         uses: 'zenhelix/ci-workflows/.github/actions/setup-gradle@v2'
@@ -78,10 +80,13 @@ jobs:
           app-id: '${{ secrets.app-id }}'
           app-private-key: '${{ secrets.app-private-key }}'
 
-      - name: 'Bump version and push tag'
-        uses: 'mathieudutour/github-tag-action@v6.2'
-        with:
-          github_token: '${{ steps.app-token.outputs.token }}'
-          default_bump: '${{ inputs.default-bump }}'
-          tag_prefix: '${{ inputs.tag-prefix }}'
-          release_branches: '${{ inputs.release-branches }}'
+      - name: 'Create and push tag'
+        env:
+          GITHUB_TOKEN: '${{ steps.app-token.outputs.token }}'
+        run: |
+          TAG="${{ inputs.tag-prefix }}${{ inputs.tag-version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
+          echo "::notice::Created tag $TAG"

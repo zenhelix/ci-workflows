@@ -1,19 +1,23 @@
-name: 'Check'
+name: 'Application Deploy'
 
 on:
   workflow_call:
     inputs:
       setup-action:
-        description: 'Setup action to use: gradle, go'
+        description: 'Setup action to use: gradle, go, python'
         type: 'string'
         required: true
       setup-params:
-        description: 'JSON object with setup parameters (e.g. {"java-version": "21"})'
+        description: 'JSON object with setup parameters'
         type: 'string'
         required: false
         default: '{}'
-      check-command:
-        description: 'Command to run for checking'
+      deploy-command:
+        description: 'Command to run for deployment'
+        type: 'string'
+        required: true
+      tag:
+        description: 'Tag/version to deploy (checked out at this ref)'
         type: 'string'
         required: true
 
@@ -21,8 +25,8 @@ permissions:
   contents: 'read'
 
 jobs:
-  build:
-    name: 'Build'
+  deploy:
+    name: 'Deploy'
     runs-on: 'ubuntu-latest'
     steps:
       - name: 'Setup Gradle'
@@ -30,18 +34,24 @@ jobs:
         uses: 'zenhelix/ci-workflows/.github/actions/setup-gradle@v2'
         with:
           java-version: '${{ fromJson(inputs.setup-params).java-version || ''17'' }}'
+          fetch-depth: '0'
 
       - name: 'Setup Go'
         if: inputs.setup-action == 'go'
         uses: 'zenhelix/ci-workflows/.github/actions/setup-go@v2'
         with:
           go-version: '${{ fromJson(inputs.setup-params).go-version || ''1.22'' }}'
+          fetch-depth: '0'
 
       - name: 'Setup Python'
         if: inputs.setup-action == 'python'
         uses: 'zenhelix/ci-workflows/.github/actions/setup-python@v2'
         with:
           python-version: '${{ fromJson(inputs.setup-params).python-version || ''3.12'' }}'
+          fetch-depth: '0'
 
-      - name: 'Run check'
-        run: '${{ inputs.check-command }}'
+      - name: 'Checkout tag'
+        run: git checkout "${{ inputs.tag }}"
+
+      - name: 'Deploy'
+        run: '${{ inputs.deploy-command }}'

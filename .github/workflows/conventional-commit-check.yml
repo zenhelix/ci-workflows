@@ -1,0 +1,33 @@
+name: 'Conventional Commit Check'
+
+on:
+  workflow_call:
+    inputs:
+      allowed-types:
+        description: 'Comma-separated list of allowed commit types'
+        type: 'string'
+        required: false
+        default: 'feat,fix,refactor,docs,test,chore,perf,ci'
+
+permissions:
+  pull-requests: 'read'
+
+jobs:
+  check-title:
+    name: 'Check PR Title'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Validate PR title format'
+        env:
+          PR_TITLE: '${{ github.event.pull_request.title }}'
+          ALLOWED_TYPES: '${{ inputs.allowed-types }}'
+        run: |
+          TYPES_PATTERN=$(echo "$ALLOWED_TYPES" | tr ',' '|')
+          PATTERN="^($TYPES_PATTERN)(\(.+\))?(!)?: .+"
+          if [[ ! "$PR_TITLE" =~ $PATTERN ]]; then
+            echo "::error::PR title must match conventional commits format: <type>(<scope>): <description>"
+            echo "::error::Allowed types: $ALLOWED_TYPES"
+            echo "::error::Got: $PR_TITLE"
+            exit 1
+          fi
+          echo "PR title is valid: $PR_TITLE"

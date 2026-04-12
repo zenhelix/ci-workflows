@@ -1,0 +1,42 @@
+name: 'Go Manual Create Tag'
+
+on:
+  workflow_call:
+    inputs:
+      tag-version:
+        description: 'Version to tag (e.g. 1.2.3)'
+        type: 'string'
+        required: true
+      go-version:
+        description: 'Go version to use'
+        type: 'string'
+        required: false
+        default: '1.22'
+      check-command:
+        description: 'Go validation command'
+        type: 'string'
+        required: false
+        default: 'make test'
+      tag-prefix:
+        description: 'Prefix for the tag'
+        type: 'string'
+        required: false
+        default: 'v'
+    secrets:
+      app-id:
+        required: true
+      app-private-key:
+        required: true
+
+jobs:
+  manual-tag:
+    uses: 'zenhelix/ci-workflows/.github/workflows/manual-create-tag.yml@v2'
+    with:
+      tag-version: '${{ inputs.tag-version }}'
+      tag-prefix: '${{ inputs.tag-prefix }}'
+      setup-action: 'go'
+      setup-params: '{"go-version": "${{ inputs.go-version }}"}'
+      check-command: '${{ inputs.check-command }}'
+    secrets:
+      app-id: '${{ secrets.app-id }}'
+      app-private-key: '${{ secrets.app-private-key }}'

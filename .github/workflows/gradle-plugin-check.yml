@@ -8,6 +8,11 @@ on:
         type: 'string'
         required: false
         default: '17'
+      java-versions:
+        description: 'JSON array of JDK versions for matrix build (overrides java-version)'
+        type: 'string'
+        required: false
+        default: ''
       gradle-command:
         description: 'Gradle check command'
         type: 'string'
@@ -15,9 +20,15 @@ on:
         default: './gradlew check'
 
 jobs:
+  conventional-commit:
+    uses: 'zenhelix/ci-workflows/.github/workflows/conventional-commit-check.yml@v2'
+
   check:
+    strategy:
+      matrix:
+        java-version: ${{ fromJson(inputs.java-versions || format('["{0}"]', inputs.java-version)) }}
     uses: 'zenhelix/ci-workflows/.github/workflows/check.yml@v2'
     with:
       setup-action: 'gradle'
-      setup-params: '{"java-version": "${{ inputs.java-version }}"}'
+      setup-params: '{"java-version": "${{ matrix.java-version }}"}'
       check-command: '${{ inputs.gradle-command }}'
