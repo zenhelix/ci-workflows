@@ -90,6 +90,19 @@ workflow(
             action = ActionsSetupGradle(gradleHomeCacheCleanup = true)
         )
         run(
+            name = "Validate secrets",
+            command = """
+                if [ -z "${'$'}GRADLE_PUBLISH_KEY" ] && [ -z "${'$'}SIGNING_KEY_ID" ]; then
+                  echo "::error::No publishing credentials configured. Set either GRADLE_PUBLISH_KEY/SECRET or MAVEN_SONATYPE_SIGNING_* secrets."
+                  exit 1
+                fi
+            """.trimIndent(),
+            env = mapOf(
+                "GRADLE_PUBLISH_KEY" to expr { "secrets.GRADLE_PUBLISH_KEY" },
+                "SIGNING_KEY_ID" to expr { "secrets.MAVEN_SONATYPE_SIGNING_KEY_ID" }
+            )
+        )
+        run(
             name = "Publish",
             command = expr { "inputs.publish-command" },
             env = mapOf(

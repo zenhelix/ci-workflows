@@ -1,4 +1,4 @@
-# This file was generated using Kotlin DSL (.github/workflows/.github/workflows/workflow.release-publish-gradle.main.kts).
+# This file was generated using Kotlin DSL (.github/workflows/workflow.release-publish-gradle.main.kts).
 # If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
 # Generated with https://github.com/typesafegithub/github-workflows-kt
 
@@ -56,6 +56,16 @@ jobs:
       with:
         gradle-home-cache-cleanup: 'true'
     - id: 'step-3'
+      name: 'Validate secrets'
+      env:
+        GRADLE_PUBLISH_KEY: '${{ secrets.GRADLE_PUBLISH_KEY }}'
+        SIGNING_KEY_ID: '${{ secrets.MAVEN_SONATYPE_SIGNING_KEY_ID }}'
+      run: |-
+        if [ -z "$GRADLE_PUBLISH_KEY" ] && [ -z "$SIGNING_KEY_ID" ]; then
+          echo "::error::No publishing credentials configured. Set either GRADLE_PUBLISH_KEY/SECRET or MAVEN_SONATYPE_SIGNING_* secrets."
+          exit 1
+        fi
+    - id: 'step-4'
       name: 'Publish'
       env:
         GRADLE_PUBLISH_KEY: '${{ secrets.GRADLE_PUBLISH_KEY }}'
