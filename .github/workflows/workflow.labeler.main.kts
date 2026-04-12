@@ -49,6 +49,7 @@ workflow(
             name = "Label PR based on file paths",
             action = Labeler(
                 repoToken = expr { secrets.GITHUB_TOKEN },
+                configPath = expr { "inputs.config-path" },
                 syncLabels = true
             )
         )
