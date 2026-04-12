@@ -1,0 +1,43 @@
+# This file was generated using Kotlin DSL (.github/workflows/workflow.release-github.main.kts).
+# If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
+
+name: 'GitHub Release'
+on:
+  workflow_call:
+    inputs:
+      changelog-config:
+        description: 'Path to changelog configuration file'
+        type: 'string'
+        required: false
+        default: '.github/changelog-config.json'
+permissions:
+  contents: 'write'
+jobs:
+  release:
+    name: 'GitHub Release'
+    runs-on: 'ubuntu-latest'
+    steps:
+    - id: 'step-0'
+      name: 'Check out'
+      uses: 'actions/checkout@v6'
+      with:
+        fetch-depth: '0'
+    - id: 'step-1'
+      name: 'Build Changelog'
+      uses: 'mikepenz/release-changelog-builder-action@v6'
+      with:
+        configuration: '${{ inputs.changelog-config }}'
+        toTag: '${{ github.ref_name }}'
+      env:
+        GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+    - id: 'step-2'
+      name: 'Create Release'
+      uses: 'softprops/action-gh-release@v2'
+      with:
+        body: '${{ steps.step-1.outputs.changelog }}'
+        name: '${{ github.ref_name }}'
+        tag_name: '${{ github.ref_name }}'
+        draft: 'false'
+      env:
+        GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
