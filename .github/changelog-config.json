@@ -25,6 +25,18 @@
       "labels": ["dependencies"]
     },
     {
+      "title": "## Performance",
+      "labels": ["perf", "performance"]
+    },
+    {
+      "title": "## Refactoring",
+      "labels": ["refactor"]
+    },
+    {
+      "title": "## Tests",
+      "labels": ["test", "tests"]
+    },
+    {
       "title": "## Other Changes",
       "labels": []
     }

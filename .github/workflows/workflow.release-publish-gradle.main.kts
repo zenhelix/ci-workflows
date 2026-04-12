@@ -67,6 +67,14 @@ workflow(
                 "MAVEN_SONATYPE_SIGNING_PASSWORD" to WorkflowCall.Secret(
                     description = "GPG signing key passphrase",
                     required = false
+                ),
+                "MAVEN_SONATYPE_USERNAME" to WorkflowCall.Secret(
+                    description = "Maven Central (Sonatype) username",
+                    required = false
+                ),
+                "MAVEN_SONATYPE_TOKEN" to WorkflowCall.Secret(
+                    description = "Maven Central (Sonatype) token",
+                    required = false
                 )
             )
         )
@@ -90,6 +98,19 @@ workflow(
             action = ActionsSetupGradle(gradleHomeCacheCleanup = true)
         )
         run(
+            name = "Validate secrets",
+            command = """
+                if [ -z "${'$'}GRADLE_PUBLISH_KEY" ] && [ -z "${'$'}SIGNING_KEY_ID" ]; then
+                  echo "::error::No publishing credentials configured. Set either GRADLE_PUBLISH_KEY/SECRET or MAVEN_SONATYPE_SIGNING_* secrets."
+                  exit 1
+                fi
+            """.trimIndent(),
+            env = mapOf(
+                "GRADLE_PUBLISH_KEY" to expr { "secrets.GRADLE_PUBLISH_KEY" },
+                "SIGNING_KEY_ID" to expr { "secrets.MAVEN_SONATYPE_SIGNING_KEY_ID" }
+            )
+        )
+        run(
             name = "Publish",
             command = expr { "inputs.publish-command" },
             env = mapOf(
@@ -98,7 +119,9 @@ workflow(
                 "ORG_GRADLE_PROJECT_signingKeyId" to expr { "secrets.MAVEN_SONATYPE_SIGNING_KEY_ID" },
                 "ORG_GRADLE_PROJECT_signingPublicKey" to expr { "secrets.MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED" },
                 "ORG_GRADLE_PROJECT_signingKey" to expr { "secrets.MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED" },
-                "ORG_GRADLE_PROJECT_signingPassword" to expr { "secrets.MAVEN_SONATYPE_SIGNING_PASSWORD" }
+                "ORG_GRADLE_PROJECT_signingPassword" to expr { "secrets.MAVEN_SONATYPE_SIGNING_PASSWORD" },
+                "MAVEN_SONATYPE_USERNAME" to expr { "secrets.MAVEN_SONATYPE_USERNAME" },
+                "MAVEN_SONATYPE_TOKEN" to expr { "secrets.MAVEN_SONATYPE_TOKEN" }
             )
         )
     }
