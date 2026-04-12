@@ -34,18 +34,21 @@ jobs:
         uses: 'zenhelix/ci-workflows/.github/actions/setup-gradle@v2'
         with:
           java-version: '${{ fromJson(inputs.setup-params).java-version || ''17'' }}'
+          fetch-depth: '0'
 
       - name: 'Setup Go'
         if: inputs.setup-action == 'go'
         uses: 'zenhelix/ci-workflows/.github/actions/setup-go@v2'
         with:
           go-version: '${{ fromJson(inputs.setup-params).go-version || ''1.22'' }}'
+          fetch-depth: '0'
 
       - name: 'Setup Python'
         if: inputs.setup-action == 'python'
         uses: 'zenhelix/ci-workflows/.github/actions/setup-python@v2'
         with:
           python-version: '${{ fromJson(inputs.setup-params).python-version || ''3.12'' }}'
+          fetch-depth: '0'
 
       - name: 'Checkout tag'
         run: git checkout "${{ inputs.tag }}"
