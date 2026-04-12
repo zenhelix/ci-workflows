@@ -8,9 +8,15 @@ on:
         type: 'string'
         required: false
         default: '.github/changelog-config.json'
+      draft:
+        description: 'Create release as draft (default true for apps)'
+        type: 'boolean'
+        required: false
+        default: true
 
 jobs:
   release:
     uses: 'zenhelix/ci-workflows/.github/workflows/release.yml@v2'
     with:
       changelog-config: '${{ inputs.changelog-config }}'
+      draft: '${{ inputs.draft }}'
