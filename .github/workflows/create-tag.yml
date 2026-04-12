@@ -61,6 +61,13 @@ jobs:
           go-version: '${{ fromJson(inputs.setup-params).go-version || ''1.22'' }}'
           fetch-depth: '0'
 
+      - name: 'Setup Python'
+        if: inputs.setup-action == 'python'
+        uses: 'zenhelix/ci-workflows/.github/actions/setup-python@v2'
+        with:
+          python-version: '${{ fromJson(inputs.setup-params).python-version || ''3.12'' }}'
+          fetch-depth: '0'
+
       - name: 'Run validation'
         run: '${{ inputs.check-command }}'
 
