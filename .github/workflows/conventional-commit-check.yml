@@ -9,9 +9,6 @@ on:
         required: false
         default: 'feat,fix,refactor,docs,test,chore,perf,ci'
 
-permissions:
-  pull-requests: 'read'
-
 jobs:
   check-title:
     name: 'Check PR Title'
