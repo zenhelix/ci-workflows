@@ -1,5 +1,5 @@
 name: 'Setup Go'
-description: 'Checkout and setup Go with caching (architecture stub — not yet implemented)'
+description: 'Checkout and setup Go with module caching'
 
 inputs:
   go-version:
@@ -22,3 +22,5 @@ runs:
       uses: 'actions/setup-go@v5'
       with:
         go-version: '${{ inputs.go-version }}'
+        cache: true
+        cache-dependency-path: 'go.sum'
