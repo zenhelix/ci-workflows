@@ -1,0 +1,80 @@
+# This file was generated using Kotlin DSL (.github/workflows/workflow.gradle-create-tag.main.kts).
+# If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
+
+name: 'Gradle Create Tag'
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        description: 'JDK version to use'
+        type: 'string'
+        required: false
+        default: '17'
+      gradle-command:
+        description: 'Gradle command to run'
+        type: 'string'
+        required: false
+        default: './gradlew check'
+      default-bump:
+        description: 'Default version bump type (major, minor, patch)'
+        type: 'string'
+        required: false
+        default: 'patch'
+      tag-prefix:
+        description: 'Prefix for the tag (e.g. ''v'')'
+        type: 'string'
+        required: false
+        default: ''
+      release-branches:
+        description: 'Comma-separated list of branch patterns for releases'
+        type: 'string'
+        required: false
+        default: 'main,[0-9]+\.x'
+    secrets:
+      app-id:
+        description: 'GitHub App ID for generating commit token'
+        required: true
+      app-private-key:
+        description: 'GitHub App private key for generating commit token'
+        required: true
+permissions:
+  contents: 'write'
+jobs:
+  create_tag:
+    name: 'Create Tag'
+    runs-on: 'ubuntu-latest'
+    steps:
+    - id: 'step-0'
+      name: 'Check out'
+      uses: 'actions/checkout@v6'
+      with:
+        fetch-depth: '0'
+    - id: 'step-1'
+      name: 'Set up Java'
+      uses: 'actions/setup-java@v5'
+      with:
+        java-version: '${{ inputs.java-version }}'
+        distribution: 'temurin'
+    - id: 'step-2'
+      name: 'Setup Gradle'
+      uses: 'gradle/actions/setup-gradle@v5'
+      with:
+        gradle-home-cache-cleanup: 'true'
+    - id: 'step-3'
+      name: 'Check'
+      run: '${{ inputs.gradle-command }}'
+    - id: 'step-4'
+      name: 'Generate App Token'
+      uses: 'actions/create-github-app-token@v2'
+      with:
+        app-id: '${{ secrets.app-id }}'
+        private-key: '${{ secrets.app-private-key }}'
+    - id: 'step-5'
+      name: 'Bump version and push tag'
+      uses: 'mathieudutour/github-tag-action@v6.2'
+      with:
+        github_token: '${{ steps.step-4.outputs.token }}'
+        default_bump: '${{ inputs.default-bump }}'
+        tag_prefix: '${{ inputs.tag-prefix }}'
+        release_branches: '${{ inputs.release-branches }}'
