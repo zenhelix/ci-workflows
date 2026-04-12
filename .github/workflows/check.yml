@@ -1,0 +1,41 @@
+name: 'Check'
+
+on:
+  workflow_call:
+    inputs:
+      setup-action:
+        description: 'Setup action to use: gradle, go'
+        type: 'string'
+        required: true
+      setup-params:
+        description: 'JSON object with setup parameters (e.g. {"java-version": "21"})'
+        type: 'string'
+        required: false
+        default: '{}'
+      check-command:
+        description: 'Command to run for checking'
+        type: 'string'
+        required: true
+
+permissions:
+  contents: 'read'
+
+jobs:
+  build:
+    name: 'Build'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Setup Gradle'
+        if: inputs.setup-action == 'gradle'
+        uses: 'zenhelix/ci-workflows/.github/actions/setup-gradle@v2'
+        with:
+          java-version: '${{ fromJson(inputs.setup-params).java-version || ''17'' }}'
+
+      - name: 'Setup Go'
+        if: inputs.setup-action == 'go'
+        uses: 'zenhelix/ci-workflows/.github/actions/setup-go@v2'
+        with:
+          go-version: '${{ fromJson(inputs.setup-params).go-version || ''1.22'' }}'
+
+      - name: 'Run check'
+        run: '${{ inputs.check-command }}'

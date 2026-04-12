@@ -216,6 +216,55 @@ Reference workflows by tag for stability:
 - `@v1.0.0` — exact version
 - `@main` — development only
 
+## Extending
+
+The CI/CD system uses a three-level architecture:
+
+```
+Level 3: Project workflows      — per-repo .github/workflows that call presets or base directly
+Level 2: Preset workflows       — common configurations per project type (gradle-check, kotlin-library-release, …)
+Level 1: Base workflows         — generic, tool-agnostic (check, create-tag, publish, release)
+         Composite actions      — setup-gradle, setup-go, create-app-token
+```
+
+### Adding a new setup action
+
+To support a new language or toolchain (e.g., `setup-rust`):
+
+1. Create `.github/actions/setup-rust/action.yml` as a composite action that installs the toolchain and any caches.
+2. In the base workflows (`check.yml`, `create-tag.yml`, `publish.yml`), add a new conditional step:
+   ```yaml
+   - if: inputs.setup-action == 'rust'
+     uses: ./.github/actions/setup-rust
+     with:
+       setup-params: ${{ inputs.setup-params }}
+   ```
+3. Existing presets and project workflows remain untouched.
+
+### Adding a new preset workflow
+
+Presets wrap base workflows with sensible defaults for a specific project type:
+
+1. Create `.github/workflows/<type>-check.yml` and/or `<type>-release.yml`.
+2. Call the corresponding base workflow with pre-configured `setup-action` and `setup-params`:
+   ```yaml
+   jobs:
+     check:
+       uses: ./.github/workflows/check.yml
+       with:
+         setup-action: 'gradle'
+         setup-params: '{"java-version":"21"}'
+   ```
+3. Expose named inputs (e.g., `java-version`) instead of raw JSON so callers get a clean interface.
+4. Follow the naming convention: `<type>-check.yml`, `<type>-create-tag.yml`, `<type>-release.yml`.
+
+### Adding a new project type end-to-end
+
+1. **Infra** — add the value to the `project-type` custom property (in the `infra` repo).
+2. **ci-workflows** — create preset workflows for the new type (see above).
+3. **Template repo** (optional) — create `zenhelix/template-<type>` with `.github/workflows` that call the new presets.
+4. **Rulesets** — update infra rulesets if the new type needs different branch-protection or status-check rules.
+
 ## Development
 
 Workflows are defined as Kotlin scripts in `.github/workflows/workflow.*.main.kts`. To regenerate YAML after editing:

@@ -1,0 +1,30 @@
+name: 'Setup Gradle'
+description: 'Checkout, setup Java (Temurin), and configure Gradle with caching'
+
+inputs:
+  java-version:
+    description: 'JDK version to use'
+    required: false
+    default: '17'
+  fetch-depth:
+    description: 'Git fetch depth (0 for full history)'
+    required: false
+    default: '1'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Check out'
+      uses: 'actions/checkout@v6'
+      with:
+        fetch-depth: '${{ inputs.fetch-depth }}'
+    - name: 'Set up Java'
+      uses: 'actions/setup-java@v5'
+      with:
+        java-version: '${{ inputs.java-version }}'
+        distribution: 'temurin'
+    - name: 'Setup Gradle'
+      uses: 'gradle/actions/setup-gradle@v5'
+      with:
+        cache-read-only: 'true'
+        gradle-home-cache-cleanup: 'true'

@@ -1,0 +1,80 @@
+name: 'Create Tag'
+
+on:
+  workflow_call:
+    inputs:
+      setup-action:
+        description: 'Setup action to use: gradle, go'
+        type: 'string'
+        required: true
+      setup-params:
+        description: 'JSON object with setup parameters'
+        type: 'string'
+        required: false
+        default: '{}'
+      check-command:
+        description: 'Validation command to run before tagging'
+        type: 'string'
+        required: true
+      default-bump:
+        description: 'Default version bump type (major, minor, patch)'
+        type: 'string'
+        required: false
+        default: 'patch'
+      tag-prefix:
+        description: 'Prefix for the tag (e.g. v)'
+        type: 'string'
+        required: false
+        default: ''
+      release-branches:
+        description: 'Comma-separated branch patterns for releases'
+        type: 'string'
+        required: false
+        default: 'main,[0-9]+\.x'
+    secrets:
+      app-id:
+        description: 'GitHub App ID for generating commit token'
+        required: true
+      app-private-key:
+        description: 'GitHub App private key for generating commit token'
+        required: true
+
+permissions:
+  contents: 'write'
+
+jobs:
+  create_tag:
+    name: 'Create Tag'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Setup Gradle'
+        if: inputs.setup-action == 'gradle'
+        uses: 'zenhelix/ci-workflows/.github/actions/setup-gradle@v2'
+        with:
+          java-version: '${{ fromJson(inputs.setup-params).java-version || ''17'' }}'
+          fetch-depth: '0'
+
+      - name: 'Setup Go'
+        if: inputs.setup-action == 'go'
+        uses: 'zenhelix/ci-workflows/.github/actions/setup-go@v2'
+        with:
+          go-version: '${{ fromJson(inputs.setup-params).go-version || ''1.22'' }}'
+          fetch-depth: '0'
+
+      - name: 'Run validation'
+        run: '${{ inputs.check-command }}'
+
+      - name: 'Generate App Token'
+        id: 'app-token'
+        uses: 'zenhelix/ci-workflows/.github/actions/create-app-token@v2'
+        with:
+          app-id: '${{ secrets.app-id }}'
+          app-private-key: '${{ secrets.app-private-key }}'
+
+      - name: 'Bump version and push tag'
+        uses: 'mathieudutour/github-tag-action@v6.2'
+        with:
+          github_token: '${{ steps.app-token.outputs.token }}'
+          default_bump: '${{ inputs.default-bump }}'
+          tag_prefix: '${{ inputs.tag-prefix }}'
+          release_branches: '${{ inputs.release-branches }}'

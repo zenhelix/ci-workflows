@@ -1,0 +1,25 @@
+name: 'Create App Token'
+description: 'Generate a GitHub App installation token'
+
+inputs:
+  app-id:
+    description: 'GitHub App ID'
+    required: true
+  app-private-key:
+    description: 'GitHub App private key'
+    required: true
+
+outputs:
+  token:
+    description: 'Generated installation token'
+    value: '${{ steps.generate.outputs.token }}'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Generate App Token'
+      id: 'generate'
+      uses: 'actions/create-github-app-token@v2'
+      with:
+        app-id: '${{ inputs.app-id }}'
+        private-key: '${{ inputs.app-private-key }}'
