@@ -3,12 +3,14 @@ name: 'Verify Workflows'
 on:
   pull_request:
     paths:
-      - '.github/workflow-src/**'
+      - 'src/**'
+      - 'build.gradle.kts'
       - '.github/workflows/**'
   push:
     branches: ['main']
     paths:
-      - '.github/workflow-src/**'
+      - 'src/**'
+      - 'build.gradle.kts'
       - '.github/workflows/**'
 
 permissions:
@@ -28,20 +30,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 'Install Kotlin'
-        run: |
-          curl -s https://get.sdkman.io | bash
-          source "$HOME/.sdkman/bin/sdkman-init.sh"
-          sdk install kotlin
-          echo "$HOME/.sdkman/candidates/kotlin/current/bin" >> $GITHUB_PATH
+      - name: 'Setup Gradle'
+        uses: 'gradle/actions/setup-gradle@v5'
 
       - name: 'Generate workflows'
-        run: .github/workflow-src/generate.sh
+        run: ./gradlew run
 
       - name: 'Check for differences'
         run: |
           if ! git diff --exit-code .github/workflows/; then
-            echo "::error::Generated workflow YAML files are out of date. Run .github/workflow-src/generate.sh locally and commit the results."
+            echo "::error::Generated workflow YAML files are out of date. Run ./gradlew run and commit."
             exit 1
           fi
           echo "All generated workflows are up-to-date."
