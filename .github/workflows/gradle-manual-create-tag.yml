@@ -1,5 +1,8 @@
-name: 'Gradle Manual Create Tag'
+# This file was generated using Kotlin DSL (.github/workflow-src/gradle-manual-create-tag.main.kts).
+# If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
 
+name: 'Gradle Manual Create Tag'
 on:
   workflow_call:
     inputs:
@@ -24,10 +27,11 @@ on:
         default: ''
     secrets:
       app-id:
+        description: ''
         required: true
       app-private-key:
+        description: ''
         required: true
-
 jobs:
   manual-tag:
     uses: 'zenhelix/ci-workflows/.github/workflows/manual-create-tag.yml@v2'

@@ -293,3 +293,70 @@ val CHECK_COMMAND_INPUT = "check-command" to stringInput(
 
 val APP_ID_SECRET = "app-id" to secretInput("GitHub App ID for generating commit token")
 val APP_PRIVATE_KEY_SECRET = "app-private-key" to secretInput("GitHub App private key for generating commit token")
+
+// ── Adapter Workflow Post-Processing ──────────────────────────────────────────
+
+/**
+ * Removes `runs-on` and `steps` blocks from jobs that use reusable workflows (`uses:` at job level).
+ * GitHub Actions does not allow `runs-on` or `steps` on reusable workflow call jobs.
+ */
+fun cleanReusableWorkflowJobs(targetFileName: String) {
+    val targetFile = java.io.File("../workflows/$targetFileName")
+    val lines = targetFile.readLines()
+    val output = mutableListOf<String>()
+
+    val jobsLineIdx = lines.indexOfFirst { it.trimStart() == "jobs:" }
+    val reusableJobIds = mutableSetOf<String>()
+
+    if (jobsLineIdx >= 0) {
+        var currentJobId: String? = null
+        for (idx in (jobsLineIdx + 1) until lines.size) {
+            val line = lines[idx]
+            if (line.isBlank()) continue
+            val indent = line.length - line.trimStart().length
+            if (indent == 0) break
+            if (indent == 2 && line.trimEnd().endsWith(":")) {
+                currentJobId = line.trim().removeSuffix(":")
+            }
+            if (indent == 4 && line.trimStart().startsWith("uses:") && currentJobId != null) {
+                reusableJobIds.add(currentJobId)
+            }
+        }
+    }
+
+    var currentJobId2: String? = null
+    var i = 0
+    while (i < lines.size) {
+        val line = lines[i]
+        val indent = if (line.isBlank()) -1 else line.length - line.trimStart().length
+
+        if (indent == 2 && line.trimEnd().endsWith(":") && i > jobsLineIdx) {
+            currentJobId2 = line.trim().removeSuffix(":")
+        }
+
+        val inReusable = currentJobId2 in reusableJobIds
+
+        if (inReusable && indent == 4 && line.trimStart().startsWith("runs-on:")) {
+            i++
+            continue
+        }
+
+        if (inReusable && indent == 4 && line.trimStart().startsWith("steps:")) {
+            i++
+            while (i < lines.size) {
+                val nextLine = lines[i]
+                if (nextLine.isBlank()) { i++; continue }
+                val nextIndent = nextLine.length - nextLine.trimStart().length
+                if (nextIndent < 4) break
+                if (nextIndent == 4 && !nextLine.trimStart().startsWith("-")) break
+                i++
+            }
+            continue
+        }
+
+        output.add(line)
+        i++
+    }
+
+    targetFile.writeText(output.joinToString("\n") + "\n")
+}

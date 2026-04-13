@@ -1,5 +1,8 @@
-name: 'Gradle Plugin Release'
+# This file was generated using Kotlin DSL (.github/workflow-src/gradle-plugin-release.main.kts).
+# If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
 
+name: 'Gradle Plugin Release'
 on:
   workflow_call:
     inputs:
@@ -19,30 +22,36 @@ on:
         default: '.github/changelog-config.json'
     secrets:
       MAVEN_SONATYPE_USERNAME:
+        description: ''
         required: true
       MAVEN_SONATYPE_TOKEN:
+        description: ''
         required: true
       MAVEN_SONATYPE_SIGNING_KEY_ID:
+        description: ''
         required: true
       MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED:
+        description: ''
         required: true
       MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED:
+        description: ''
         required: true
       MAVEN_SONATYPE_SIGNING_PASSWORD:
+        description: ''
         required: true
       GRADLE_PUBLISH_KEY:
+        description: ''
         required: true
       GRADLE_PUBLISH_SECRET:
+        description: ''
         required: true
-
 jobs:
   release:
     uses: 'zenhelix/ci-workflows/.github/workflows/release.yml@v2'
     with:
       changelog-config: '${{ inputs.changelog-config }}'
-
   publish:
-    needs: release
+    needs: 'release'
     uses: 'zenhelix/ci-workflows/.github/workflows/publish.yml@v2'
     with:
       setup-action: 'gradle'
