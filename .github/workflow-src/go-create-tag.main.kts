@@ -6,11 +6,13 @@ import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 
+val targetFile = "go-create-tag.yml"
+
 workflow(
     name = "Go Create Tag",
     on = listOf(WorkflowDispatch()),
     sourceFile = __FILE__,
-    targetFileName = "go-create-tag.yml",
+    targetFileName = targetFile,
     consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
     _customArguments = mapOf(
         "on" to mapOf(
@@ -63,5 +65,9 @@ workflow(
                 "app-private-key" to "\${{ secrets.app-private-key }}",
             ),
         ),
-    ) {}
+    ) {
+        run(name = "placeholder", command = "echo placeholder")
+    }
 }
+
+cleanReusableWorkflowJobs(targetFile)
