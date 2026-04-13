@@ -4,6 +4,9 @@ import actions.SetupAction
 import io.github.typesafegithub.workflows.dsl.JobBuilder
 import java.io.File
 
+/** Reference an input of the current workflow: generates "\${{ inputs.<name> }}" */
+fun inputRef(name: String) = "\${{ inputs.$name }}"
+
 fun JobBuilder<*>.conditionalSetupSteps(fetchDepth: String? = null) {
     uses(
         name = "Setup Gradle",
