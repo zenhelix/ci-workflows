@@ -1,57 +1,31 @@
 package workflows.base
 
+import io.github.typesafegithub.workflows.domain.Mode
+import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
+import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.APP_ID_SECRET
-import shared.APP_PRIVATE_KEY_SECRET
 import shared.CreateAppTokenAction
-import shared.SETUP_ACTION_INPUT
-import shared.SETUP_PARAMS_INPUT
 import shared.conditionalSetupSteps
-import shared.stringInput
+import shared.dsl.ManualCreateTagWorkflow
 import java.io.File
 
 fun generateManualCreateTag(outputDir: File) {
     workflow(
         name = "Manual Create Tag",
-        on = listOf(WorkflowDispatch()),
+        on = listOf(
+            WorkflowDispatch(),
+            WorkflowCall(
+                inputs = ManualCreateTagWorkflow.inputs,
+                secrets = ManualCreateTagWorkflow.secrets,
+            ),
+        ),
         sourceFile = File(".github/workflow-src/manual-create-tag.main.kts"),
         targetFileName = "manual-create-tag.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
-        _customArguments = mapOf(
-            "on" to mapOf(
-                "workflow_call" to mapOf(
-                    "inputs" to mapOf(
-                        "tag-version" to stringInput(
-                            description = "Version to tag (e.g. 1.2.3)",
-                            required = true,
-                        ),
-                        "tag-prefix" to stringInput(
-                            description = "Prefix for the tag (e.g. v)",
-                            default = "",
-                        ),
-                        SETUP_ACTION_INPUT.let { (k, v) ->
-                            k to stringInput(
-                                description = "Setup action to use: gradle, go, python",
-                                required = true,
-                            )
-                        },
-                        SETUP_PARAMS_INPUT,
-                        "check-command" to stringInput(
-                            description = "Validation command to run before tagging",
-                            required = true,
-                        ),
-                    ),
-                    "secrets" to mapOf(
-                        APP_ID_SECRET,
-                        APP_PRIVATE_KEY_SECRET,
-                    ),
-                ),
-            ),
-            "permissions" to mapOf("contents" to "write"),
-        ),
+        permissions = mapOf(Permission.Contents to Mode.Write),
     ) {
         job(
             id = "manual_tag",

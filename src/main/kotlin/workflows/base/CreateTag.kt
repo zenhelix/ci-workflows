@@ -1,58 +1,32 @@
 package workflows.base
 
+import io.github.typesafegithub.workflows.domain.Mode
+import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
+import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.APP_ID_SECRET
-import shared.APP_PRIVATE_KEY_SECRET
 import shared.CreateAppTokenAction
-import shared.DEFAULT_RELEASE_BRANCHES
 import shared.GithubTagAction
-import shared.SETUP_ACTION_INPUT
-import shared.SETUP_PARAMS_INPUT
 import shared.conditionalSetupSteps
-import shared.stringInput
+import shared.dsl.CreateTagWorkflow
 import java.io.File
 
 fun generateCreateTag(outputDir: File) {
     workflow(
         name = "Create Tag",
-        on = listOf(WorkflowDispatch()),
+        on = listOf(
+            WorkflowDispatch(),
+            WorkflowCall(
+                inputs = CreateTagWorkflow.inputs,
+                secrets = CreateTagWorkflow.secrets,
+            ),
+        ),
         sourceFile = File(".github/workflow-src/create-tag.main.kts"),
         targetFileName = "create-tag.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
-        _customArguments = mapOf(
-            "on" to mapOf(
-                "workflow_call" to mapOf(
-                    "inputs" to mapOf(
-                        SETUP_ACTION_INPUT,
-                        SETUP_PARAMS_INPUT,
-                        "check-command" to stringInput(
-                            description = "Validation command to run before tagging",
-                            required = true,
-                        ),
-                        "default-bump" to stringInput(
-                            description = "Default version bump type (major, minor, patch)",
-                            default = "patch",
-                        ),
-                        "tag-prefix" to stringInput(
-                            description = "Prefix for the tag (e.g. v)",
-                            default = "",
-                        ),
-                        "release-branches" to stringInput(
-                            description = "Comma-separated branch patterns for releases",
-                            default = DEFAULT_RELEASE_BRANCHES,
-                        ),
-                    ),
-                    "secrets" to mapOf(
-                        APP_ID_SECRET,
-                        APP_PRIVATE_KEY_SECRET,
-                    ),
-                ),
-            ),
-            "permissions" to mapOf("contents" to "write"),
-        ),
+        permissions = mapOf(Permission.Contents to Mode.Write),
     ) {
         job(
             id = "create_tag",

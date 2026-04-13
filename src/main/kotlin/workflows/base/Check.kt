@@ -1,34 +1,27 @@
 package workflows.base
 
+import io.github.typesafegithub.workflows.domain.Mode
+import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
+import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.CHECK_COMMAND_INPUT
-import shared.SETUP_ACTION_INPUT
-import shared.SETUP_PARAMS_INPUT
 import shared.conditionalSetupSteps
+import shared.dsl.CheckWorkflow
 import java.io.File
 
 fun generateCheck(outputDir: File) {
     workflow(
         name = "Check",
-        on = listOf(WorkflowDispatch()),
+        on = listOf(
+            WorkflowDispatch(),
+            WorkflowCall(inputs = CheckWorkflow.inputs),
+        ),
         sourceFile = File(".github/workflow-src/check.main.kts"),
         targetFileName = "check.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
-        _customArguments = mapOf(
-            "on" to mapOf(
-                "workflow_call" to mapOf(
-                    "inputs" to mapOf(
-                        SETUP_ACTION_INPUT,
-                        SETUP_PARAMS_INPUT,
-                        CHECK_COMMAND_INPUT,
-                    ),
-                ),
-            ),
-            "permissions" to mapOf("contents" to "read"),
-        ),
+        permissions = mapOf(Permission.Contents to Mode.Read),
     ) {
         job(
             id = "build",

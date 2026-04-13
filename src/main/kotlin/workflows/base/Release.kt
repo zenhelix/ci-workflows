@@ -1,41 +1,29 @@
 package workflows.base
 
+import io.github.typesafegithub.workflows.domain.Mode
+import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
+import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import shared.CheckoutAction
-import shared.DEFAULT_CHANGELOG_CONFIG
 import shared.GhReleaseAction
 import shared.ReleaseChangelogBuilderAction
-import shared.booleanInput
-import shared.stringInput
+import shared.dsl.ReleaseWorkflow
 import java.io.File
 
 fun generateRelease(outputDir: File) {
     workflow(
         name = "Release",
-        on = listOf(WorkflowDispatch()),
+        on = listOf(
+            WorkflowDispatch(),
+            WorkflowCall(inputs = ReleaseWorkflow.inputs),
+        ),
         sourceFile = File(".github/workflow-src/release.main.kts"),
         targetFileName = "release.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
-        _customArguments = mapOf(
-            "on" to mapOf(
-                "workflow_call" to mapOf(
-                    "inputs" to mapOf(
-                        "changelog-config" to stringInput(
-                            description = "Path to changelog configuration file",
-                            default = DEFAULT_CHANGELOG_CONFIG,
-                        ),
-                        "draft" to booleanInput(
-                            description = "Create release as draft",
-                            default = false,
-                        ),
-                    ),
-                ),
-            ),
-            "permissions" to mapOf("contents" to "write"),
-        ),
+        permissions = mapOf(Permission.Contents to Mode.Write),
     ) {
         job(
             id = "release",

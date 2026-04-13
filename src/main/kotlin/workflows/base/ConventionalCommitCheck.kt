@@ -1,31 +1,23 @@
 package workflows.base
 
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
+import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.stringInput
+import shared.dsl.ConventionalCommitCheckWorkflow
 import java.io.File
 
 fun generateConventionalCommitCheck(outputDir: File) {
     workflow(
         name = "Conventional Commit Check",
-        on = listOf(WorkflowDispatch()),
+        on = listOf(
+            WorkflowDispatch(),
+            WorkflowCall(inputs = ConventionalCommitCheckWorkflow.inputs),
+        ),
         sourceFile = File(".github/workflow-src/conventional-commit-check.main.kts"),
         targetFileName = "conventional-commit-check.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
-        _customArguments = mapOf(
-            "on" to mapOf(
-                "workflow_call" to mapOf(
-                    "inputs" to mapOf(
-                        "allowed-types" to stringInput(
-                            description = "Comma-separated list of allowed commit types",
-                            default = "feat,fix,refactor,docs,test,chore,perf,ci",
-                        ),
-                    ),
-                ),
-            ),
-        ),
     ) {
         job(
             id = "check-title",

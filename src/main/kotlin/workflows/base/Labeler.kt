@@ -1,35 +1,29 @@
 package workflows.base
 
+import io.github.typesafegithub.workflows.domain.Mode
+import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
+import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import shared.LabelerAction
-import shared.stringInput
+import shared.dsl.LabelerWorkflow
 import java.io.File
 
 fun generateLabeler(outputDir: File) {
     workflow(
         name = "PR Labeler",
-        on = listOf(WorkflowDispatch()),
+        on = listOf(
+            WorkflowDispatch(),
+            WorkflowCall(inputs = LabelerWorkflow.inputs),
+        ),
         sourceFile = File(".github/workflow-src/labeler.main.kts"),
         targetFileName = "labeler.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
-        _customArguments = mapOf(
-            "on" to mapOf(
-                "workflow_call" to mapOf(
-                    "inputs" to mapOf(
-                        "config-path" to stringInput(
-                            description = "Path to labeler configuration file",
-                            default = ".github/labeler.yml",
-                        ),
-                    ),
-                ),
-            ),
-            "permissions" to mapOf(
-                "contents" to "write",
-                "pull-requests" to "write",
-            ),
+        permissions = mapOf(
+            Permission.Contents to Mode.Write,
+            Permission.PullRequests to Mode.Write,
         ),
     ) {
         job(
