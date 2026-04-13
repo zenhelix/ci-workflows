@@ -1,6 +1,7 @@
 package dsl
 
 import actions.SetupAction
+import config.SetupTool
 import io.github.typesafegithub.workflows.dsl.JobBuilder
 import java.io.File
 
@@ -8,30 +9,17 @@ import java.io.File
 fun inputRef(name: String) = "\${{ inputs.$name }}"
 
 fun JobBuilder<*>.conditionalSetupSteps(fetchDepth: String? = null) {
-    uses(
-        name = "Setup Gradle",
-        action = SetupAction(
-            "setup-gradle", "java-version",
-            "\${{ fromJson(inputs.setup-params).java-version || '17' }}", fetchDepth
-        ),
-        condition = "inputs.setup-action == 'gradle'",
-    )
-    uses(
-        name = "Setup Go",
-        action = SetupAction(
-            "setup-go", "go-version",
-            "\${{ fromJson(inputs.setup-params).go-version || '1.22' }}", fetchDepth
-        ),
-        condition = "inputs.setup-action == 'go'",
-    )
-    uses(
-        name = "Setup Python",
-        action = SetupAction(
-            "setup-python", "python-version",
-            "\${{ fromJson(inputs.setup-params).python-version || '3.12' }}", fetchDepth
-        ),
-        condition = "inputs.setup-action == 'python'",
-    )
+    listOf(SetupTool.Gradle, SetupTool.Go, SetupTool.Python).forEach { tool ->
+        uses(
+            name = "Setup ${tool.id.replaceFirstChar { c -> c.uppercase() }}",
+            action = SetupAction(
+                tool.actionName, tool.versionKey,
+                "\${{ fromJson(inputs.setup-params).${tool.versionKey} || '${tool.defaultVersion}' }}",
+                fetchDepth,
+            ),
+            condition = "inputs.setup-action == '${tool.id}'",
+        )
+    }
 }
 
 fun JobBuilder<*>.noop() {
