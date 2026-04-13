@@ -4,7 +4,12 @@ import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.*
+import shared.CheckoutAction
+import shared.DEFAULT_CHANGELOG_CONFIG
+import shared.GhReleaseAction
+import shared.ReleaseChangelogBuilderAction
+import shared.booleanInput
+import shared.stringInput
 import java.io.File
 
 fun generateRelease(outputDir: File) {

@@ -1,5 +1,21 @@
-import workflows.adapters.*
-import workflows.base.*
+import workflows.adapters.generateAppCheck
+import workflows.adapters.generateAppDeploy
+import workflows.adapters.generateAppRelease
+import workflows.adapters.generateGoCreateTag
+import workflows.adapters.generateGoManualCreateTag
+import workflows.adapters.generateGradleCreateTag
+import workflows.adapters.generateGradleManualCreateTag
+import workflows.adapters.generateGradlePluginCheck
+import workflows.adapters.generateGradlePluginRelease
+import workflows.adapters.generateKotlinLibraryCheck
+import workflows.adapters.generateKotlinLibraryRelease
+import workflows.base.generateCheck
+import workflows.base.generateConventionalCommitCheck
+import workflows.base.generateCreateTag
+import workflows.base.generateLabeler
+import workflows.base.generateManualCreateTag
+import workflows.base.generatePublish
+import workflows.base.generateRelease
 import java.io.File
 
 fun main() {

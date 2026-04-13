@@ -4,7 +4,15 @@ import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.*
+import shared.APP_ID_SECRET
+import shared.APP_PRIVATE_KEY_SECRET
+import shared.CreateAppTokenAction
+import shared.DEFAULT_RELEASE_BRANCHES
+import shared.GithubTagAction
+import shared.SETUP_ACTION_INPUT
+import shared.SETUP_PARAMS_INPUT
+import shared.conditionalSetupSteps
+import shared.stringInput
 import java.io.File
 
 fun generateCreateTag(outputDir: File) {

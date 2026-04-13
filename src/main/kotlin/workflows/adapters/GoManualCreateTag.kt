@@ -4,7 +4,14 @@ import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.*
+import shared.APP_ID_SECRET
+import shared.APP_PRIVATE_KEY_SECRET
+import shared.APP_SECRETS_PASSTHROUGH
+import shared.DEFAULT_GO_VERSION
+import shared.cleanReusableWorkflowJobs
+import shared.noop
+import shared.reusableWorkflow
+import shared.stringInput
 import java.io.File
 
 fun generateGoManualCreateTag(outputDir: File) {

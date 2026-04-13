@@ -32,7 +32,9 @@ fun cleanReusableWorkflowJobs(targetFile: File) {
                     j++
                     while (j < currentJobLines.size) {
                         val stepLine = currentJobLines[j]
-                        if (stepLine.isBlank()) { j++; continue }
+                        if (stepLine.isBlank()) {
+                            j++; continue
+                        }
                         val stepTrimmed = stepLine.trimStart()
                         val sIndent = stepLine.length - stepTrimmed.length
                         if (sIndent < 4) break

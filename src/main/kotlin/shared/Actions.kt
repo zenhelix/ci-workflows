@@ -14,6 +14,7 @@ class SetupAction(
     ).apply {
         if (fetchDepth != null) put("fetch-depth", fetchDepth)
     }
+
     override fun buildOutputObject(stepId: String) = Outputs(stepId)
 }
 
@@ -26,9 +27,10 @@ class CreateAppTokenAction(
         "app-id" to appId,
         "app-private-key" to appPrivateKey,
     )
+
     override fun buildOutputObject(stepId: String) = CreateAppTokenOutputs(stepId)
 
-    class CreateAppTokenOutputs(stepId: String) : Action.Outputs(stepId) {
+    class CreateAppTokenOutputs(stepId: String) : Outputs(stepId) {
         val token: String get() = get("token")
     }
 }
@@ -46,6 +48,7 @@ class GithubTagAction(
         "tag_prefix" to tagPrefix,
         "release_branches" to releaseBranches,
     )
+
     override fun buildOutputObject(stepId: String) = Outputs(stepId)
 }
 
@@ -56,6 +59,7 @@ class CheckoutAction(
     override fun toYamlArguments() = linkedMapOf<String, String>().apply {
         if (fetchDepth != null) put("fetch-depth", fetchDepth)
     }
+
     override fun buildOutputObject(stepId: String) = Outputs(stepId)
 }
 
@@ -68,9 +72,10 @@ class ReleaseChangelogBuilderAction(
         "configuration" to configuration,
         "toTag" to toTag,
     )
+
     override fun buildOutputObject(stepId: String) = ChangelogOutputs(stepId)
 
-    class ChangelogOutputs(stepId: String) : Action.Outputs(stepId) {
+    class ChangelogOutputs(stepId: String) : Outputs(stepId) {
         val changelog: String get() = get("changelog")
     }
 }
@@ -88,6 +93,7 @@ class GhReleaseAction(
         "tag_name" to tagName,
         "draft" to draft,
     )
+
     override fun buildOutputObject(stepId: String) = Outputs(stepId)
 }
 
@@ -102,5 +108,6 @@ class LabelerAction(
         "configuration-path" to configurationPath,
         "sync-labels" to syncLabels,
     )
+
     override fun buildOutputObject(stepId: String) = Outputs(stepId)
 }

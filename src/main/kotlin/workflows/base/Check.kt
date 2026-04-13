@@ -4,7 +4,10 @@ import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.*
+import shared.CHECK_COMMAND_INPUT
+import shared.SETUP_ACTION_INPUT
+import shared.SETUP_PARAMS_INPUT
+import shared.conditionalSetupSteps
 import java.io.File
 
 fun generateCheck(outputDir: File) {
