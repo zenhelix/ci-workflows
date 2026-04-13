@@ -6,7 +6,7 @@ import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import actions.LabelerAction
+import io.github.typesafegithub.workflows.actions.actions.Labeler_Untyped
 import dsl.LabelerWorkflow
 import java.io.File
 
@@ -31,10 +31,10 @@ fun generateLabeler() {
         ) {
             uses(
                 name = "Label PR based on file paths",
-                action = LabelerAction(
-                    repoToken = "\${{ secrets.GITHUB_TOKEN }}",
-                    configurationPath = "\${{ inputs.config-path }}",
-                    syncLabels = "true",
+                action = Labeler_Untyped(
+                    repoToken_Untyped = "\${{ secrets.GITHUB_TOKEN }}",
+                    configurationPath_Untyped = "\${{ inputs.config-path }}",
+                    syncLabels_Untyped = "true",
                 ),
             )
         }
