@@ -20,6 +20,7 @@ val adapterWorkflowYaml: Yaml = Yaml(
     configuration = YamlConfiguration(
         encodeDefaults = false,
         singleLineStringStyle = SingleLineStringStyle.SingleQuoted,
+        breakScalarsAt = Int.MAX_VALUE,
     )
 )
 

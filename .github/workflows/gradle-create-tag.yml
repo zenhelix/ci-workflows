@@ -1,52 +1,53 @@
 # This file was generated using Kotlin DSL (.github/workflow-src/gradle-create-tag.main.kts).
 # If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
 # Generated with https://github.com/typesafegithub/github-workflows-kt
+
 name: 'Gradle Create Tag'
 on:
   workflow_call:
     inputs:
-      'java-version':
+      java-version:
         description: 'JDK version to use'
         type: 'string'
         required: false
         default: '17'
-      'gradle-command':
+      gradle-command:
         description: 'Gradle validation command'
         type: 'string'
         required: false
         default: './gradlew check'
-      'default-bump':
+      default-bump:
         description: 'Default version bump type (major, minor, patch)'
         type: 'string'
         required: false
         default: 'patch'
-      'tag-prefix':
+      tag-prefix:
         description: 'Prefix for the tag'
         type: 'string'
         required: false
         default: ''
-      'release-branches':
+      release-branches:
         description: 'Comma-separated branch patterns for releases'
         type: 'string'
         required: false
         default: 'main,[0-9]+\.x'
     secrets:
-      'app-id':
+      app-id:
         description: 'GitHub App ID for generating commit token'
         required: true
-      'app-private-key':
+      app-private-key:
         description: 'GitHub App private key for generating commit token'
         required: true
 jobs:
-  'create-tag':
+  create-tag:
     uses: 'zenhelix/ci-workflows/.github/workflows/create-tag.yml@v2'
     with:
-      'setup-action': 'gradle'
-      'setup-params': '{"java-version": "${{ inputs.java-version }}"}'
-      'check-command': '${{ inputs.gradle-command }}'
-      'default-bump': '${{ inputs.default-bump }}'
-      'tag-prefix': '${{ inputs.tag-prefix }}'
-      'release-branches': '${{ inputs.release-branches }}'
+      setup-action: 'gradle'
+      setup-params: '{"java-version": "${{ inputs.java-version }}"}'
+      check-command: '${{ inputs.gradle-command }}'
+      default-bump: '${{ inputs.default-bump }}'
+      tag-prefix: '${{ inputs.tag-prefix }}'
+      release-branches: '${{ inputs.release-branches }}'
     secrets:
-      'app-id': '${{ secrets.app-id }}'
-      'app-private-key': '${{ secrets.app-private-key }}'
+      app-id: '${{ secrets.app-id }}'
+      app-private-key: '${{ secrets.app-private-key }}'

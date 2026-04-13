@@ -33,10 +33,13 @@ abstract class AdapterWorkflow(fileName: String) : ReusableWorkflow(fileName) {
             append("# Generated with https://github.com/typesafegithub/github-workflows-kt")
         }
 
-        val body = adapterWorkflowYaml.encodeToString(AdapterWorkflowYaml.serializer(), dto)
+        val rawBody = adapterWorkflowYaml.encodeToString(AdapterWorkflowYaml.serializer(), dto)
+        // Unquote map keys: kaml quotes all strings with SingleQuoted style, but YAML map keys
+        // should be unquoted for readability (matching the expected baseline format).
+        val body = rawBody.replace(Regex("""^(\s*)'([^']*?)'\s*:""", RegexOption.MULTILINE), "$1$2:")
 
         outputDir.mkdirs()
-        File(outputDir, fileName).writeText("$header\n$body")
+        File(outputDir, fileName).writeText("$header\n\n$body\n")
     }
 }
 
