@@ -2,10 +2,7 @@ package workflows.adapters.release
 
 import config.DEFAULT_CHANGELOG_CONFIG
 import config.DEFAULT_JAVA_VERSION
-import config.GRADLE_PORTAL_SECRETS
-import config.MAVEN_SONATYPE_SECRETS
 import config.SetupTool
-import config.passthrough
 import dsl.AdapterWorkflow
 import dsl.PublishWorkflow
 import dsl.ReleaseWorkflow
@@ -31,20 +28,27 @@ object GradlePluginReleaseAdapter : AdapterWorkflow("gradle-plugin-release.yml")
         default = DEFAULT_CHANGELOG_CONFIG,
     )
 
-    init {
-        secrets(MAVEN_SONATYPE_SECRETS + GRADLE_PORTAL_SECRETS)
-    }
+    override fun createJobBuilder() = PublishWorkflow.JobBuilder()
 
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
-        reusableJob(id = "release", uses = ReleaseWorkflow) {
-            ReleaseWorkflow.changelogConfig(changelogConfig.ref)
+        reusableJob<ReleaseWorkflow.JobBuilder>(id = "release", uses = ReleaseWorkflow) {
+            changelogConfig(this@GradlePluginReleaseAdapter.changelogConfig.ref)
         },
-        reusableJob(id = "publish", uses = PublishWorkflow) {
+        reusableJob<PublishWorkflow.JobBuilder>(id = "publish", uses = PublishWorkflow) {
             needs("release")
-            PublishWorkflow.setupAction(SetupTool.Gradle.id)
-            PublishWorkflow.setupParams(SetupTool.Gradle.toParamsJson(javaVersion.ref))
-            PublishWorkflow.publishCommand(publishCommand.ref)
-            secrets((MAVEN_SONATYPE_SECRETS + GRADLE_PORTAL_SECRETS).passthrough())
+            setupAction(SetupTool.Gradle.id)
+            setupParams(SetupTool.Gradle.toParamsJson(javaVersion.ref))
+            publishCommand(this@GradlePluginReleaseAdapter.publishCommand.ref)
+            passthroughSecrets(
+                PublishWorkflow.mavenSonatypeUsername,
+                PublishWorkflow.mavenSonatypeToken,
+                PublishWorkflow.mavenSonatypeSigningKeyId,
+                PublishWorkflow.mavenSonatypeSigningPubKeyAsciiArmored,
+                PublishWorkflow.mavenSonatypeSigningKeyAsciiArmored,
+                PublishWorkflow.mavenSonatypeSigningPassword,
+                PublishWorkflow.gradlePublishKey,
+                PublishWorkflow.gradlePublishSecret,
+            )
         },
     )
 }
