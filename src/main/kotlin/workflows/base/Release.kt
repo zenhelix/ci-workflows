@@ -1,9 +1,9 @@
 package workflows.base
 
 import dsl.ReleaseWorkflow
-import io.github.typesafegithub.workflows.actions.actions.Checkout_Untyped
+import io.github.typesafegithub.workflows.actions.actions.Checkout
 import io.github.typesafegithub.workflows.actions.mikepenz.ReleaseChangelogBuilderAction_Untyped
-import io.github.typesafegithub.workflows.actions.softprops.ActionGhRelease_Untyped
+import io.github.typesafegithub.workflows.actions.softprops.ActionGhRelease
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
@@ -29,7 +29,7 @@ fun generateRelease() {
         ) {
             uses(
                 name = "Check out",
-                action = Checkout_Untyped(fetchDepth_Untyped = "0"),
+                action = Checkout(fetchDepth = Checkout.FetchDepth.Value(0)),
             )
             uses(
                 name = "Build Changelog",
@@ -44,10 +44,10 @@ fun generateRelease() {
             )
             uses(
                 name = "Create Release",
-                action = ActionGhRelease_Untyped(
-                    body_Untyped = "\${{ steps.changelog.outputs.changelog }}",
-                    name_Untyped = "\${{ github.ref_name }}",
-                    tagName_Untyped = "\${{ github.ref_name }}",
+                action = ActionGhRelease(
+                    body = "\${{ steps.changelog.outputs.changelog }}",
+                    name = "\${{ github.ref_name }}",
+                    tagName = "\${{ github.ref_name }}",
                     draft_Untyped = ReleaseWorkflow.draft.ref,
                 ),
                 env = linkedMapOf(
