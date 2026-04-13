@@ -215,7 +215,7 @@ val SETUP_ACTION_INPUT = "setup-action" to stringInput(
 )
 
 val SETUP_PARAMS_INPUT = "setup-params" to stringInput(
-    description = "JSON object with setup parameters",
+    description = "JSON object with setup parameters (e.g. {\"java-version\": \"21\"})",
     default = "{}",
 )
 

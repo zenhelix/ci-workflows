@@ -11,6 +11,8 @@ on:
         type: 'string'
         required: false
         default: 'feat,fix,refactor,docs,test,chore,perf,ci'
+permissions:
+  pull-requests: 'read'
 jobs:
   check-title:
     name: 'Check PR Title'
@@ -25,9 +27,9 @@ jobs:
         TYPES_PATTERN=$(echo "$ALLOWED_TYPES" | tr ',' '|')
         PATTERN="^($TYPES_PATTERN)(\(.+\))?(!)?: .+"
         if [[ ! "$PR_TITLE" =~ $PATTERN ]]; then
-          echo "::warning::PR title does not match conventional commits format: <type>(<scope>): <description>"
-          echo "::warning::Allowed types: $ALLOWED_TYPES"
-          echo "::warning::Got: $PR_TITLE"
-        else
-          echo "PR title is valid: $PR_TITLE"
+          echo "::error::PR title must match conventional commits format: <type>(<scope>): <description>"
+          echo "::error::Allowed types: $ALLOWED_TYPES"
+          echo "::error::Got: $PR_TITLE"
+          exit 1
         fi
+        echo "PR title is valid: $PR_TITLE"
