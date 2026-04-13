@@ -14,7 +14,7 @@ object GradleManualCreateTagAdapter : AdapterWorkflow("gradle-manual-create-tag.
 
     val tagVersion = input("tag-version", description = "Version to tag (e.g. 1.2.3)", required = true)
     val javaVersion = input("java-version", description = "JDK version to use", default = DEFAULT_JAVA_VERSION)
-    val gradleCommand = input("gradle-command", description = "Gradle validation command", default = "./gradlew check")
+    val gradleCommand = input("gradle-command", description = "Gradle check command", default = "./gradlew check")
     val tagPrefix = input("tag-prefix", description = "Prefix for the tag", default = "")
 
     init { secrets(APP_SECRETS) }

@@ -6,7 +6,11 @@ import dsl.yaml.WorkflowCallBodyYaml
 import dsl.yaml.adapterWorkflowYaml
 import java.io.File
 
-// ---- New AdapterWorkflow base class ----------------------------------------
+// Kaml SingleQuoted style quotes map keys too; strip quotes to match GitHub Actions convention.
+private val QUOTED_MAP_KEY = Regex("""^(\s*)'([^']*?)'\s*:""", RegexOption.MULTILINE)
+
+private fun unquoteYamlMapKeys(yaml: String): String =
+    yaml.replace(QUOTED_MAP_KEY, "$1$2:")
 
 abstract class AdapterWorkflow(fileName: String) : ReusableWorkflow(fileName) {
 
@@ -34,9 +38,7 @@ abstract class AdapterWorkflow(fileName: String) : ReusableWorkflow(fileName) {
         }
 
         val rawBody = adapterWorkflowYaml.encodeToString(AdapterWorkflowYaml.serializer(), dto)
-        // Unquote map keys: kaml quotes all strings with SingleQuoted style, but YAML map keys
-        // should be unquoted for readability (matching the expected baseline format).
-        val body = rawBody.replace(Regex("""^(\s*)'([^']*?)'\s*:""", RegexOption.MULTILINE), "$1$2:")
+        val body = unquoteYamlMapKeys(rawBody)
 
         outputDir.mkdirs()
         File(outputDir, fileName).writeText("$header\n\n$body\n")
