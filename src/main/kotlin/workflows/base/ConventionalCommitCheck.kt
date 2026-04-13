@@ -1,10 +1,10 @@
 package workflows.base
 
+import dsl.ConventionalCommitCheckWorkflow
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import dsl.ConventionalCommitCheckWorkflow
 import java.io.File
 
 fun generateConventionalCommitCheck() {

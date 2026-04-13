@@ -1,15 +1,15 @@
 package workflows.base
 
+import actions.CreateAppTokenAction
+import actions.GithubTagAction
+import dsl.CreateTagWorkflow
+import dsl.conditionalSetupSteps
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import actions.CreateAppTokenAction
-import actions.GithubTagAction
-import dsl.CreateTagWorkflow
-import dsl.conditionalSetupSteps
 import java.io.File
 
 fun generateCreateTag() {

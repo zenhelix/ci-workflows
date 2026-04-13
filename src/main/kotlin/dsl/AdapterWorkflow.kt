@@ -148,10 +148,10 @@ private fun StringBuilder.appendStrategy(strategy: Map<String, Any>, indent: Int
 
 private fun yamlValue(value: Any?): String = when (value) {
     is Boolean -> value.toString()
-    is Number -> value.toString()
-    is String -> yamlString(value)
-    null -> "''"
-    else -> yamlString(value.toString())
+    is Number  -> value.toString()
+    is String  -> yamlString(value)
+    null       -> "''"
+    else       -> yamlString(value.toString())
 }
 
 private fun yamlString(value: String): String {

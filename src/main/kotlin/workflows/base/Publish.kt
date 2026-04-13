@@ -1,13 +1,13 @@
 package workflows.base
 
+import dsl.PublishWorkflow
+import dsl.conditionalSetupSteps
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import dsl.PublishWorkflow
-import dsl.conditionalSetupSteps
 import java.io.File
 
 fun generatePublish() {

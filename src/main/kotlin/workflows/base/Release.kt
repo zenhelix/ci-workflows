@@ -1,14 +1,14 @@
 package workflows.base
 
+import dsl.ReleaseWorkflow
+import io.github.typesafegithub.workflows.actions.actions.Checkout_Untyped
+import io.github.typesafegithub.workflows.actions.mikepenz.ReleaseChangelogBuilderAction_Untyped
+import io.github.typesafegithub.workflows.actions.softprops.ActionGhRelease_Untyped
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import io.github.typesafegithub.workflows.actions.actions.Checkout_Untyped
-import io.github.typesafegithub.workflows.actions.mikepenz.ReleaseChangelogBuilderAction_Untyped
-import io.github.typesafegithub.workflows.actions.softprops.ActionGhRelease_Untyped
-import dsl.ReleaseWorkflow
 import java.io.File
 
 fun generateRelease() {

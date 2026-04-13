@@ -15,12 +15,14 @@ fun generateAppDeploy(outputDir: File) {
     workflow(
         name = "Application Deploy",
         on = listOf(
-            WorkflowCall(inputs = mapOf(
-                CommonInputs.setupAction(),
-                CommonInputs.setupParams(),
-                CommonInputs.deployCommand(),
-                CommonInputs.tag(),
-            )),
+            WorkflowCall(
+                inputs = mapOf(
+                    CommonInputs.setupAction(),
+                    CommonInputs.setupParams(),
+                    CommonInputs.deployCommand(),
+                    CommonInputs.tag(),
+                )
+            ),
         ),
         sourceFile = File(".github/workflow-src/app-deploy.main.kts"),
         targetFileName = "app-deploy.yml",

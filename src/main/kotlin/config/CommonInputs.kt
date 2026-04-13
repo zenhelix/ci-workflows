@@ -9,7 +9,8 @@ object CommonInputs {
     fun javaVersions() =
         "java-versions" to WorkflowCall.Input(
             "JSON array of JDK versions for matrix build (overrides java-version)",
-            false, WorkflowCall.Type.String, "")
+            false, WorkflowCall.Type.String, ""
+        )
 
     fun gradleCommand(description: String = "Gradle check command", default: String = "./gradlew check") =
         "gradle-command" to WorkflowCall.Input(description, false, WorkflowCall.Type.String, default)
@@ -19,7 +20,8 @@ object CommonInputs {
 
     fun changelogConfig() =
         "changelog-config" to WorkflowCall.Input(
-            "Path to changelog configuration file", false, WorkflowCall.Type.String, DEFAULT_CHANGELOG_CONFIG)
+            "Path to changelog configuration file", false, WorkflowCall.Type.String, DEFAULT_CHANGELOG_CONFIG
+        )
 
     fun goVersion(default: String = DEFAULT_GO_VERSION) =
         "go-version" to WorkflowCall.Input("Go version to use", false, WorkflowCall.Type.String, default)
@@ -29,14 +31,16 @@ object CommonInputs {
 
     fun defaultBump() =
         "default-bump" to WorkflowCall.Input(
-            "Default version bump type (major, minor, patch)", false, WorkflowCall.Type.String, "patch")
+            "Default version bump type (major, minor, patch)", false, WorkflowCall.Type.String, "patch"
+        )
 
     fun tagPrefix(default: String = "") =
         "tag-prefix" to WorkflowCall.Input("Prefix for the tag", false, WorkflowCall.Type.String, default)
 
     fun releaseBranches() =
         "release-branches" to WorkflowCall.Input(
-            "Comma-separated branch patterns for releases", false, WorkflowCall.Type.String, DEFAULT_RELEASE_BRANCHES)
+            "Comma-separated branch patterns for releases", false, WorkflowCall.Type.String, DEFAULT_RELEASE_BRANCHES
+        )
 
     fun checkCommand(description: String = "Validation command", default: String) =
         "check-command" to WorkflowCall.Input(description, false, WorkflowCall.Type.String, default)
@@ -49,7 +53,8 @@ object CommonInputs {
 
     fun setupParams() =
         "setup-params" to WorkflowCall.Input(
-            "JSON object with setup parameters (e.g. {\"java-version\": \"21\"})", false, WorkflowCall.Type.String, "{}")
+            "JSON object with setup parameters (e.g. {\"java-version\": \"21\"})", false, WorkflowCall.Type.String, "{}"
+        )
 
     fun tag() =
         "tag" to WorkflowCall.Input("Tag/version to deploy (checked out at this ref)", true, WorkflowCall.Type.String)

@@ -22,11 +22,13 @@ internal fun generateGradleCheckWorkflow(
         name = workflowName,
         sourceFileSlug = fileSlug,
         targetFileName = targetFile,
-        trigger = WorkflowCall(inputs = mapOf(
-            CommonInputs.javaVersion(),
-            CommonInputs.javaVersions(),
-            CommonInputs.gradleCommand(),
-        )),
+        trigger = WorkflowCall(
+            inputs = mapOf(
+                CommonInputs.javaVersion(),
+                CommonInputs.javaVersions(),
+                CommonInputs.gradleCommand(),
+            )
+        ),
         jobs = listOf(
             reusableJob(id = "conventional-commit", uses = ConventionalCommitCheckWorkflow),
             reusableJob(id = "check", uses = CheckWorkflow) {
