@@ -1,5 +1,8 @@
-name: 'Create Tag'
+# This file was generated using Kotlin DSL (.github/workflow-src/create-tag.main.kts).
+# If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
 
+name: 'Create Tag'
 on:
   workflow_call:
     inputs:
@@ -38,50 +41,48 @@ on:
       app-private-key:
         description: 'GitHub App private key for generating commit token'
         required: true
-
 permissions:
   contents: 'write'
-
 jobs:
   create_tag:
     name: 'Create Tag'
     runs-on: 'ubuntu-latest'
     steps:
-      - name: 'Setup Gradle'
-        if: inputs.setup-action == 'gradle'
-        uses: 'zenhelix/ci-workflows/.github/actions/setup-gradle@v2'
-        with:
-          java-version: '${{ fromJson(inputs.setup-params).java-version || ''17'' }}'
-          fetch-depth: '0'
-
-      - name: 'Setup Go'
-        if: inputs.setup-action == 'go'
-        uses: 'zenhelix/ci-workflows/.github/actions/setup-go@v2'
-        with:
-          go-version: '${{ fromJson(inputs.setup-params).go-version || ''1.22'' }}'
-          fetch-depth: '0'
-
-      - name: 'Setup Python'
-        if: inputs.setup-action == 'python'
-        uses: 'zenhelix/ci-workflows/.github/actions/setup-python@v2'
-        with:
-          python-version: '${{ fromJson(inputs.setup-params).python-version || ''3.12'' }}'
-          fetch-depth: '0'
-
-      - name: 'Run validation'
-        run: '${{ inputs.check-command }}'
-
-      - name: 'Generate App Token'
-        id: 'app-token'
-        uses: 'zenhelix/ci-workflows/.github/actions/create-app-token@v2'
-        with:
-          app-id: '${{ secrets.app-id }}'
-          app-private-key: '${{ secrets.app-private-key }}'
-
-      - name: 'Bump version and push tag'
-        uses: 'mathieudutour/github-tag-action@v6.2'
-        with:
-          github_token: '${{ steps.app-token.outputs.token }}'
-          default_bump: '${{ inputs.default-bump }}'
-          tag_prefix: '${{ inputs.tag-prefix }}'
-          release_branches: '${{ inputs.release-branches }}'
+    - id: 'step-0'
+      name: 'Setup Gradle'
+      uses: 'zenhelix/ci-workflows/.github/actions/setup-gradle@v2'
+      with:
+        java-version: '${{ fromJson(inputs.setup-params).java-version || ''17'' }}'
+        fetch-depth: '0'
+      if: 'inputs.setup-action == ''gradle'''
+    - id: 'step-1'
+      name: 'Setup Go'
+      uses: 'zenhelix/ci-workflows/.github/actions/setup-go@v2'
+      with:
+        go-version: '${{ fromJson(inputs.setup-params).go-version || ''1.22'' }}'
+        fetch-depth: '0'
+      if: 'inputs.setup-action == ''go'''
+    - id: 'step-2'
+      name: 'Setup Python'
+      uses: 'zenhelix/ci-workflows/.github/actions/setup-python@v2'
+      with:
+        python-version: '${{ fromJson(inputs.setup-params).python-version || ''3.12'' }}'
+        fetch-depth: '0'
+      if: 'inputs.setup-action == ''python'''
+    - id: 'step-3'
+      name: 'Run validation'
+      run: '${{ inputs.check-command }}'
+    - id: 'app-token'
+      name: 'Generate App Token'
+      uses: 'zenhelix/ci-workflows/.github/actions/create-app-token@v2'
+      with:
+        app-id: '${{ secrets.app-id }}'
+        app-private-key: '${{ secrets.app-private-key }}'
+    - id: 'step-5'
+      name: 'Bump version and push tag'
+      uses: 'mathieudutour/github-tag-action@v6.2'
+      with:
+        github_token: '${{ steps.app-token.outputs.token }}'
+        default_bump: '${{ inputs.default-bump }}'
+        tag_prefix: '${{ inputs.tag-prefix }}'
+        release_branches: '${{ inputs.release-branches }}'

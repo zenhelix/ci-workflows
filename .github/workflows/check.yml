@@ -11,7 +11,7 @@ on:
         type: 'string'
         required: true
       setup-params:
-        description: 'JSON object with setup parameters (e.g. {"java-version": "21"})'
+        description: 'JSON object with setup parameters'
         type: 'string'
         required: false
         default: '{}'

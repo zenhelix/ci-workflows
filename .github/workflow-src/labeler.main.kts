@@ -7,33 +7,40 @@ import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 
 workflow(
-    name = "Check",
+    name = "PR Labeler",
     on = listOf(WorkflowDispatch()),
     sourceFile = __FILE__,
-    targetFileName = "check.yml",
+    targetFileName = "labeler.yml",
     consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
     _customArguments = mapOf(
         "on" to mapOf(
             "workflow_call" to mapOf(
                 "inputs" to mapOf(
-                    SETUP_ACTION_INPUT,
-                    SETUP_PARAMS_INPUT,
-                    CHECK_COMMAND_INPUT,
+                    "config-path" to stringInput(
+                        description = "Path to labeler configuration file",
+                        default = ".github/labeler.yml",
+                    ),
                 ),
             ),
         ),
-        "permissions" to mapOf("contents" to "read"),
+        "permissions" to mapOf(
+            "contents" to "write",
+            "pull-requests" to "write",
+        ),
     ),
 ) {
     job(
-        id = "build",
-        name = "Build",
+        id = "label",
+        name = "Label PR",
         runsOn = UbuntuLatest,
     ) {
-        conditionalSetupSteps()
-        run(
-            name = "Run check",
-            command = "\${{ inputs.check-command }}",
+        uses(
+            name = "Label PR based on file paths",
+            action = LabelerAction(
+                repoToken = "\${{ secrets.GITHUB_TOKEN }}",
+                configurationPath = "\${{ inputs.config-path }}",
+                syncLabels = "true",
+            ),
         )
     }
 }
