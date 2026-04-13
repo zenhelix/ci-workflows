@@ -2,7 +2,6 @@ package workflows.base
 
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import shared.dsl.ConventionalCommitCheckWorkflow
@@ -12,7 +11,6 @@ fun generateConventionalCommitCheck(outputDir: File) {
     workflow(
         name = "Conventional Commit Check",
         on = listOf(
-            WorkflowDispatch(),
             WorkflowCall(inputs = ConventionalCommitCheckWorkflow.inputs),
         ),
         sourceFile = File(".github/workflow-src/conventional-commit-check.main.kts"),

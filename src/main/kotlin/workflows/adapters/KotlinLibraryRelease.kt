@@ -1,7 +1,6 @@
 package workflows.adapters
 
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import shared.DEFAULT_CHANGELOG_CONFIG
@@ -20,7 +19,6 @@ fun generateKotlinLibraryRelease(outputDir: File) {
     workflow(
         name = "Kotlin Library Release",
         on = listOf(
-            WorkflowDispatch(),
             WorkflowCall(
                 inputs = mapOf(
                     "java-version" to WorkflowCall.Input("JDK version to use", false, WorkflowCall.Type.String, DEFAULT_JAVA_VERSION),

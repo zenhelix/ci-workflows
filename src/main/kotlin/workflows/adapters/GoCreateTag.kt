@@ -1,7 +1,6 @@
 package workflows.adapters
 
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import shared.APP_SECRETS
@@ -19,7 +18,6 @@ fun generateGoCreateTag(outputDir: File) {
     workflow(
         name = "Go Create Tag",
         on = listOf(
-            WorkflowDispatch(),
             WorkflowCall(
                 inputs = mapOf(
                     "go-version" to WorkflowCall.Input("Go version to use", false, WorkflowCall.Type.String, DEFAULT_GO_VERSION),

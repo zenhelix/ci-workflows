@@ -1,7 +1,6 @@
 package workflows.adapters
 
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import shared.DEFAULT_CHANGELOG_CONFIG
@@ -16,11 +15,24 @@ fun generateAppRelease(outputDir: File) {
     workflow(
         name = "Application Release",
         on = listOf(
-            WorkflowDispatch(),
-            WorkflowCall(inputs = mapOf(
-                "changelog-config" to WorkflowCall.Input("Path to changelog configuration file", false, WorkflowCall.Type.String, DEFAULT_CHANGELOG_CONFIG),
-                "draft" to WorkflowCall.Input("Create release as draft (default true for apps)", false, WorkflowCall.Type.Boolean, "true"),
-            )),
+            WorkflowCall(
+                _customArguments = mapOf(
+                    "inputs" to mapOf(
+                        "changelog-config" to mapOf(
+                            "description" to "Path to changelog configuration file",
+                            "type" to "string",
+                            "required" to false,
+                            "default" to DEFAULT_CHANGELOG_CONFIG,
+                        ),
+                        "draft" to mapOf(
+                            "description" to "Create release as draft (default true for apps)",
+                            "type" to "boolean",
+                            "required" to false,
+                            "default" to true,
+                        ),
+                    ),
+                ),
+            ),
         ),
         sourceFile = File(".github/workflow-src/app-release.main.kts"),
         targetFileName = targetFile,

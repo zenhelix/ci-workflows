@@ -4,7 +4,6 @@ import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import shared.CreateAppTokenAction
@@ -16,7 +15,6 @@ fun generateManualCreateTag(outputDir: File) {
     workflow(
         name = "Manual Create Tag",
         on = listOf(
-            WorkflowDispatch(),
             WorkflowCall(
                 inputs = ManualCreateTagWorkflow.inputs,
                 secrets = ManualCreateTagWorkflow.secrets,

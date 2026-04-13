@@ -4,7 +4,6 @@ import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import shared.conditionalSetupSteps
@@ -14,7 +13,6 @@ fun generateAppDeploy(outputDir: File) {
     workflow(
         name = "Application Deploy",
         on = listOf(
-            WorkflowDispatch(),
             WorkflowCall(inputs = mapOf(
                 "setup-action" to WorkflowCall.Input("Setup action to use: gradle, go, python", true, WorkflowCall.Type.String),
                 "setup-params" to WorkflowCall.Input("JSON object with setup parameters (e.g. {\"java-version\": \"21\"})", false, WorkflowCall.Type.String, "{}"),
