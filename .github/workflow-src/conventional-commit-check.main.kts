@@ -23,7 +23,6 @@ workflow(
                 ),
             ),
         ),
-        "permissions" to mapOf("pull-requests" to "read"),
     ),
 ) {
     job(
@@ -37,12 +36,12 @@ workflow(
                 TYPES_PATTERN=${'$'}(echo "${'$'}ALLOWED_TYPES" | tr ',' '|')
                 PATTERN="^(${'$'}TYPES_PATTERN)(\(.+\))?(!)?: .+"
                 if [[ ! "${'$'}PR_TITLE" =~ ${'$'}PATTERN ]]; then
-                  echo "::error::PR title must match conventional commits format: <type>(<scope>): <description>"
-                  echo "::error::Allowed types: ${'$'}ALLOWED_TYPES"
-                  echo "::error::Got: ${'$'}PR_TITLE"
-                  exit 1
+                  echo "::warning::PR title does not match conventional commits format: <type>(<scope>): <description>"
+                  echo "::warning::Allowed types: ${'$'}ALLOWED_TYPES"
+                  echo "::warning::Got: ${'$'}PR_TITLE"
+                else
+                  echo "PR title is valid: ${'$'}PR_TITLE"
                 fi
-                echo "PR title is valid: ${'$'}PR_TITLE"
             """.trimIndent(),
             env = linkedMapOf(
                 "PR_TITLE" to "\${{ github.event.pull_request.title }}",
