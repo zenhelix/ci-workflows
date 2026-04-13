@@ -10,7 +10,7 @@ import dsl.CheckWorkflow
 import dsl.conditionalSetupSteps
 import java.io.File
 
-fun generateCheck(outputDir: File) {
+fun generateCheck() {
     workflow(
         name = "Check",
         on = listOf(

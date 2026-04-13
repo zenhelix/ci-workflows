@@ -11,7 +11,7 @@ import actions.ReleaseChangelogBuilderAction
 import dsl.ReleaseWorkflow
 import java.io.File
 
-fun generateRelease(outputDir: File) {
+fun generateRelease() {
     workflow(
         name = "Release",
         on = listOf(

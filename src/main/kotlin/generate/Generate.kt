@@ -23,13 +23,13 @@ import java.io.File
 fun main() {
     val outputDir = File(".github/workflows")
 
-    generateCheck(outputDir)
-    generateConventionalCommitCheck(outputDir)
-    generateCreateTag(outputDir)
-    generateManualCreateTag(outputDir)
-    generateRelease(outputDir)
-    generatePublish(outputDir)
-    generateLabeler(outputDir)
+    generateCheck()
+    generateConventionalCommitCheck()
+    generateCreateTag()
+    generateManualCreateTag()
+    generateRelease()
+    generatePublish()
+    generateLabeler()
 
     // Adapters
     generateAppCheck(outputDir)

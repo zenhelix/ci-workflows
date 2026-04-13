@@ -7,7 +7,7 @@ import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import dsl.ConventionalCommitCheckWorkflow
 import java.io.File
 
-fun generateConventionalCommitCheck(outputDir: File) {
+fun generateConventionalCommitCheck() {
     workflow(
         name = "Conventional Commit Check",
         on = listOf(

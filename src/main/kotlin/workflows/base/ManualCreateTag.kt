@@ -11,7 +11,7 @@ import dsl.ManualCreateTagWorkflow
 import dsl.conditionalSetupSteps
 import java.io.File
 
-fun generateManualCreateTag(outputDir: File) {
+fun generateManualCreateTag() {
     workflow(
         name = "Manual Create Tag",
         on = listOf(

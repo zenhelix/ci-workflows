@@ -10,7 +10,7 @@ import dsl.PublishWorkflow
 import dsl.conditionalSetupSteps
 import java.io.File
 
-fun generatePublish(outputDir: File) {
+fun generatePublish() {
     workflow(
         name = "Publish",
         on = listOf(

@@ -10,7 +10,7 @@ import actions.LabelerAction
 import dsl.LabelerWorkflow
 import java.io.File
 
-fun generateLabeler(outputDir: File) {
+fun generateLabeler() {
     workflow(
         name = "PR Labeler",
         on = listOf(

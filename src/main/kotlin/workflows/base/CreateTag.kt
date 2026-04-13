@@ -12,7 +12,7 @@ import dsl.CreateTagWorkflow
 import dsl.conditionalSetupSteps
 import java.io.File
 
-fun generateCreateTag(outputDir: File) {
+fun generateCreateTag() {
     workflow(
         name = "Create Tag",
         on = listOf(
