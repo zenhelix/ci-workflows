@@ -46,6 +46,8 @@ abstract class ReusableWorkflow(val fileName: String) {
     val secrets: Map<String, WorkflowCall.Secret> get() = _secrets.toMap()
     val usesString: String get() = reusableWorkflow(fileName)
 
+    abstract fun createJobBuilder(): ReusableWorkflowJobBuilder
+
     fun toInputsYaml(): Map<String, InputYaml>? {
         if (_inputs.isEmpty()) return null
         return _inputs.map { (name, input) ->
@@ -69,10 +71,6 @@ abstract class ReusableWorkflow(val fileName: String) {
         return _secrets.map { (name, secret) ->
             name to SecretYaml(description = secret.description, required = secret.required)
         }.toMap()
-    }
-
-    protected fun secrets(map: Map<String, WorkflowCall.Secret>) {
-        map.forEach { (name, s) -> secret(name, description = s.description, required = s.required) }
     }
 
     /**
@@ -114,4 +112,15 @@ class WorkflowInput(val name: String) {
 
 class WorkflowSecret(val name: String) {
     val ref: String get() = "\${{ secrets.$name }}"
+}
+
+fun <B : ReusableWorkflowJobBuilder> reusableJob(
+    id: String,
+    uses: ReusableWorkflow,
+    block: B.() -> Unit = {},
+): ReusableWorkflowJobDef {
+    @Suppress("UNCHECKED_CAST")
+    val builder = uses.createJobBuilder() as B
+    builder.block()
+    return builder.build(id)
 }
