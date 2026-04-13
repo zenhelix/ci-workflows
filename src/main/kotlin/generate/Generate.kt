@@ -5,10 +5,10 @@ import workflows.adapters.deploy.generateAppDeploy
 import workflows.adapters.release.AppReleaseAdapter
 import workflows.adapters.release.GradlePluginReleaseAdapter
 import workflows.adapters.release.KotlinLibraryReleaseAdapter
-import workflows.adapters.tag.generateGoCreateTag
-import workflows.adapters.tag.generateGoManualCreateTag
-import workflows.adapters.tag.generateGradleCreateTag
-import workflows.adapters.tag.generateGradleManualCreateTag
+import workflows.adapters.tag.GradleCreateTagAdapter
+import workflows.adapters.tag.GradleManualCreateTagAdapter
+import workflows.adapters.tag.GoCreateTagAdapter
+import workflows.adapters.tag.GoManualCreateTagAdapter
 import workflows.base.generateCheck
 import workflows.base.generateConventionalCommitCheck
 import workflows.base.generateCreateTag
@@ -36,10 +36,10 @@ fun main() {
     GradleCheckAdapter("kotlin-library-check.yml", "Kotlin Library Check").generate(outputDir)
     AppReleaseAdapter.generate(outputDir)
     generateAppDeploy(outputDir)
-    generateGradleCreateTag(outputDir)
-    generateGradleManualCreateTag(outputDir)
+    GradleCreateTagAdapter.generate(outputDir)
+    GradleManualCreateTagAdapter.generate(outputDir)
     GradlePluginReleaseAdapter.generate(outputDir)
     KotlinLibraryReleaseAdapter.generate(outputDir)
-    generateGoCreateTag(outputDir)
-    generateGoManualCreateTag(outputDir)
+    GoCreateTagAdapter.generate(outputDir)
+    GoManualCreateTagAdapter.generate(outputDir)
 }

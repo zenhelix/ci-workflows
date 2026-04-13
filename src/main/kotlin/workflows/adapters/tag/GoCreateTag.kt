@@ -1,42 +1,35 @@
 package workflows.adapters.tag
 
 import config.APP_SECRETS
-import config.CommonInputs
+import config.DEFAULT_GO_VERSION
+import config.DEFAULT_RELEASE_BRANCHES
 import config.SetupTool
 import config.passthrough
+import dsl.AdapterWorkflow
 import dsl.CreateTagWorkflow
-import dsl.generateAdapterWorkflow
-import dsl.inputRef
+import dsl.ReusableWorkflowJobDef
 import dsl.reusableJob
-import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-import java.io.File
 
-fun generateGoCreateTag(outputDir: File) {
-    generateAdapterWorkflow(
-        name = "Go Create Tag",
-        sourceFileSlug = "go-create-tag",
-        targetFileName = "go-create-tag.yml",
-        trigger = WorkflowCall(
-            inputs = mapOf(
-                CommonInputs.goVersion(),
-                CommonInputs.checkCommand(description = "Go validation command", default = "make test"),
-                CommonInputs.defaultBump(),
-                CommonInputs.tagPrefix(default = "v"),
-                CommonInputs.releaseBranches(),
-            ),
-            secrets = APP_SECRETS,
-        ),
-        jobs = listOf(
-            reusableJob(id = "create-tag", uses = CreateTagWorkflow) {
-                CreateTagWorkflow.setupAction(SetupTool.Go.id)
-                CreateTagWorkflow.setupParams(SetupTool.Go.toParamsJson(inputRef("go-version")))
-                CreateTagWorkflow.checkCommand(inputRef("check-command"))
-                CreateTagWorkflow.defaultBump(inputRef("default-bump"))
-                CreateTagWorkflow.tagPrefix(inputRef("tag-prefix"))
-                CreateTagWorkflow.releaseBranches(inputRef("release-branches"))
-                secrets(APP_SECRETS.passthrough())
-            },
-        ),
-        outputDir = outputDir,
+object GoCreateTagAdapter : AdapterWorkflow("go-create-tag.yml") {
+    override val workflowName = "Go Create Tag"
+
+    val goVersion = input("go-version", description = "Go version to use", default = DEFAULT_GO_VERSION)
+    val checkCommand = input("check-command", description = "Go validation command", default = "make test")
+    val defaultBump = input("default-bump", description = "Default version bump type (major, minor, patch)", default = "patch")
+    val tagPrefix = input("tag-prefix", description = "Prefix for the tag", default = "v")
+    val releaseBranches = input("release-branches", description = "Comma-separated branch patterns for releases", default = DEFAULT_RELEASE_BRANCHES)
+
+    init { secrets(APP_SECRETS) }
+
+    override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
+        reusableJob(id = "create-tag", uses = CreateTagWorkflow) {
+            CreateTagWorkflow.setupAction(SetupTool.Go.id)
+            CreateTagWorkflow.setupParams(SetupTool.Go.toParamsJson(goVersion.ref))
+            CreateTagWorkflow.checkCommand(checkCommand.ref)
+            CreateTagWorkflow.defaultBump(defaultBump.ref)
+            CreateTagWorkflow.tagPrefix(tagPrefix.ref)
+            CreateTagWorkflow.releaseBranches(releaseBranches.ref)
+            secrets(APP_SECRETS.passthrough())
+        },
     )
 }

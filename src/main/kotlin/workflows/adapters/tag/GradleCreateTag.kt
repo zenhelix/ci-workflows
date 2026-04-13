@@ -1,42 +1,35 @@
 package workflows.adapters.tag
 
 import config.APP_SECRETS
-import config.CommonInputs
+import config.DEFAULT_JAVA_VERSION
+import config.DEFAULT_RELEASE_BRANCHES
 import config.SetupTool
 import config.passthrough
+import dsl.AdapterWorkflow
 import dsl.CreateTagWorkflow
-import dsl.generateAdapterWorkflow
-import dsl.inputRef
+import dsl.ReusableWorkflowJobDef
 import dsl.reusableJob
-import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-import java.io.File
 
-fun generateGradleCreateTag(outputDir: File) {
-    generateAdapterWorkflow(
-        name = "Gradle Create Tag",
-        sourceFileSlug = "gradle-create-tag",
-        targetFileName = "gradle-create-tag.yml",
-        trigger = WorkflowCall(
-            inputs = mapOf(
-                CommonInputs.javaVersion(),
-                CommonInputs.gradleCommand(description = "Gradle validation command"),
-                CommonInputs.defaultBump(),
-                CommonInputs.tagPrefix(),
-                CommonInputs.releaseBranches(),
-            ),
-            secrets = APP_SECRETS,
-        ),
-        jobs = listOf(
-            reusableJob(id = "create-tag", uses = CreateTagWorkflow) {
-                CreateTagWorkflow.setupAction(SetupTool.Gradle.id)
-                CreateTagWorkflow.setupParams(SetupTool.Gradle.toParamsJson(inputRef("java-version")))
-                CreateTagWorkflow.checkCommand(inputRef("gradle-command"))
-                CreateTagWorkflow.defaultBump(inputRef("default-bump"))
-                CreateTagWorkflow.tagPrefix(inputRef("tag-prefix"))
-                CreateTagWorkflow.releaseBranches(inputRef("release-branches"))
-                secrets(APP_SECRETS.passthrough())
-            },
-        ),
-        outputDir = outputDir,
+object GradleCreateTagAdapter : AdapterWorkflow("gradle-create-tag.yml") {
+    override val workflowName = "Gradle Create Tag"
+
+    val javaVersion = input("java-version", description = "JDK version to use", default = DEFAULT_JAVA_VERSION)
+    val gradleCommand = input("gradle-command", description = "Gradle validation command", default = "./gradlew check")
+    val defaultBump = input("default-bump", description = "Default version bump type (major, minor, patch)", default = "patch")
+    val tagPrefix = input("tag-prefix", description = "Prefix for the tag", default = "")
+    val releaseBranches = input("release-branches", description = "Comma-separated branch patterns for releases", default = DEFAULT_RELEASE_BRANCHES)
+
+    init { secrets(APP_SECRETS) }
+
+    override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
+        reusableJob(id = "create-tag", uses = CreateTagWorkflow) {
+            CreateTagWorkflow.setupAction(SetupTool.Gradle.id)
+            CreateTagWorkflow.setupParams(SetupTool.Gradle.toParamsJson(javaVersion.ref))
+            CreateTagWorkflow.checkCommand(gradleCommand.ref)
+            CreateTagWorkflow.defaultBump(defaultBump.ref)
+            CreateTagWorkflow.tagPrefix(tagPrefix.ref)
+            CreateTagWorkflow.releaseBranches(releaseBranches.ref)
+            secrets(APP_SECRETS.passthrough())
+        },
     )
 }

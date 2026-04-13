@@ -1,46 +1,45 @@
 # This file was generated using Kotlin DSL (.github/workflow-src/go-manual-create-tag.main.kts).
 # If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
 # Generated with https://github.com/typesafegithub/github-workflows-kt
-
 name: 'Go Manual Create Tag'
 on:
   workflow_call:
     inputs:
-      tag-version:
+      'tag-version':
         description: 'Version to tag (e.g. 1.2.3)'
         type: 'string'
         required: true
-      go-version:
+      'go-version':
         description: 'Go version to use'
         type: 'string'
         required: false
         default: '1.22'
-      check-command:
+      'check-command':
         description: 'Go validation command'
         type: 'string'
         required: false
         default: 'make test'
-      tag-prefix:
+      'tag-prefix':
         description: 'Prefix for the tag'
         type: 'string'
         required: false
         default: 'v'
     secrets:
-      app-id:
+      'app-id':
         description: 'GitHub App ID for generating commit token'
         required: true
-      app-private-key:
+      'app-private-key':
         description: 'GitHub App private key for generating commit token'
         required: true
 jobs:
-  manual-tag:
+  'manual-tag':
     uses: 'zenhelix/ci-workflows/.github/workflows/manual-create-tag.yml@v2'
     with:
-      tag-version: '${{ inputs.tag-version }}'
-      tag-prefix: '${{ inputs.tag-prefix }}'
-      setup-action: 'go'
-      setup-params: '{"go-version": "${{ inputs.go-version }}"}'
-      check-command: '${{ inputs.check-command }}'
+      'tag-version': '${{ inputs.tag-version }}'
+      'tag-prefix': '${{ inputs.tag-prefix }}'
+      'setup-action': 'go'
+      'setup-params': '{"go-version": "${{ inputs.go-version }}"}'
+      'check-command': '${{ inputs.check-command }}'
     secrets:
-      app-id: '${{ secrets.app-id }}'
-      app-private-key: '${{ secrets.app-private-key }}'
+      'app-id': '${{ secrets.app-id }}'
+      'app-private-key': '${{ secrets.app-private-key }}'
