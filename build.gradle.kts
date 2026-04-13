@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.3.20"
+    kotlin("plugin.serialization") version "2.3.20"
     application
 }
 
@@ -14,6 +15,8 @@ repositories {
 
 dependencies {
     implementation("io.github.typesafegithub:github-workflows-kt:3.7.0")
+    implementation("com.charleskorn.kaml:kaml:0.104.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.11.0")
 
     // JIT action bindings
     implementation("actions:checkout:v6")
