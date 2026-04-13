@@ -3,11 +3,6 @@ package dsl
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import java.io.File
 
-/**
- * Generates a YAML file for an adapter workflow that delegates to reusable workflows.
- * Produces YAML directly without github-workflows-kt's workflow() function,
- * eliminating the need for cleanReusableWorkflowJobs() post-processing.
- */
 fun generateAdapterWorkflow(
     name: String,
     sourceFileSlug: String,
@@ -75,7 +70,6 @@ private data class InputProps(
 )
 
 private fun resolveInputs(trigger: WorkflowCall): Map<String, InputProps> {
-    // Check for _customArguments-based inputs (used for boolean defaults)
     val customArgs = trigger._customArguments
     if (customArgs.containsKey("inputs")) {
         @Suppress("UNCHECKED_CAST")
@@ -90,7 +84,6 @@ private fun resolveInputs(trigger: WorkflowCall): Map<String, InputProps> {
         }.toMap()
     }
 
-    // Standard inputs
     return trigger.inputs.map { (name, input) ->
         name to InputProps(
             description = input.description,
@@ -117,10 +110,6 @@ private fun StringBuilder.appendJob(job: ReusableWorkflowJobDef) {
                 appendLine("    - ${yamlString(need)}")
             }
         }
-    }
-
-    if (job.condition != null) {
-        appendLine("    if: ${yamlString(job.condition)}")
     }
 
     if (job.strategy != null) {
@@ -157,11 +146,6 @@ private fun StringBuilder.appendStrategy(strategy: Map<String, Any>, indent: Int
     }
 }
 
-/**
- * Formats a value for YAML output.
- * - Strings are single-quoted with internal single quotes escaped (doubled).
- * - Booleans and numbers are unquoted.
- */
 private fun yamlValue(value: Any?): String = when (value) {
     is Boolean -> value.toString()
     is Number -> value.toString()
@@ -170,9 +154,6 @@ private fun yamlValue(value: Any?): String = when (value) {
     else -> yamlString(value.toString())
 }
 
-/**
- * Single-quotes a string for YAML, escaping internal single quotes by doubling them.
- */
 private fun yamlString(value: String): String {
     val escaped = value.replace("'", "''")
     return "'$escaped'"
