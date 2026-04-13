@@ -1,9 +1,7 @@
 package workflows.adapters.tag
 
-import config.APP_SECRETS
 import config.DEFAULT_JAVA_VERSION
 import config.SetupTool
-import config.passthrough
 import dsl.AdapterWorkflow
 import dsl.ManualCreateTagWorkflow
 import dsl.ReusableWorkflowJobDef
@@ -17,16 +15,16 @@ object GradleManualCreateTagAdapter : AdapterWorkflow("gradle-manual-create-tag.
     val gradleCommand = input("gradle-command", description = "Gradle check command", default = "./gradlew check")
     val tagPrefix = input("tag-prefix", description = "Prefix for the tag", default = "")
 
-    init { secrets(APP_SECRETS) }
+    override fun createJobBuilder() = ManualCreateTagWorkflow.JobBuilder()
 
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
-        reusableJob(id = "manual-tag", uses = ManualCreateTagWorkflow) {
-            ManualCreateTagWorkflow.tagVersion(tagVersion.ref)
-            ManualCreateTagWorkflow.tagPrefix(tagPrefix.ref)
-            ManualCreateTagWorkflow.setupAction(SetupTool.Gradle.id)
-            ManualCreateTagWorkflow.setupParams(SetupTool.Gradle.toParamsJson(javaVersion.ref))
-            ManualCreateTagWorkflow.checkCommand(gradleCommand.ref)
-            secrets(APP_SECRETS.passthrough())
+        reusableJob<ManualCreateTagWorkflow.JobBuilder>(id = "manual-tag", uses = ManualCreateTagWorkflow) {
+            tagVersion(this@GradleManualCreateTagAdapter.tagVersion.ref)
+            tagPrefix(this@GradleManualCreateTagAdapter.tagPrefix.ref)
+            setupAction(SetupTool.Gradle.id)
+            setupParams(SetupTool.Gradle.toParamsJson(javaVersion.ref))
+            checkCommand(gradleCommand.ref)
+            passthroughAllSecrets()
         },
     )
 }
