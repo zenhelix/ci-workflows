@@ -51,3 +51,33 @@ fun WorkflowBuilder.reusableWorkflowJob(
         _customArguments = builder.toCustomArguments(),
     ) { noop() }
 }
+
+data class ReusableWorkflowJobDef(
+    val id: String,
+    val uses: ReusableWorkflow,
+    val needs: List<String> = emptyList(),
+    val condition: String? = null,
+    val with: Map<String, String> = emptyMap(),
+    val secrets: Map<String, String> = emptyMap(),
+    val strategy: Map<String, Any>? = null,
+)
+
+fun reusableJob(
+    id: String,
+    uses: ReusableWorkflow,
+    block: ReusableWorkflowJobBuilder.() -> Unit = {},
+): ReusableWorkflowJobDef {
+    val builder = ReusableWorkflowJobBuilder(uses).apply(block)
+    val args = builder.toCustomArguments()
+    @Suppress("UNCHECKED_CAST")
+    return ReusableWorkflowJobDef(
+        id = id,
+        uses = uses,
+        needs = (args["needs"] as? List<String>)
+            ?: (args["needs"] as? String)?.let { listOf(it) }
+            ?: emptyList(),
+        with = (args["with"] as? Map<String, String>) ?: emptyMap(),
+        secrets = (args["secrets"] as? Map<String, String>) ?: emptyMap(),
+        strategy = args["strategy"] as? Map<String, Any>,
+    )
+}
