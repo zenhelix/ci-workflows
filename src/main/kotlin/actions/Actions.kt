@@ -1,5 +1,6 @@
-package shared
+package actions
 
+import config.localAction
 import io.github.typesafegithub.workflows.domain.actions.Action
 
 class SetupAction(

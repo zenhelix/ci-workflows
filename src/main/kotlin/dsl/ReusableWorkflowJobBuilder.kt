@@ -1,8 +1,7 @@
-package shared.dsl
+package dsl
 
 import io.github.typesafegithub.workflows.domain.RunnerType
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
-import shared.noop
 
 class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
     private val withMap = mutableMapOf<String, String>()

@@ -1,14 +1,14 @@
-package workflows.adapters
+package workflows.adapters.check
 
+import config.DEFAULT_JAVA_VERSION
+import config.JAVA_VERSION_MATRIX_EXPR
+import dsl.CheckWorkflow
+import dsl.ConventionalCommitCheckWorkflow
+import dsl.cleanReusableWorkflowJobs
+import dsl.reusableWorkflowJob
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.DEFAULT_JAVA_VERSION
-import shared.JAVA_VERSION_MATRIX_EXPR
-import shared.cleanReusableWorkflowJobs
-import shared.dsl.CheckWorkflow
-import shared.dsl.ConventionalCommitCheckWorkflow
-import shared.dsl.reusableWorkflowJob
 import java.io.File
 
 internal fun generateGradleCheckWorkflow(

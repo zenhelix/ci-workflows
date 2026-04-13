@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClass.set("GenerateKt")
+    mainClass.set("generate.GenerateKt")
 }
 
 repositories {

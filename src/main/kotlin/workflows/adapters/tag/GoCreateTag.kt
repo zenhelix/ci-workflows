@@ -1,15 +1,15 @@
-package workflows.adapters
+package workflows.adapters.tag
 
+import config.APP_SECRETS
+import config.APP_SECRETS_PASSTHROUGH
+import config.DEFAULT_GO_VERSION
+import config.DEFAULT_RELEASE_BRANCHES
+import dsl.CreateTagWorkflow
+import dsl.cleanReusableWorkflowJobs
+import dsl.reusableWorkflowJob
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.APP_SECRETS
-import shared.APP_SECRETS_PASSTHROUGH
-import shared.DEFAULT_GO_VERSION
-import shared.DEFAULT_RELEASE_BRANCHES
-import shared.cleanReusableWorkflowJobs
-import shared.dsl.CreateTagWorkflow
-import shared.dsl.reusableWorkflowJob
 import java.io.File
 
 fun generateGoCreateTag(outputDir: File) {

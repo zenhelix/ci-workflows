@@ -1,4 +1,4 @@
-package shared
+package config
 
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 

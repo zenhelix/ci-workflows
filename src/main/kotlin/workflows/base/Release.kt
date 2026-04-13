@@ -5,10 +5,10 @@ import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.CheckoutAction
-import shared.GhReleaseAction
-import shared.ReleaseChangelogBuilderAction
-import shared.dsl.ReleaseWorkflow
+import actions.CheckoutAction
+import actions.GhReleaseAction
+import actions.ReleaseChangelogBuilderAction
+import dsl.ReleaseWorkflow
 import java.io.File
 
 fun generateRelease(outputDir: File) {

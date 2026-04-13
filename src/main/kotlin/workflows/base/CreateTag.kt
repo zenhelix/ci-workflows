@@ -6,10 +6,10 @@ import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.CreateAppTokenAction
-import shared.GithubTagAction
-import shared.conditionalSetupSteps
-import shared.dsl.CreateTagWorkflow
+import actions.CreateAppTokenAction
+import actions.GithubTagAction
+import dsl.CreateTagWorkflow
+import dsl.conditionalSetupSteps
 import java.io.File
 
 fun generateCreateTag(outputDir: File) {

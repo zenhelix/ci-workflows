@@ -6,8 +6,8 @@ import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.LabelerAction
-import shared.dsl.LabelerWorkflow
+import actions.LabelerAction
+import dsl.LabelerWorkflow
 import java.io.File
 
 fun generateLabeler(outputDir: File) {

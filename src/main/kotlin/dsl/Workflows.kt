@@ -1,7 +1,7 @@
-package shared.dsl
+package dsl
 
-import shared.DEFAULT_CHANGELOG_CONFIG
-import shared.DEFAULT_RELEASE_BRANCHES
+import config.DEFAULT_CHANGELOG_CONFIG
+import config.DEFAULT_RELEASE_BRANCHES
 
 object CheckWorkflow : ReusableWorkflow("check.yml") {
     val setupAction = input("setup-action",

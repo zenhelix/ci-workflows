@@ -1,12 +1,12 @@
-package workflows.adapters
+package workflows.adapters.release
 
+import config.DEFAULT_CHANGELOG_CONFIG
+import dsl.ReleaseWorkflow
+import dsl.cleanReusableWorkflowJobs
+import dsl.reusableWorkflowJob
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.DEFAULT_CHANGELOG_CONFIG
-import shared.cleanReusableWorkflowJobs
-import shared.dsl.ReleaseWorkflow
-import shared.dsl.reusableWorkflowJob
 import java.io.File
 
 fun generateAppRelease(outputDir: File) {

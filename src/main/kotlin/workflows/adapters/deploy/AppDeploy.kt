@@ -1,12 +1,12 @@
-package workflows.adapters
+package workflows.adapters.deploy
 
+import dsl.conditionalSetupSteps
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.conditionalSetupSteps
 import java.io.File
 
 fun generateAppDeploy(outputDir: File) {

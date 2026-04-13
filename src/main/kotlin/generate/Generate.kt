@@ -1,14 +1,16 @@
-import workflows.adapters.generateAppCheck
-import workflows.adapters.generateAppDeploy
-import workflows.adapters.generateAppRelease
-import workflows.adapters.generateGoCreateTag
-import workflows.adapters.generateGoManualCreateTag
-import workflows.adapters.generateGradleCreateTag
-import workflows.adapters.generateGradleManualCreateTag
-import workflows.adapters.generateGradlePluginCheck
-import workflows.adapters.generateGradlePluginRelease
-import workflows.adapters.generateKotlinLibraryCheck
-import workflows.adapters.generateKotlinLibraryRelease
+package generate
+
+import workflows.adapters.check.generateAppCheck
+import workflows.adapters.check.generateGradlePluginCheck
+import workflows.adapters.check.generateKotlinLibraryCheck
+import workflows.adapters.deploy.generateAppDeploy
+import workflows.adapters.release.generateAppRelease
+import workflows.adapters.release.generateGradlePluginRelease
+import workflows.adapters.release.generateKotlinLibraryRelease
+import workflows.adapters.tag.generateGoCreateTag
+import workflows.adapters.tag.generateGoManualCreateTag
+import workflows.adapters.tag.generateGradleCreateTag
+import workflows.adapters.tag.generateGradleManualCreateTag
 import workflows.base.generateCheck
 import workflows.base.generateConventionalCommitCheck
 import workflows.base.generateCreateTag

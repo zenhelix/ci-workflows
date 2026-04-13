@@ -1,4 +1,4 @@
-package workflows.adapters
+package workflows.adapters.check
 
 import java.io.File
 

@@ -6,8 +6,8 @@ import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.conditionalSetupSteps
-import shared.dsl.PublishWorkflow
+import dsl.PublishWorkflow
+import dsl.conditionalSetupSteps
 import java.io.File
 
 fun generatePublish(outputDir: File) {

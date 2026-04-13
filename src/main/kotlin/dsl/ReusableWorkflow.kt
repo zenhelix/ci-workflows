@@ -1,7 +1,7 @@
-package shared.dsl
+package dsl
 
+import config.reusableWorkflow
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-import shared.reusableWorkflow
 
 abstract class ReusableWorkflow(val fileName: String) {
     private val _inputs = mutableMapOf<String, WorkflowCall.Input>()
