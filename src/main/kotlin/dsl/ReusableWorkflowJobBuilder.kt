@@ -1,8 +1,5 @@
 package dsl
 
-import io.github.typesafegithub.workflows.domain.RunnerType
-import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
-
 class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
     private val withMap = mutableMapOf<String, String>()
     private val secretsMap = mutableMapOf<String, String>()
@@ -33,23 +30,6 @@ class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
         if (withMap.isNotEmpty()) put("with", withMap.toMap())
         if (secretsMap.isNotEmpty()) put("secrets", secretsMap.toMap())
     }
-}
-
-fun WorkflowBuilder.reusableWorkflowJob(
-    id: String,
-    name: String? = null,
-    uses: ReusableWorkflow,
-    condition: String? = null,
-    block: ReusableWorkflowJobBuilder.() -> Unit = {},
-) {
-    val builder = ReusableWorkflowJobBuilder(uses).apply(block)
-    job(
-        id = id,
-        name = name,
-        runsOn = RunnerType.UbuntuLatest,
-        condition = condition,
-        _customArguments = builder.toCustomArguments(),
-    ) { noop() }
 }
 
 data class ReusableWorkflowJobDef(

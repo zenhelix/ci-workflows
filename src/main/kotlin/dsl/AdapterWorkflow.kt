@@ -23,9 +23,8 @@ fun generateAdapterWorkflow(
         appendLine("on:")
         appendWorkflowCallTrigger(trigger)
         appendLine("jobs:")
-        jobs.forEachIndexed { index, job ->
+        jobs.forEach { job ->
             appendJob(job)
-            if (index < jobs.lastIndex) appendLine()
         }
     }
 

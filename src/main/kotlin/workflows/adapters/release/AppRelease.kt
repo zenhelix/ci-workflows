@@ -2,48 +2,41 @@ package workflows.adapters.release
 
 import config.DEFAULT_CHANGELOG_CONFIG
 import dsl.ReleaseWorkflow
-import dsl.cleanReusableWorkflowJobs
+import dsl.generateAdapterWorkflow
 import dsl.inputRef
-import dsl.reusableWorkflowJob
+import dsl.reusableJob
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-import io.github.typesafegithub.workflows.dsl.workflow
-import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import java.io.File
 
 fun generateAppRelease(outputDir: File) {
-    val targetFile = "app-release.yml"
-
-    workflow(
+    generateAdapterWorkflow(
         name = "Application Release",
-        on = listOf(
-            WorkflowCall(
-                _customArguments = mapOf(
-                    "inputs" to mapOf(
-                        "changelog-config" to mapOf(
-                            "description" to "Path to changelog configuration file",
-                            "type" to "string",
-                            "required" to false,
-                            "default" to DEFAULT_CHANGELOG_CONFIG,
-                        ),
-                        "draft" to mapOf(
-                            "description" to "Create release as draft (default true for apps)",
-                            "type" to "boolean",
-                            "required" to false,
-                            "default" to true,
-                        ),
+        sourceFileSlug = "app-release",
+        targetFileName = "app-release.yml",
+        trigger = WorkflowCall(
+            _customArguments = mapOf(
+                "inputs" to mapOf(
+                    "changelog-config" to mapOf(
+                        "description" to "Path to changelog configuration file",
+                        "type" to "string",
+                        "required" to false,
+                        "default" to DEFAULT_CHANGELOG_CONFIG,
+                    ),
+                    "draft" to mapOf(
+                        "description" to "Create release as draft (default true for apps)",
+                        "type" to "boolean",
+                        "required" to false,
+                        "default" to true,
                     ),
                 ),
             ),
         ),
-        sourceFile = File(".github/workflow-src/app-release.main.kts"),
-        targetFileName = targetFile,
-        consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
-    ) {
-        reusableWorkflowJob(id = "release", uses = ReleaseWorkflow) {
-            ReleaseWorkflow.changelogConfig(inputRef("changelog-config"))
-            ReleaseWorkflow.draft(inputRef("draft"))
-        }
-    }
-
-    cleanReusableWorkflowJobs(File(outputDir, targetFile))
+        jobs = listOf(
+            reusableJob(id = "release", uses = ReleaseWorkflow) {
+                ReleaseWorkflow.changelogConfig(inputRef("changelog-config"))
+                ReleaseWorkflow.draft(inputRef("draft"))
+            },
+        ),
+        outputDir = outputDir,
+    )
 }

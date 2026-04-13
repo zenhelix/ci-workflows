@@ -5,12 +5,10 @@ import config.JAVA_VERSION_MATRIX_EXPR
 import config.SetupTool
 import dsl.CheckWorkflow
 import dsl.ConventionalCommitCheckWorkflow
-import dsl.cleanReusableWorkflowJobs
+import dsl.generateAdapterWorkflow
 import dsl.inputRef
-import dsl.reusableWorkflowJob
+import dsl.reusableJob
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-import io.github.typesafegithub.workflows.dsl.workflow
-import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import java.io.File
 
 internal fun generateGradleCheckWorkflow(
@@ -20,31 +18,24 @@ internal fun generateGradleCheckWorkflow(
 ) {
     val targetFile = "$fileSlug.yml"
 
-    workflow(
+    generateAdapterWorkflow(
         name = workflowName,
-        on = listOf(
-            WorkflowCall(inputs = mapOf(
-                CommonInputs.javaVersion(),
-                CommonInputs.javaVersions(),
-                CommonInputs.gradleCommand(),
-            )),
-        ),
-        sourceFile = File(".github/workflow-src/$fileSlug.main.kts"),
+        sourceFileSlug = fileSlug,
         targetFileName = targetFile,
-        consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
-    ) {
-        reusableWorkflowJob(
-            id = "conventional-commit",
-            uses = ConventionalCommitCheckWorkflow,
-        )
-
-        reusableWorkflowJob(id = "check", uses = CheckWorkflow) {
-            strategy(mapOf("java-version" to JAVA_VERSION_MATRIX_EXPR))
-            CheckWorkflow.setupAction(SetupTool.Gradle.id)
-            CheckWorkflow.setupParams(SetupTool.Gradle.toParamsJson("\${{ matrix.java-version }}"))
-            CheckWorkflow.checkCommand(inputRef("gradle-command"))
-        }
-    }
-
-    cleanReusableWorkflowJobs(File(outputDir, targetFile))
+        trigger = WorkflowCall(inputs = mapOf(
+            CommonInputs.javaVersion(),
+            CommonInputs.javaVersions(),
+            CommonInputs.gradleCommand(),
+        )),
+        jobs = listOf(
+            reusableJob(id = "conventional-commit", uses = ConventionalCommitCheckWorkflow),
+            reusableJob(id = "check", uses = CheckWorkflow) {
+                strategy(mapOf("java-version" to JAVA_VERSION_MATRIX_EXPR))
+                CheckWorkflow.setupAction(SetupTool.Gradle.id)
+                CheckWorkflow.setupParams(SetupTool.Gradle.toParamsJson("\${{ matrix.java-version }}"))
+                CheckWorkflow.checkCommand(inputRef("gradle-command"))
+            },
+        ),
+        outputDir = outputDir,
+    )
 }
