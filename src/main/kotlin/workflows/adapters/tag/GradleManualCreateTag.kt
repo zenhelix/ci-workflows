@@ -1,7 +1,7 @@
 package workflows.adapters.tag
 
 import config.APP_SECRETS
-import config.APP_SECRETS_PASSTHROUGH
+import config.passthrough
 import config.DEFAULT_JAVA_VERSION
 import dsl.ManualCreateTagWorkflow
 import dsl.cleanReusableWorkflowJobs
@@ -37,7 +37,7 @@ fun generateGradleManualCreateTag(outputDir: File) {
             ManualCreateTagWorkflow.setupAction("gradle")
             ManualCreateTagWorkflow.setupParams("{\"java-version\": \"\${{ inputs.java-version }}\"}")
             ManualCreateTagWorkflow.checkCommand("\${{ inputs.gradle-command }}")
-            secrets(APP_SECRETS_PASSTHROUGH)
+            secrets(APP_SECRETS.passthrough())
         }
     }
 

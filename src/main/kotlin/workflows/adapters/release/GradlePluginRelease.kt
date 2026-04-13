@@ -3,9 +3,8 @@ package workflows.adapters.release
 import config.DEFAULT_CHANGELOG_CONFIG
 import config.DEFAULT_JAVA_VERSION
 import config.GRADLE_PORTAL_SECRETS
-import config.GRADLE_PORTAL_SECRETS_PASSTHROUGH
 import config.MAVEN_SONATYPE_SECRETS
-import config.MAVEN_SONATYPE_SECRETS_PASSTHROUGH
+import config.passthrough
 import dsl.PublishWorkflow
 import dsl.ReleaseWorkflow
 import dsl.cleanReusableWorkflowJobs
@@ -43,7 +42,7 @@ fun generateGradlePluginRelease(outputDir: File) {
             PublishWorkflow.setupAction("gradle")
             PublishWorkflow.setupParams("{\"java-version\": \"\${{ inputs.java-version }}\"}")
             PublishWorkflow.publishCommand("\${{ inputs.publish-command }}")
-            secrets(MAVEN_SONATYPE_SECRETS_PASSTHROUGH + GRADLE_PORTAL_SECRETS_PASSTHROUGH)
+            secrets(MAVEN_SONATYPE_SECRETS.passthrough() + GRADLE_PORTAL_SECRETS.passthrough())
         }
     }
 

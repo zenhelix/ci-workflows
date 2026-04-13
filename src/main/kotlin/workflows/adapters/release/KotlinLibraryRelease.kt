@@ -3,7 +3,7 @@ package workflows.adapters.release
 import config.DEFAULT_CHANGELOG_CONFIG
 import config.DEFAULT_JAVA_VERSION
 import config.MAVEN_SONATYPE_SECRETS
-import config.MAVEN_SONATYPE_SECRETS_PASSTHROUGH
+import config.passthrough
 import dsl.PublishWorkflow
 import dsl.ReleaseWorkflow
 import dsl.cleanReusableWorkflowJobs
@@ -41,7 +41,7 @@ fun generateKotlinLibraryRelease(outputDir: File) {
             PublishWorkflow.setupAction("gradle")
             PublishWorkflow.setupParams("{\"java-version\": \"\${{ inputs.java-version }}\"}")
             PublishWorkflow.publishCommand("\${{ inputs.publish-command }}")
-            secrets(MAVEN_SONATYPE_SECRETS_PASSTHROUGH)
+            secrets(MAVEN_SONATYPE_SECRETS.passthrough())
         }
     }
 

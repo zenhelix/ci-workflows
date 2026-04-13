@@ -1,7 +1,7 @@
 package workflows.adapters.tag
 
 import config.APP_SECRETS
-import config.APP_SECRETS_PASSTHROUGH
+import config.passthrough
 import config.DEFAULT_JAVA_VERSION
 import config.DEFAULT_RELEASE_BRANCHES
 import dsl.CreateTagWorkflow
@@ -40,7 +40,7 @@ fun generateGradleCreateTag(outputDir: File) {
             CreateTagWorkflow.defaultBump("\${{ inputs.default-bump }}")
             CreateTagWorkflow.tagPrefix("\${{ inputs.tag-prefix }}")
             CreateTagWorkflow.releaseBranches("\${{ inputs.release-branches }}")
-            secrets(APP_SECRETS_PASSTHROUGH)
+            secrets(APP_SECRETS.passthrough())
         }
     }
 

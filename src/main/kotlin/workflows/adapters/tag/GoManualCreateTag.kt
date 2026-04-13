@@ -1,7 +1,7 @@
 package workflows.adapters.tag
 
 import config.APP_SECRETS
-import config.APP_SECRETS_PASSTHROUGH
+import config.passthrough
 import config.DEFAULT_GO_VERSION
 import dsl.ManualCreateTagWorkflow
 import dsl.cleanReusableWorkflowJobs
@@ -37,7 +37,7 @@ fun generateGoManualCreateTag(outputDir: File) {
             ManualCreateTagWorkflow.setupAction("go")
             ManualCreateTagWorkflow.setupParams("{\"go-version\": \"\${{ inputs.go-version }}\"}")
             ManualCreateTagWorkflow.checkCommand("\${{ inputs.check-command }}")
-            secrets(APP_SECRETS_PASSTHROUGH)
+            secrets(APP_SECRETS.passthrough())
         }
     }
 
