@@ -1,7 +1,5 @@
 package config
 
-import kotlinx.serialization.json.Json
-
 sealed class SetupTool(
     val actionName: String,
     val versionKey: String,
@@ -10,7 +8,7 @@ sealed class SetupTool(
     val id: String get() = actionName.removePrefix("setup-")
 
     fun toParamsJson(versionExpr: String): String =
-        Json.encodeToString(mapOf(versionKey to versionExpr))
+        """{"$versionKey": "$versionExpr"}"""
 
     data object Gradle : SetupTool("setup-gradle", "java-version", DEFAULT_JAVA_VERSION)
     data object Go : SetupTool("setup-go", "go-version", DEFAULT_GO_VERSION)

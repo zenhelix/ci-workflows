@@ -59,7 +59,7 @@ abstract class AdapterWorkflow(fileName: String) : ReusableWorkflow(fileName) {
 
             SecretYaml(
                 description = workflowSecret?.description ?: name,
-                required = workflowSecret?.required ?: true,
+                required = true,
             )
         }
     }
