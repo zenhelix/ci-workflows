@@ -1,15 +1,15 @@
 package workflows.adapters
 
-import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
+import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import shared.DEFAULT_JAVA_VERSION
 import shared.JAVA_VERSION_MATRIX_EXPR
 import shared.cleanReusableWorkflowJobs
-import shared.noop
-import shared.reusableWorkflow
-import shared.stringInput
+import shared.dsl.CheckWorkflow
+import shared.dsl.ConventionalCommitCheckWorkflow
+import shared.dsl.reusableWorkflowJob
 import java.io.File
 
 fun generateGradlePluginCheck(outputDir: File) {
@@ -17,59 +17,28 @@ fun generateGradlePluginCheck(outputDir: File) {
 
     workflow(
         name = "Gradle Plugin Check",
-        on = listOf(WorkflowDispatch()),
+        on = listOf(
+            WorkflowDispatch(),
+            WorkflowCall(inputs = mapOf(
+                "java-version" to WorkflowCall.Input("JDK version to use", false, WorkflowCall.Type.String, DEFAULT_JAVA_VERSION),
+                "java-versions" to WorkflowCall.Input("JSON array of JDK versions for matrix build (overrides java-version)", false, WorkflowCall.Type.String, ""),
+                "gradle-command" to WorkflowCall.Input("Gradle check command", false, WorkflowCall.Type.String, "./gradlew check"),
+            )),
+        ),
         sourceFile = File(".github/workflow-src/gradle-plugin-check.main.kts"),
         targetFileName = targetFile,
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
-        _customArguments = mapOf(
-            "on" to mapOf(
-                "workflow_call" to mapOf(
-                    "inputs" to mapOf(
-                        "java-version" to stringInput(
-                            description = "JDK version to use",
-                            default = DEFAULT_JAVA_VERSION,
-                        ),
-                        "java-versions" to stringInput(
-                            description = "JSON array of JDK versions for matrix build (overrides java-version)",
-                            default = "",
-                        ),
-                        "gradle-command" to stringInput(
-                            description = "Gradle check command",
-                            default = "./gradlew check",
-                        ),
-                    ),
-                ),
-            ),
-        ),
     ) {
-        job(
+        reusableWorkflowJob(
             id = "conventional-commit",
-            runsOn = UbuntuLatest,
-            _customArguments = mapOf(
-                "uses" to reusableWorkflow("conventional-commit-check.yml"),
-            ),
-        ) {
-            noop()
-        }
+            uses = ConventionalCommitCheckWorkflow,
+        )
 
-        job(
-            id = "check",
-            runsOn = UbuntuLatest,
-            _customArguments = mapOf(
-                "strategy" to mapOf(
-                    "matrix" to mapOf(
-                        "java-version" to JAVA_VERSION_MATRIX_EXPR,
-                    ),
-                ),
-                "uses" to reusableWorkflow("check.yml"),
-                "with" to mapOf(
-                    "setup-action" to "gradle",
-                    "setup-params" to "{\"java-version\": \"\${{ matrix.java-version }}\"}",
-                    "check-command" to "\${{ inputs.gradle-command }}",
-                ),
-            ),
-        ) {
-            noop()
+        reusableWorkflowJob(id = "check", uses = CheckWorkflow) {
+            strategy(mapOf("java-version" to JAVA_VERSION_MATRIX_EXPR))
+            CheckWorkflow.setupAction("gradle")
+            CheckWorkflow.setupParams("{\"java-version\": \"\${{ matrix.java-version }}\"}")
+            CheckWorkflow.checkCommand("\${{ inputs.gradle-command }}")
         }
     }
 

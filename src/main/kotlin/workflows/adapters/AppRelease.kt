@@ -1,15 +1,13 @@
 package workflows.adapters
 
-import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
+import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import shared.DEFAULT_CHANGELOG_CONFIG
-import shared.booleanInput
 import shared.cleanReusableWorkflowJobs
-import shared.noop
-import shared.reusableWorkflow
-import shared.stringInput
+import shared.dsl.ReleaseWorkflow
+import shared.dsl.reusableWorkflowJob
 import java.io.File
 
 fun generateAppRelease(outputDir: File) {
@@ -17,39 +15,20 @@ fun generateAppRelease(outputDir: File) {
 
     workflow(
         name = "Application Release",
-        on = listOf(WorkflowDispatch()),
+        on = listOf(
+            WorkflowDispatch(),
+            WorkflowCall(inputs = mapOf(
+                "changelog-config" to WorkflowCall.Input("Path to changelog configuration file", false, WorkflowCall.Type.String, DEFAULT_CHANGELOG_CONFIG),
+                "draft" to WorkflowCall.Input("Create release as draft (default true for apps)", false, WorkflowCall.Type.Boolean, "true"),
+            )),
+        ),
         sourceFile = File(".github/workflow-src/app-release.main.kts"),
         targetFileName = targetFile,
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
-        _customArguments = mapOf(
-            "on" to mapOf(
-                "workflow_call" to mapOf(
-                    "inputs" to mapOf(
-                        "changelog-config" to stringInput(
-                            description = "Path to changelog configuration file",
-                            default = DEFAULT_CHANGELOG_CONFIG,
-                        ),
-                        "draft" to booleanInput(
-                            description = "Create release as draft (default true for apps)",
-                            default = true,
-                        ),
-                    ),
-                ),
-            ),
-        ),
     ) {
-        job(
-            id = "release",
-            runsOn = UbuntuLatest,
-            _customArguments = mapOf(
-                "uses" to reusableWorkflow("release.yml"),
-                "with" to mapOf(
-                    "changelog-config" to "\${{ inputs.changelog-config }}",
-                    "draft" to "\${{ inputs.draft }}",
-                ),
-            ),
-        ) {
-            noop()
+        reusableWorkflowJob(id = "release", uses = ReleaseWorkflow) {
+            ReleaseWorkflow.changelogConfig("\${{ inputs.changelog-config }}")
+            ReleaseWorkflow.draft("\${{ inputs.draft }}")
         }
     }
 

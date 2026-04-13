@@ -1,17 +1,15 @@
 package workflows.adapters
 
-import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
+import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.APP_ID_SECRET
-import shared.APP_PRIVATE_KEY_SECRET
+import shared.APP_SECRETS
 import shared.APP_SECRETS_PASSTHROUGH
 import shared.DEFAULT_GO_VERSION
 import shared.cleanReusableWorkflowJobs
-import shared.noop
-import shared.reusableWorkflow
-import shared.stringInput
+import shared.dsl.ManualCreateTagWorkflow
+import shared.dsl.reusableWorkflowJob
 import java.io.File
 
 fun generateGoManualCreateTag(outputDir: File) {
@@ -19,55 +17,29 @@ fun generateGoManualCreateTag(outputDir: File) {
 
     workflow(
         name = "Go Manual Create Tag",
-        on = listOf(WorkflowDispatch()),
+        on = listOf(
+            WorkflowDispatch(),
+            WorkflowCall(
+                inputs = mapOf(
+                    "tag-version" to WorkflowCall.Input("Version to tag (e.g. 1.2.3)", true, WorkflowCall.Type.String),
+                    "go-version" to WorkflowCall.Input("Go version to use", false, WorkflowCall.Type.String, DEFAULT_GO_VERSION),
+                    "check-command" to WorkflowCall.Input("Go validation command", false, WorkflowCall.Type.String, "make test"),
+                    "tag-prefix" to WorkflowCall.Input("Prefix for the tag", false, WorkflowCall.Type.String, "v"),
+                ),
+                secrets = APP_SECRETS,
+            ),
+        ),
         sourceFile = File(".github/workflow-src/go-manual-create-tag.main.kts"),
         targetFileName = targetFile,
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
-        _customArguments = mapOf(
-            "on" to mapOf(
-                "workflow_call" to mapOf(
-                    "inputs" to mapOf(
-                        "tag-version" to stringInput(
-                            description = "Version to tag (e.g. 1.2.3)",
-                            required = true,
-                        ),
-                        "go-version" to stringInput(
-                            description = "Go version to use",
-                            default = DEFAULT_GO_VERSION,
-                        ),
-                        "check-command" to stringInput(
-                            description = "Go validation command",
-                            default = "make test",
-                        ),
-                        "tag-prefix" to stringInput(
-                            description = "Prefix for the tag",
-                            default = "v",
-                        ),
-                    ),
-                    "secrets" to mapOf(
-                        APP_ID_SECRET,
-                        APP_PRIVATE_KEY_SECRET,
-                    ),
-                ),
-            ),
-        ),
     ) {
-        job(
-            id = "manual-tag",
-            runsOn = UbuntuLatest,
-            _customArguments = mapOf(
-                "uses" to reusableWorkflow("manual-create-tag.yml"),
-                "with" to mapOf(
-                    "tag-version" to "\${{ inputs.tag-version }}",
-                    "tag-prefix" to "\${{ inputs.tag-prefix }}",
-                    "setup-action" to "go",
-                    "setup-params" to "{\"go-version\": \"\${{ inputs.go-version }}\"}",
-                    "check-command" to "\${{ inputs.check-command }}",
-                ),
-                "secrets" to APP_SECRETS_PASSTHROUGH,
-            ),
-        ) {
-            noop()
+        reusableWorkflowJob(id = "manual-tag", uses = ManualCreateTagWorkflow) {
+            ManualCreateTagWorkflow.tagVersion("\${{ inputs.tag-version }}")
+            ManualCreateTagWorkflow.tagPrefix("\${{ inputs.tag-prefix }}")
+            ManualCreateTagWorkflow.setupAction("go")
+            ManualCreateTagWorkflow.setupParams("{\"go-version\": \"\${{ inputs.go-version }}\"}")
+            ManualCreateTagWorkflow.checkCommand("\${{ inputs.check-command }}")
+            secrets(APP_SECRETS_PASSTHROUGH)
         }
     }
 

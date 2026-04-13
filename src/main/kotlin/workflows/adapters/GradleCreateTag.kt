@@ -1,18 +1,16 @@
 package workflows.adapters
 
-import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
+import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowDispatch
 import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
-import shared.APP_ID_SECRET
-import shared.APP_PRIVATE_KEY_SECRET
+import shared.APP_SECRETS
 import shared.APP_SECRETS_PASSTHROUGH
 import shared.DEFAULT_JAVA_VERSION
 import shared.DEFAULT_RELEASE_BRANCHES
 import shared.cleanReusableWorkflowJobs
-import shared.noop
-import shared.reusableWorkflow
-import shared.stringInput
+import shared.dsl.CreateTagWorkflow
+import shared.dsl.reusableWorkflowJob
 import java.io.File
 
 fun generateGradleCreateTag(outputDir: File) {
@@ -20,60 +18,31 @@ fun generateGradleCreateTag(outputDir: File) {
 
     workflow(
         name = "Gradle Create Tag",
-        on = listOf(WorkflowDispatch()),
+        on = listOf(
+            WorkflowDispatch(),
+            WorkflowCall(
+                inputs = mapOf(
+                    "java-version" to WorkflowCall.Input("JDK version to use", false, WorkflowCall.Type.String, DEFAULT_JAVA_VERSION),
+                    "gradle-command" to WorkflowCall.Input("Gradle validation command", false, WorkflowCall.Type.String, "./gradlew check"),
+                    "default-bump" to WorkflowCall.Input("Default version bump type (major, minor, patch)", false, WorkflowCall.Type.String, "patch"),
+                    "tag-prefix" to WorkflowCall.Input("Prefix for the tag", false, WorkflowCall.Type.String, ""),
+                    "release-branches" to WorkflowCall.Input("Comma-separated branch patterns for releases", false, WorkflowCall.Type.String, DEFAULT_RELEASE_BRANCHES),
+                ),
+                secrets = APP_SECRETS,
+            ),
+        ),
         sourceFile = File(".github/workflow-src/gradle-create-tag.main.kts"),
         targetFileName = targetFile,
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
-        _customArguments = mapOf(
-            "on" to mapOf(
-                "workflow_call" to mapOf(
-                    "inputs" to mapOf(
-                        "java-version" to stringInput(
-                            description = "JDK version to use",
-                            default = DEFAULT_JAVA_VERSION,
-                        ),
-                        "gradle-command" to stringInput(
-                            description = "Gradle validation command",
-                            default = "./gradlew check",
-                        ),
-                        "default-bump" to stringInput(
-                            description = "Default version bump type (major, minor, patch)",
-                            default = "patch",
-                        ),
-                        "tag-prefix" to stringInput(
-                            description = "Prefix for the tag",
-                            default = "",
-                        ),
-                        "release-branches" to stringInput(
-                            description = "Comma-separated branch patterns for releases",
-                            default = DEFAULT_RELEASE_BRANCHES,
-                        ),
-                    ),
-                    "secrets" to mapOf(
-                        APP_ID_SECRET,
-                        APP_PRIVATE_KEY_SECRET,
-                    ),
-                ),
-            ),
-        ),
     ) {
-        job(
-            id = "create-tag",
-            runsOn = UbuntuLatest,
-            _customArguments = mapOf(
-                "uses" to reusableWorkflow("create-tag.yml"),
-                "with" to mapOf(
-                    "setup-action" to "gradle",
-                    "setup-params" to "{\"java-version\": \"\${{ inputs.java-version }}\"}",
-                    "check-command" to "\${{ inputs.gradle-command }}",
-                    "default-bump" to "\${{ inputs.default-bump }}",
-                    "tag-prefix" to "\${{ inputs.tag-prefix }}",
-                    "release-branches" to "\${{ inputs.release-branches }}",
-                ),
-                "secrets" to APP_SECRETS_PASSTHROUGH,
-            ),
-        ) {
-            noop()
+        reusableWorkflowJob(id = "create-tag", uses = CreateTagWorkflow) {
+            CreateTagWorkflow.setupAction("gradle")
+            CreateTagWorkflow.setupParams("{\"java-version\": \"\${{ inputs.java-version }}\"}")
+            CreateTagWorkflow.checkCommand("\${{ inputs.gradle-command }}")
+            CreateTagWorkflow.defaultBump("\${{ inputs.default-bump }}")
+            CreateTagWorkflow.tagPrefix("\${{ inputs.tag-prefix }}")
+            CreateTagWorkflow.releaseBranches("\${{ inputs.release-branches }}")
+            secrets(APP_SECRETS_PASSTHROUGH)
         }
     }
 
