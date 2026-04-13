@@ -20,15 +20,9 @@ val GRADLE_PORTAL_SECRETS = mapOf(
 
 val GRADLE_PORTAL_SECRETS_PASSTHROUGH = GRADLE_PORTAL_SECRETS.keys.associateWith { "\${{ secrets.$it }}" }
 
-val APP_SECRETS_PASSTHROUGH = mapOf(
-    "app-id" to "\${{ secrets.app-id }}",
-    "app-private-key" to "\${{ secrets.app-private-key }}",
-)
-
 val APP_SECRETS = mapOf(
     "app-id" to WorkflowCall.Secret("GitHub App ID for generating commit token", true),
     "app-private-key" to WorkflowCall.Secret("GitHub App private key for generating commit token", true),
 )
 
-fun Map<String, WorkflowCall.Secret>.withRequired(required: Boolean): Map<String, WorkflowCall.Secret> =
-    mapValues { (_, v) -> WorkflowCall.Secret(v.description, required) }
+val APP_SECRETS_PASSTHROUGH = APP_SECRETS.keys.associateWith { "\${{ secrets.$it }}" }

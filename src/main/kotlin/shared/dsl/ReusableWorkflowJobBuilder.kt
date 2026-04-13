@@ -27,7 +27,8 @@ class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
     }
 
     internal fun toCustomArguments(): Map<String, Any?> = buildMap {
-        if (needsList != null) put("needs", if (needsList!!.size == 1) needsList!!.first() else needsList)
+        val needs = needsList
+        if (needs != null) put("needs", if (needs.size == 1) needs.first() else needs)
         if (matrixMap != null) put("strategy", mapOf("matrix" to matrixMap))
         put("uses", workflow.usesString)
         if (withMap.isNotEmpty()) put("with", withMap.toMap())
