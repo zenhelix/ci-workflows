@@ -1,6 +1,7 @@
 package dsl
 
 import dsl.yaml.AdapterWorkflowYaml
+import dsl.yaml.SecretYaml
 import dsl.yaml.TriggerYaml
 import dsl.yaml.WorkflowCallBodyYaml
 import dsl.yaml.adapterWorkflowYaml
@@ -19,15 +20,18 @@ abstract class AdapterWorkflow(fileName: String) : ReusableWorkflow(fileName) {
     abstract fun jobs(): List<ReusableWorkflowJobDef>
 
     fun generate(outputDir: File) {
+        val jobDefs = jobs()
+        val collectedSecrets = collectSecretsFromJobs(jobDefs)
+
         val dto = AdapterWorkflowYaml(
             name = workflowName,
             on = TriggerYaml(
                 workflowCall = WorkflowCallBodyYaml(
                     inputs = toInputsYaml(),
-                    secrets = toSecretsYaml(),
+                    secrets = collectedSecrets,
                 )
             ),
-            jobs = jobs().associate { job -> job.id to job.toJobYaml() },
+            jobs = jobDefs.associate { job -> job.id to job.toJobYaml() },
         )
 
         val slug = fileName.removeSuffix(".yml")
@@ -43,5 +47,20 @@ abstract class AdapterWorkflow(fileName: String) : ReusableWorkflow(fileName) {
         outputDir.mkdirs()
         File(outputDir, fileName).writeText("$header\n\n$body\n")
     }
-}
 
+    private fun collectSecretsFromJobs(jobDefs: List<ReusableWorkflowJobDef>): Map<String, SecretYaml>? {
+        val secretNames = jobDefs.flatMap { it.secrets.keys }.toSet()
+        if (secretNames.isEmpty()) return null
+
+        return secretNames.associateWith { name ->
+            val workflowSecret = jobDefs
+                .mapNotNull { job -> job.uses.secrets[name] }
+                .firstOrNull()
+
+            SecretYaml(
+                description = workflowSecret?.description ?: name,
+                required = workflowSecret?.required ?: true,
+            )
+        }
+    }
+}
