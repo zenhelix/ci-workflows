@@ -37,7 +37,7 @@ fun generateConventionalCommitCheck() {
                 """.trimIndent(),
                 env = linkedMapOf(
                     "PR_TITLE" to "\${{ github.event.pull_request.title }}",
-                    "ALLOWED_TYPES" to "\${{ inputs.allowed-types }}",
+                    "ALLOWED_TYPES" to ConventionalCommitCheckWorkflow.allowedTypes.ref,
                 ),
             )
         }

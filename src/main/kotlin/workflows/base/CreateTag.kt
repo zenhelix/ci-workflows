@@ -34,13 +34,13 @@ fun generateCreateTag() {
             conditionalSetupSteps(fetchDepth = "0")
             run(
                 name = "Run validation",
-                command = "\${{ inputs.check-command }}",
+                command = CreateTagWorkflow.checkCommand.ref,
             )
             uses(
                 name = "Generate App Token",
                 action = CreateAppTokenAction(
-                    appId = "\${{ secrets.app-id }}",
-                    appPrivateKey = "\${{ secrets.app-private-key }}",
+                    appId = CreateTagWorkflow.appId.ref,
+                    appPrivateKey = CreateTagWorkflow.appPrivateKey.ref,
                 ),
                 id = "app-token",
             )
@@ -48,9 +48,9 @@ fun generateCreateTag() {
                 name = "Bump version and push tag",
                 action = GithubTagAction(
                     githubToken = "\${{ steps.app-token.outputs.token }}",
-                    defaultBump = "\${{ inputs.default-bump }}",
-                    tagPrefix = "\${{ inputs.tag-prefix }}",
-                    releaseBranches = "\${{ inputs.release-branches }}",
+                    defaultBump = CreateTagWorkflow.defaultBump.ref,
+                    tagPrefix = CreateTagWorkflow.tagPrefix.ref,
+                    releaseBranches = CreateTagWorkflow.releaseBranches.ref,
                 ),
             )
         }

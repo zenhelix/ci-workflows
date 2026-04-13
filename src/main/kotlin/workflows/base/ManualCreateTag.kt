@@ -43,13 +43,13 @@ fun generateManualCreateTag() {
             conditionalSetupSteps(fetchDepth = "0")
             run(
                 name = "Run validation",
-                command = "\${{ inputs.check-command }}",
+                command = ManualCreateTagWorkflow.checkCommand.ref,
             )
             uses(
                 name = "Generate App Token",
                 action = CreateAppTokenAction(
-                    appId = "\${{ secrets.app-id }}",
-                    appPrivateKey = "\${{ secrets.app-private-key }}",
+                    appId = ManualCreateTagWorkflow.appId.ref,
+                    appPrivateKey = ManualCreateTagWorkflow.appPrivateKey.ref,
                 ),
                 id = "app-token",
             )

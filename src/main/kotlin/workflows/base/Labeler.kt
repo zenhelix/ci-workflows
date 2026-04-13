@@ -33,7 +33,7 @@ fun generateLabeler() {
                 name = "Label PR based on file paths",
                 action = Labeler_Untyped(
                     repoToken_Untyped = "\${{ secrets.GITHUB_TOKEN }}",
-                    configurationPath_Untyped = "\${{ inputs.config-path }}",
+                    configurationPath_Untyped = LabelerWorkflow.configPath.ref,
                     syncLabels_Untyped = "true",
                 ),
             )

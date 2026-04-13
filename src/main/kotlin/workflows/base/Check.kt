@@ -29,7 +29,7 @@ fun generateCheck() {
             conditionalSetupSteps()
             run(
                 name = "Run check",
-                command = "\${{ inputs.check-command }}",
+                command = CheckWorkflow.checkCommand.ref,
             )
         }
     }

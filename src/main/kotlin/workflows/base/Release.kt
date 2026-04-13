@@ -34,7 +34,7 @@ fun generateRelease() {
             uses(
                 name = "Build Changelog",
                 action = ReleaseChangelogBuilderAction_Untyped(
-                    configuration_Untyped = "\${{ inputs.changelog-config }}",
+                    configuration_Untyped = ReleaseWorkflow.changelogConfig.ref,
                     toTag_Untyped = "\${{ github.ref_name }}",
                 ),
                 id = "changelog",
@@ -48,7 +48,7 @@ fun generateRelease() {
                     body_Untyped = "\${{ steps.changelog.outputs.changelog }}",
                     name_Untyped = "\${{ github.ref_name }}",
                     tagName_Untyped = "\${{ github.ref_name }}",
-                    draft_Untyped = "\${{ inputs.draft }}",
+                    draft_Untyped = ReleaseWorkflow.draft.ref,
                 ),
                 env = linkedMapOf(
                     "GITHUB_TOKEN" to "\${{ secrets.GITHUB_TOKEN }}",
