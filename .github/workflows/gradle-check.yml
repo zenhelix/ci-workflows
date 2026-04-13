@@ -1,7 +1,7 @@
-# This file was generated using Kotlin DSL (.github/workflow-src/app-check.main.kts).
+# This file was generated using Kotlin DSL (.github/workflow-src/gradle-check.main.kts).
 # If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
 # Generated with https://github.com/typesafegithub/github-workflows-kt
-name: 'Application Check'
+name: 'Gradle Check'
 on:
   workflow_call:
     inputs:
