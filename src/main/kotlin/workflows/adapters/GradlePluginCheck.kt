@@ -10,9 +10,6 @@ import java.io.File
 fun generateGradlePluginCheck(outputDir: File) {
     val targetFile = "gradle-plugin-check.yml"
 
-    val JAVA_VERSION_MATRIX_EXPR =
-        "\${{ fromJson(inputs.java-versions || format('[\"" + "{0}" + "\"]', inputs.java-version)) }}"
-
     workflow(
         name = "Gradle Plugin Check",
         on = listOf(WorkflowDispatch()),

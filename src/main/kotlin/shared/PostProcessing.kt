@@ -20,21 +20,23 @@ fun cleanReusableWorkflowJobs(targetFile: File) {
             var j = 0
             while (j < currentJobLines.size) {
                 val buffered = currentJobLines[j]
-                val bIndent = if (buffered.isBlank()) -1 else buffered.length - buffered.trimStart().length
+                val trimmed = buffered.trimStart()
+                val bIndent = if (buffered.isBlank()) -1 else buffered.length - trimmed.length
 
-                if (bIndent == 4 && buffered.trimStart().startsWith("runs-on:")) {
+                if (bIndent == 4 && trimmed.startsWith("runs-on:")) {
                     j++
                     continue
                 }
 
-                if (bIndent == 4 && buffered.trimStart().startsWith("steps:")) {
+                if (bIndent == 4 && trimmed.startsWith("steps:")) {
                     j++
                     while (j < currentJobLines.size) {
                         val stepLine = currentJobLines[j]
                         if (stepLine.isBlank()) { j++; continue }
-                        val sIndent = stepLine.length - stepLine.trimStart().length
+                        val stepTrimmed = stepLine.trimStart()
+                        val sIndent = stepLine.length - stepTrimmed.length
                         if (sIndent < 4) break
-                        if (sIndent == 4 && !stepLine.trimStart().startsWith("-")) break
+                        if (sIndent == 4 && !stepTrimmed.startsWith("-")) break
                         j++
                     }
                     continue
@@ -50,7 +52,8 @@ fun cleanReusableWorkflowJobs(targetFile: File) {
 
     while (i < lines.size) {
         val line = lines[i]
-        val indent = if (line.isBlank()) -1 else line.length - line.trimStart().length
+        val trimmed = line.trimStart()
+        val indent = if (line.isBlank()) -1 else line.length - trimmed.length
 
         if (!inJobsSection) {
             output.add(line)
@@ -74,7 +77,7 @@ fun cleanReusableWorkflowJobs(targetFile: File) {
             continue
         }
 
-        if (indent == 4 && line.trimStart().startsWith("uses:")) {
+        if (indent == 4 && trimmed.startsWith("uses:")) {
             currentJobHasUses = true
         }
 

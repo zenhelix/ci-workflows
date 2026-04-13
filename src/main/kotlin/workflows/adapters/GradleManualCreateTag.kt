@@ -57,10 +57,7 @@ fun generateGradleManualCreateTag(outputDir: File) {
                     "setup-params" to "{\"java-version\": \"\${{ inputs.java-version }}\"}",
                     "check-command" to "\${{ inputs.gradle-command }}",
                 ),
-                "secrets" to mapOf(
-                    "app-id" to "\${{ secrets.app-id }}",
-                    "app-private-key" to "\${{ secrets.app-private-key }}",
-                ),
+                "secrets" to APP_SECRETS_PASSTHROUGH,
             ),
         ) {
             noop()

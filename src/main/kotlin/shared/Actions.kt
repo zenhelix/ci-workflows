@@ -2,39 +2,15 @@ package shared
 
 import io.github.typesafegithub.workflows.domain.actions.Action
 
-class SetupGradleAction(
-    private val javaVersion: String,
+class SetupAction(
+    private val actionName: String,
+    private val versionKey: String,
+    private val version: String,
     private val fetchDepth: String? = null,
 ) : Action<Action.Outputs>() {
-    override val usesString = localAction("setup-gradle")
+    override val usesString = localAction(actionName)
     override fun toYamlArguments() = linkedMapOf(
-        "java-version" to javaVersion,
-    ).apply {
-        if (fetchDepth != null) put("fetch-depth", fetchDepth)
-    }
-    override fun buildOutputObject(stepId: String) = Outputs(stepId)
-}
-
-class SetupGoAction(
-    private val goVersion: String,
-    private val fetchDepth: String? = null,
-) : Action<Action.Outputs>() {
-    override val usesString = localAction("setup-go")
-    override fun toYamlArguments() = linkedMapOf(
-        "go-version" to goVersion,
-    ).apply {
-        if (fetchDepth != null) put("fetch-depth", fetchDepth)
-    }
-    override fun buildOutputObject(stepId: String) = Outputs(stepId)
-}
-
-class SetupPythonAction(
-    private val pythonVersion: String,
-    private val fetchDepth: String? = null,
-) : Action<Action.Outputs>() {
-    override val usesString = localAction("setup-python")
-    override fun toYamlArguments() = linkedMapOf(
-        "python-version" to pythonVersion,
+        versionKey to version,
     ).apply {
         if (fetchDepth != null) put("fetch-depth", fetchDepth)
     }

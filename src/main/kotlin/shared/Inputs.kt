@@ -41,6 +41,11 @@ val CHECK_COMMAND_INPUT = "check-command" to stringInput(
 val APP_ID_SECRET = "app-id" to secretInput("GitHub App ID for generating commit token")
 val APP_PRIVATE_KEY_SECRET = "app-private-key" to secretInput("GitHub App private key for generating commit token")
 
+val APP_SECRETS_PASSTHROUGH = mapOf(
+    "app-id" to "\${{ secrets.app-id }}",
+    "app-private-key" to "\${{ secrets.app-private-key }}",
+)
+
 val MAVEN_SONATYPE_SECRETS = mapOf(
     "MAVEN_SONATYPE_USERNAME" to secretInput("Maven Central (Sonatype) username"),
     "MAVEN_SONATYPE_TOKEN" to secretInput("Maven Central (Sonatype) token"),
@@ -58,3 +63,6 @@ val GRADLE_PORTAL_SECRETS = mapOf(
 )
 
 val GRADLE_PORTAL_SECRETS_PASSTHROUGH = GRADLE_PORTAL_SECRETS.keys.associateWith { "\${{ secrets.$it }}" }
+
+fun Map<String, Map<String, Any>>.withRequired(required: Boolean): Map<String, Map<String, Any>> =
+    mapValues { (_, v) -> v + ("required" to required) }

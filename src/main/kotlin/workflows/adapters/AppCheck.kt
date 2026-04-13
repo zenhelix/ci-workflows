@@ -53,7 +53,7 @@ fun generateAppCheck(outputDir: File) {
             _customArguments = mapOf(
                 "strategy" to mapOf(
                     "matrix" to mapOf(
-                        "java-version" to "\${{ fromJson(inputs.java-versions || format('[\"" + "{0}" + "\"]', inputs.java-version)) }}",
+                        "java-version" to JAVA_VERSION_MATRIX_EXPR,
                     ),
                 ),
                 "uses" to reusableWorkflow("check.yml"),

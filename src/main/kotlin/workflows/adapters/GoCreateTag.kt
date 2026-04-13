@@ -62,10 +62,7 @@ fun generateGoCreateTag(outputDir: File) {
                     "tag-prefix" to "\${{ inputs.tag-prefix }}",
                     "release-branches" to "\${{ inputs.release-branches }}",
                 ),
-                "secrets" to mapOf(
-                    "app-id" to "\${{ secrets.app-id }}",
-                    "app-private-key" to "\${{ secrets.app-private-key }}",
-                ),
+                "secrets" to APP_SECRETS_PASSTHROUGH,
             ),
         ) {
             noop()
