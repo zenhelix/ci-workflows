@@ -1,60 +1,63 @@
 # This file was generated using Kotlin DSL (.github/workflow-src/kotlin-library-release.main.kts).
 # If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
 # Generated with https://github.com/typesafegithub/github-workflows-kt
-
 name: 'Kotlin Library Release'
 on:
   workflow_call:
     inputs:
-      java-version:
+      'java-version':
         description: 'JDK version to use'
         type: 'string'
         required: false
         default: '17'
-      publish-command:
+      'publish-command':
         description: 'Gradle publish command for Maven Central'
         type: 'string'
         required: true
-      changelog-config:
+      'changelog-config':
         description: 'Path to changelog configuration file'
         type: 'string'
         required: false
         default: '.github/changelog-config.json'
     secrets:
-      MAVEN_SONATYPE_USERNAME:
+      'MAVEN_SONATYPE_USERNAME':
         description: 'Maven Central (Sonatype) username'
         required: true
-      MAVEN_SONATYPE_TOKEN:
+      'MAVEN_SONATYPE_TOKEN':
         description: 'Maven Central (Sonatype) token'
         required: true
-      MAVEN_SONATYPE_SIGNING_KEY_ID:
+      'MAVEN_SONATYPE_SIGNING_KEY_ID':
         description: 'GPG signing key ID'
         required: true
-      MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED:
+      'MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED':
         description: 'GPG signing public key (ASCII armored)'
         required: true
-      MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED:
+      'MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED':
         description: 'GPG signing private key (ASCII armored)'
         required: true
-      MAVEN_SONATYPE_SIGNING_PASSWORD:
+      'MAVEN_SONATYPE_SIGNING_PASSWORD':
         description: 'GPG signing key passphrase'
         required: true
 jobs:
-  release:
+  'release':
     uses: 'zenhelix/ci-workflows/.github/workflows/release.yml@v2'
     with:
-      changelog-config: '${{ inputs.changelog-config }}'
-  publish:
+      'changelog-config': '${{ inputs.changelog-config }}'
+  'publish':
     needs: 'release'
     uses: 'zenhelix/ci-workflows/.github/workflows/publish.yml@v2'
     with:
-      setup-action: 'gradle'
-      setup-params: '{"java-version": "${{ inputs.java-version }}"}'
-      publish-command: '${{ inputs.publish-command }}'
+      'setup-action': 'gradle'
+      'setup-params': '{"java-version": "${{ inputs.java-version }}"}'
+      'publish-command': '${{ inputs.publish-command }}'
     secrets:
-      MAVEN_SONATYPE_USERNAME: '${{ secrets.MAVEN_SONATYPE_USERNAME }}'
-      MAVEN_SONATYPE_TOKEN: '${{ secrets.MAVEN_SONATYPE_TOKEN }}'
-      MAVEN_SONATYPE_SIGNING_KEY_ID: '${{ secrets.MAVEN_SONATYPE_SIGNING_KEY_ID }}'
-      MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED: '${{ secrets.MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED }}'
-      MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED: '${{ secrets.MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED }}'
-      MAVEN_SONATYPE_SIGNING_PASSWORD: '${{ secrets.MAVEN_SONATYPE_SIGNING_PASSWORD }}'
+      'MAVEN_SONATYPE_USERNAME': '${{ secrets.MAVEN_SONATYPE_USERNAME }}'
+      'MAVEN_SONATYPE_TOKEN': '${{ secrets.MAVEN_SONATYPE_TOKEN }}'
+      'MAVEN_SONATYPE_SIGNING_KEY_ID': '${{ secrets.MAVEN_SONATYPE_SIGNING_KEY_ID
+        }}'
+      'MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED': '${{ secrets.MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED
+        }}'
+      'MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED': '${{ secrets.MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED
+        }}'
+      'MAVEN_SONATYPE_SIGNING_PASSWORD': '${{ secrets.MAVEN_SONATYPE_SIGNING_PASSWORD
+        }}'

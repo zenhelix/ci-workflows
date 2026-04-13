@@ -1,24 +1,23 @@
 # This file was generated using Kotlin DSL (.github/workflow-src/app-release.main.kts).
 # If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
 # Generated with https://github.com/typesafegithub/github-workflows-kt
-
 name: 'Application Release'
 on:
   workflow_call:
     inputs:
-      changelog-config:
+      'changelog-config':
         description: 'Path to changelog configuration file'
         type: 'string'
         required: false
         default: '.github/changelog-config.json'
-      draft:
+      'draft':
         description: 'Create release as draft (default true for apps)'
         type: 'boolean'
         required: false
         default: true
 jobs:
-  release:
+  'release':
     uses: 'zenhelix/ci-workflows/.github/workflows/release.yml@v2'
     with:
-      changelog-config: '${{ inputs.changelog-config }}'
-      draft: '${{ inputs.draft }}'
+      'changelog-config': '${{ inputs.changelog-config }}'
+      'draft': '${{ inputs.draft }}'
