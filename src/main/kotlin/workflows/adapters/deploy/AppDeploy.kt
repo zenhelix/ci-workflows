@@ -1,8 +1,6 @@
 package workflows.adapters.deploy
 
-import config.CommonInputs
 import dsl.conditionalSetupSteps
-import dsl.inputRef
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
@@ -17,10 +15,19 @@ fun generateAppDeploy(outputDir: File) {
         on = listOf(
             WorkflowCall(
                 inputs = mapOf(
-                    CommonInputs.setupAction(),
-                    CommonInputs.setupParams(),
-                    CommonInputs.deployCommand(),
-                    CommonInputs.tag(),
+                    "setup-action" to WorkflowCall.Input(
+                        "Setup action to use: gradle, go, python", true, WorkflowCall.Type.String
+                    ),
+                    "setup-params" to WorkflowCall.Input(
+                        "JSON object with setup parameters (e.g. {\"java-version\": \"21\"})",
+                        false, WorkflowCall.Type.String, "{}"
+                    ),
+                    "deploy-command" to WorkflowCall.Input(
+                        "Command to run for deployment", true, WorkflowCall.Type.String
+                    ),
+                    "tag" to WorkflowCall.Input(
+                        "Tag/version to deploy (checked out at this ref)", true, WorkflowCall.Type.String
+                    ),
                 )
             ),
         ),
@@ -37,11 +44,11 @@ fun generateAppDeploy(outputDir: File) {
             conditionalSetupSteps(fetchDepth = "0")
             run(
                 name = "Checkout tag",
-                command = "git checkout \"${inputRef("tag")}\"",
+                command = "git checkout \"\${{ inputs.tag }}\"",
             )
             run(
                 name = "Deploy",
-                command = inputRef("deploy-command"),
+                command = "\${{ inputs.deploy-command }}",
             )
         }
     }
