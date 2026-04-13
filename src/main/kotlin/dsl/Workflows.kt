@@ -19,6 +19,14 @@ object CheckWorkflow : ReusableWorkflow("check.yml") {
         description = "Command to run for checking",
         required = true
     )
+
+    override fun createJobBuilder() = JobBuilder()
+
+    class JobBuilder : ReusableWorkflowJobBuilder(CheckWorkflow) {
+        fun setupAction(value: String) = set(CheckWorkflow.setupAction, value)
+        fun setupParams(value: String) = set(CheckWorkflow.setupParams, value)
+        fun checkCommand(value: String) = set(CheckWorkflow.checkCommand, value)
+    }
 }
 
 object ConventionalCommitCheckWorkflow : ReusableWorkflow("conventional-commit-check.yml") {
@@ -27,6 +35,12 @@ object ConventionalCommitCheckWorkflow : ReusableWorkflow("conventional-commit-c
         description = "Comma-separated list of allowed commit types",
         default = "feat,fix,refactor,docs,test,chore,perf,ci"
     )
+
+    override fun createJobBuilder() = JobBuilder()
+
+    class JobBuilder : ReusableWorkflowJobBuilder(ConventionalCommitCheckWorkflow) {
+        fun allowedTypes(value: String) = set(ConventionalCommitCheckWorkflow.allowedTypes, value)
+    }
 }
 
 object CreateTagWorkflow : ReusableWorkflow("create-tag.yml") {
@@ -68,6 +82,17 @@ object CreateTagWorkflow : ReusableWorkflow("create-tag.yml") {
         "app-private-key",
         description = "GitHub App private key for generating commit token"
     )
+
+    override fun createJobBuilder() = JobBuilder()
+
+    class JobBuilder : ReusableWorkflowJobBuilder(CreateTagWorkflow) {
+        fun setupAction(value: String) = set(CreateTagWorkflow.setupAction, value)
+        fun setupParams(value: String) = set(CreateTagWorkflow.setupParams, value)
+        fun checkCommand(value: String) = set(CreateTagWorkflow.checkCommand, value)
+        fun defaultBump(value: String) = set(CreateTagWorkflow.defaultBump, value)
+        fun tagPrefix(value: String) = set(CreateTagWorkflow.tagPrefix, value)
+        fun releaseBranches(value: String) = set(CreateTagWorkflow.releaseBranches, value)
+    }
 }
 
 object ManualCreateTagWorkflow : ReusableWorkflow("manual-create-tag.yml") {
@@ -104,6 +129,16 @@ object ManualCreateTagWorkflow : ReusableWorkflow("manual-create-tag.yml") {
         "app-private-key",
         description = "GitHub App private key for generating commit token"
     )
+
+    override fun createJobBuilder() = JobBuilder()
+
+    class JobBuilder : ReusableWorkflowJobBuilder(ManualCreateTagWorkflow) {
+        fun tagVersion(value: String) = set(ManualCreateTagWorkflow.tagVersion, value)
+        fun tagPrefix(value: String) = set(ManualCreateTagWorkflow.tagPrefix, value)
+        fun setupAction(value: String) = set(ManualCreateTagWorkflow.setupAction, value)
+        fun setupParams(value: String) = set(ManualCreateTagWorkflow.setupParams, value)
+        fun checkCommand(value: String) = set(ManualCreateTagWorkflow.checkCommand, value)
+    }
 }
 
 object ReleaseWorkflow : ReusableWorkflow("release.yml") {
@@ -117,6 +152,13 @@ object ReleaseWorkflow : ReusableWorkflow("release.yml") {
         description = "Create release as draft",
         default = false
     )
+
+    override fun createJobBuilder() = JobBuilder()
+
+    class JobBuilder : ReusableWorkflowJobBuilder(ReleaseWorkflow) {
+        fun changelogConfig(value: String) = set(ReleaseWorkflow.changelogConfig, value)
+        fun draft(value: String) = set(ReleaseWorkflow.draft, value)
+    }
 }
 
 object PublishWorkflow : ReusableWorkflow("publish.yml") {
@@ -167,6 +209,14 @@ object PublishWorkflow : ReusableWorkflow("publish.yml") {
         "GRADLE_PUBLISH_SECRET",
         description = "Gradle Plugin Portal publish secret", required = false
     )
+
+    override fun createJobBuilder() = JobBuilder()
+
+    class JobBuilder : ReusableWorkflowJobBuilder(PublishWorkflow) {
+        fun setupAction(value: String) = set(PublishWorkflow.setupAction, value)
+        fun setupParams(value: String) = set(PublishWorkflow.setupParams, value)
+        fun publishCommand(value: String) = set(PublishWorkflow.publishCommand, value)
+    }
 }
 
 object LabelerWorkflow : ReusableWorkflow("labeler.yml") {
@@ -175,4 +225,10 @@ object LabelerWorkflow : ReusableWorkflow("labeler.yml") {
         description = "Path to labeler configuration file",
         default = ".github/labeler.yml"
     )
+
+    override fun createJobBuilder() = JobBuilder()
+
+    class JobBuilder : ReusableWorkflowJobBuilder(LabelerWorkflow) {
+        fun configPath(value: String) = set(LabelerWorkflow.configPath, value)
+    }
 }
