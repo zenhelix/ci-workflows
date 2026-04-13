@@ -6,6 +6,8 @@ import config.SetupTool
 import dsl.AdapterWorkflow
 import dsl.CheckWorkflow
 import dsl.ConventionalCommitCheckWorkflow
+import dsl.MatrixDef
+import dsl.MatrixRef
 import dsl.ReusableWorkflowJobDef
 import dsl.reusableJob
 
@@ -30,13 +32,17 @@ class GradleCheckAdapter(
         default = "./gradlew check",
     )
 
+    private val javaVersionMatrix = MatrixRef("java-version")
+
+    override fun createJobBuilder() = CheckWorkflow.JobBuilder()
+
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
-        reusableJob(id = "conventional-commit", uses = ConventionalCommitCheckWorkflow),
-        reusableJob(id = "check", uses = CheckWorkflow) {
-            strategy(mapOf("java-version" to JAVA_VERSION_MATRIX_EXPR))
-            CheckWorkflow.setupAction(SetupTool.Gradle.id)
-            CheckWorkflow.setupParams(SetupTool.Gradle.toParamsJson("\${{ matrix.java-version }}"))
-            CheckWorkflow.checkCommand(gradleCommand.ref)
+        reusableJob<ConventionalCommitCheckWorkflow.JobBuilder>(id = "conventional-commit", uses = ConventionalCommitCheckWorkflow),
+        reusableJob<CheckWorkflow.JobBuilder>(id = "check", uses = CheckWorkflow) {
+            strategy(MatrixDef(mapOf(javaVersionMatrix.key to JAVA_VERSION_MATRIX_EXPR)))
+            setupAction(SetupTool.Gradle.id)
+            setupParams(SetupTool.Gradle.toParamsJson(javaVersionMatrix.ref))
+            checkCommand(gradleCommand.ref)
         },
     )
 }
