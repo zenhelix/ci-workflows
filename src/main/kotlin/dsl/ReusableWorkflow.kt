@@ -76,6 +76,10 @@ abstract class ReusableWorkflow(val fileName: String) {
         }.toMap()
 }
 
-class WorkflowInput(val name: String)
+class WorkflowInput(val name: String) {
+    val ref: String get() = "\${{ inputs.$name }}"
+}
 
-class WorkflowSecret(val name: String)
+class WorkflowSecret(val name: String) {
+    val ref: String get() = "\${{ secrets.$name }}"
+}
