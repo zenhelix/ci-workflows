@@ -40,7 +40,7 @@ workflow(
         name = "Deploy",
         runsOn = UbuntuLatest,
     ) {
-        conditionalSetupStepsFullHistory()
+        conditionalSetupSteps(fetchDepth = "0")
         run(
             name = "Checkout tag",
             command = "git checkout \"\${{ inputs.tag }}\"",

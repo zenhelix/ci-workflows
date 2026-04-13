@@ -33,10 +33,10 @@ on:
         default: 'main,[0-9]+\.x'
     secrets:
       app-id:
-        description: ''
+        description: 'GitHub App ID for generating commit token'
         required: true
       app-private-key:
-        description: ''
+        description: 'GitHub App private key for generating commit token'
         required: true
 jobs:
   create-tag:

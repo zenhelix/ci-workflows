@@ -49,7 +49,7 @@ workflow(
         name = "Create Tag",
         runsOn = UbuntuLatest,
     ) {
-        conditionalSetupStepsFullHistory()
+        conditionalSetupSteps(fetchDepth = "0")
         run(
             name = "Run validation",
             command = "\${{ inputs.check-command }}",

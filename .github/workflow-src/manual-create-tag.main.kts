@@ -60,7 +60,7 @@ workflow(
                 fi
             """.trimIndent(),
         )
-        conditionalSetupStepsFullHistory()
+        conditionalSetupSteps(fetchDepth = "0")
         run(
             name = "Run validation",
             command = "\${{ inputs.check-command }}",

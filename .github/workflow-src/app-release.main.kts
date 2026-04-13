@@ -42,7 +42,7 @@ workflow(
             ),
         ),
     ) {
-        run(name = "placeholder", command = "echo placeholder")
+        noop()
     }
 }
 

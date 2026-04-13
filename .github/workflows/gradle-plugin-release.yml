@@ -22,28 +22,28 @@ on:
         default: '.github/changelog-config.json'
     secrets:
       MAVEN_SONATYPE_USERNAME:
-        description: ''
+        description: 'Maven Central (Sonatype) username'
         required: true
       MAVEN_SONATYPE_TOKEN:
-        description: ''
+        description: 'Maven Central (Sonatype) token'
         required: true
       MAVEN_SONATYPE_SIGNING_KEY_ID:
-        description: ''
+        description: 'GPG signing key ID'
         required: true
       MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED:
-        description: ''
+        description: 'GPG signing public key (ASCII armored)'
         required: true
       MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED:
-        description: ''
+        description: 'GPG signing private key (ASCII armored)'
         required: true
       MAVEN_SONATYPE_SIGNING_PASSWORD:
-        description: ''
+        description: 'GPG signing key passphrase'
         required: true
       GRADLE_PUBLISH_KEY:
-        description: ''
+        description: 'Gradle Plugin Portal publish key'
         required: true
       GRADLE_PUBLISH_SECRET:
-        description: ''
+        description: 'Gradle Plugin Portal publish secret'
         required: true
 jobs:
   release:

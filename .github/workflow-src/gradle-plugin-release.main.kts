@@ -31,16 +31,7 @@ workflow(
                         default = DEFAULT_CHANGELOG_CONFIG,
                     ),
                 ),
-                "secrets" to mapOf(
-                    "MAVEN_SONATYPE_USERNAME" to secretInput("", required = true),
-                    "MAVEN_SONATYPE_TOKEN" to secretInput("", required = true),
-                    "MAVEN_SONATYPE_SIGNING_KEY_ID" to secretInput("", required = true),
-                    "MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED" to secretInput("", required = true),
-                    "MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED" to secretInput("", required = true),
-                    "MAVEN_SONATYPE_SIGNING_PASSWORD" to secretInput("", required = true),
-                    "GRADLE_PUBLISH_KEY" to secretInput("", required = true),
-                    "GRADLE_PUBLISH_SECRET" to secretInput("", required = true),
-                ),
+                "secrets" to MAVEN_SONATYPE_SECRETS + GRADLE_PORTAL_SECRETS,
             ),
         ),
     ),
@@ -55,7 +46,7 @@ workflow(
             ),
         ),
     ) {
-        run(name = "placeholder", command = "echo placeholder")
+        noop()
     }
 
     job(
@@ -69,19 +60,10 @@ workflow(
                 "setup-params" to "{\"java-version\": \"\${{ inputs.java-version }}\"}",
                 "publish-command" to "\${{ inputs.publish-command }}",
             ),
-            "secrets" to mapOf(
-                "MAVEN_SONATYPE_USERNAME" to "\${{ secrets.MAVEN_SONATYPE_USERNAME }}",
-                "MAVEN_SONATYPE_TOKEN" to "\${{ secrets.MAVEN_SONATYPE_TOKEN }}",
-                "MAVEN_SONATYPE_SIGNING_KEY_ID" to "\${{ secrets.MAVEN_SONATYPE_SIGNING_KEY_ID }}",
-                "MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED" to "\${{ secrets.MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED }}",
-                "MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED" to "\${{ secrets.MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED }}",
-                "MAVEN_SONATYPE_SIGNING_PASSWORD" to "\${{ secrets.MAVEN_SONATYPE_SIGNING_PASSWORD }}",
-                "GRADLE_PUBLISH_KEY" to "\${{ secrets.GRADLE_PUBLISH_KEY }}",
-                "GRADLE_PUBLISH_SECRET" to "\${{ secrets.GRADLE_PUBLISH_SECRET }}",
-            ),
+            "secrets" to MAVEN_SONATYPE_SECRETS_PASSTHROUGH + GRADLE_PORTAL_SECRETS_PASSTHROUGH,
         ),
     ) {
-        run(name = "placeholder", command = "echo placeholder")
+        noop()
     }
 }
 

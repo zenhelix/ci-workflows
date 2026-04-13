@@ -40,8 +40,8 @@ workflow(
                     ),
                 ),
                 "secrets" to mapOf(
-                    "app-id" to secretInput("", required = true),
-                    "app-private-key" to secretInput("", required = true),
+                    APP_ID_SECRET,
+                    APP_PRIVATE_KEY_SECRET,
                 ),
             ),
         ),
@@ -66,7 +66,7 @@ workflow(
             ),
         ),
     ) {
-        run(name = "placeholder", command = "echo placeholder")
+        noop()
     }
 }
 

@@ -9,8 +9,6 @@ import io.github.typesafegithub.workflows.dsl.JobBuilder
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
-val UBUNTU_LATEST = RunnerType.UbuntuLatest
-
 val DEFAULT_JAVA_VERSION = "17"
 val DEFAULT_GO_VERSION = "1.22"
 val DEFAULT_PYTHON_VERSION = "3.12"
@@ -182,30 +180,12 @@ class LabelerAction(
 
 // ── DSL Helper Functions ───────────────────────────────────────────────────────
 
-fun JobBuilder<*>.conditionalSetupSteps() {
-    uses(
-        name = "Setup Gradle",
-        action = SetupGradleAction("\${{ fromJson(inputs.setup-params).java-version || '17' }}"),
-        condition = "inputs.setup-action == 'gradle'",
-    )
-    uses(
-        name = "Setup Go",
-        action = SetupGoAction("\${{ fromJson(inputs.setup-params).go-version || '1.22' }}"),
-        condition = "inputs.setup-action == 'go'",
-    )
-    uses(
-        name = "Setup Python",
-        action = SetupPythonAction("\${{ fromJson(inputs.setup-params).python-version || '3.12' }}"),
-        condition = "inputs.setup-action == 'python'",
-    )
-}
-
-fun JobBuilder<*>.conditionalSetupStepsFullHistory() {
+fun JobBuilder<*>.conditionalSetupSteps(fetchDepth: String? = null) {
     uses(
         name = "Setup Gradle",
         action = SetupGradleAction(
             javaVersion = "\${{ fromJson(inputs.setup-params).java-version || '17' }}",
-            fetchDepth = "0",
+            fetchDepth = fetchDepth,
         ),
         condition = "inputs.setup-action == 'gradle'",
     )
@@ -213,7 +193,7 @@ fun JobBuilder<*>.conditionalSetupStepsFullHistory() {
         name = "Setup Go",
         action = SetupGoAction(
             goVersion = "\${{ fromJson(inputs.setup-params).go-version || '1.22' }}",
-            fetchDepth = "0",
+            fetchDepth = fetchDepth,
         ),
         condition = "inputs.setup-action == 'go'",
     )
@@ -221,58 +201,11 @@ fun JobBuilder<*>.conditionalSetupStepsFullHistory() {
         name = "Setup Python",
         action = SetupPythonAction(
             pythonVersion = "\${{ fromJson(inputs.setup-params).python-version || '3.12' }}",
-            fetchDepth = "0",
+            fetchDepth = fetchDepth,
         ),
         condition = "inputs.setup-action == 'python'",
     )
 }
-
-// ── Setup Step Helpers (for _customArguments usage) ───────────────────────────
-
-fun gradleSetupStep(
-    javaVersionExpr: String = "fromJson(inputs.setup-params).java-version || '17'",
-    fetchDepth: String = "1",
-) = mapOf(
-    "name" to "Setup Gradle",
-    "if" to "inputs.setup-action == 'gradle'",
-    "uses" to localAction("setup-gradle"),
-    "with" to mapOf(
-        "java-version" to "\${{ $javaVersionExpr }}",
-        "fetch-depth" to fetchDepth,
-    ),
-)
-
-fun goSetupStep(
-    goVersionExpr: String = "fromJson(inputs.setup-params).go-version || '1.22'",
-    fetchDepth: String = "1",
-) = mapOf(
-    "name" to "Setup Go",
-    "if" to "inputs.setup-action == 'go'",
-    "uses" to localAction("setup-go"),
-    "with" to mapOf(
-        "go-version" to "\${{ $goVersionExpr }}",
-        "fetch-depth" to fetchDepth,
-    ),
-)
-
-fun pythonSetupStep(
-    pythonVersionExpr: String = "fromJson(inputs.setup-params).python-version || '3.12'",
-    fetchDepth: String = "1",
-) = mapOf(
-    "name" to "Setup Python",
-    "if" to "inputs.setup-action == 'python'",
-    "uses" to localAction("setup-python"),
-    "with" to mapOf(
-        "python-version" to "\${{ $pythonVersionExpr }}",
-        "fetch-depth" to fetchDepth,
-    ),
-)
-
-fun conditionalSetupStepsMap(fetchDepth: String = "1") = listOf(
-    gradleSetupStep(fetchDepth = fetchDepth),
-    goSetupStep(fetchDepth = fetchDepth),
-    pythonSetupStep(fetchDepth = fetchDepth),
-)
 
 // ── Common Inputs ──────────────────────────────────────────────────────────────
 
@@ -294,11 +227,35 @@ val CHECK_COMMAND_INPUT = "check-command" to stringInput(
 val APP_ID_SECRET = "app-id" to secretInput("GitHub App ID for generating commit token")
 val APP_PRIVATE_KEY_SECRET = "app-private-key" to secretInput("GitHub App private key for generating commit token")
 
+val MAVEN_SONATYPE_SECRETS = mapOf(
+    "MAVEN_SONATYPE_USERNAME" to secretInput("Maven Central (Sonatype) username"),
+    "MAVEN_SONATYPE_TOKEN" to secretInput("Maven Central (Sonatype) token"),
+    "MAVEN_SONATYPE_SIGNING_KEY_ID" to secretInput("GPG signing key ID"),
+    "MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED" to secretInput("GPG signing public key (ASCII armored)"),
+    "MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED" to secretInput("GPG signing private key (ASCII armored)"),
+    "MAVEN_SONATYPE_SIGNING_PASSWORD" to secretInput("GPG signing key passphrase"),
+)
+
+val MAVEN_SONATYPE_SECRETS_PASSTHROUGH = MAVEN_SONATYPE_SECRETS.keys.associateWith { "\${{ secrets.$it }}" }
+
+val GRADLE_PORTAL_SECRETS = mapOf(
+    "GRADLE_PUBLISH_KEY" to secretInput("Gradle Plugin Portal publish key"),
+    "GRADLE_PUBLISH_SECRET" to secretInput("Gradle Plugin Portal publish secret"),
+)
+
+val GRADLE_PORTAL_SECRETS_PASSTHROUGH = GRADLE_PORTAL_SECRETS.keys.associateWith { "\${{ secrets.$it }}" }
+
+fun JobBuilder<*>.noop() {
+    run(name = "noop", command = "true")
+}
+
 // ── Adapter Workflow Post-Processing ──────────────────────────────────────────
 
 /**
  * Removes `runs-on` and `steps` blocks from jobs that use reusable workflows (`uses:` at job level).
  * GitHub Actions does not allow `runs-on` or `steps` on reusable workflow call jobs.
+ *
+ * Single-pass: buffers lines per job; when flushing, strips `runs-on` and `steps` if `uses:` was seen.
  */
 fun cleanReusableWorkflowJobs(targetFileName: String) {
     val targetFile = java.io.File("../workflows/$targetFileName")
@@ -306,57 +263,85 @@ fun cleanReusableWorkflowJobs(targetFileName: String) {
     val output = mutableListOf<String>()
 
     val jobsLineIdx = lines.indexOfFirst { it.trimStart() == "jobs:" }
-    val reusableJobIds = mutableSetOf<String>()
 
-    if (jobsLineIdx >= 0) {
-        var currentJobId: String? = null
-        for (idx in (jobsLineIdx + 1) until lines.size) {
-            val line = lines[idx]
-            if (line.isBlank()) continue
-            val indent = line.length - line.trimStart().length
-            if (indent == 0) break
-            if (indent == 2 && line.trimEnd().endsWith(":")) {
-                currentJobId = line.trim().removeSuffix(":")
-            }
-            if (indent == 4 && line.trimStart().startsWith("uses:") && currentJobId != null) {
-                reusableJobIds.add(currentJobId)
+    var currentJobLines = mutableListOf<String>()
+    var currentJobHasUses = false
+    var inJobsSection = false
+    var i = 0
+
+    fun flushJob() {
+        if (!currentJobHasUses) {
+            output.addAll(currentJobLines)
+        } else {
+            var j = 0
+            while (j < currentJobLines.size) {
+                val buffered = currentJobLines[j]
+                val bIndent = if (buffered.isBlank()) -1 else buffered.length - buffered.trimStart().length
+
+                if (bIndent == 4 && buffered.trimStart().startsWith("runs-on:")) {
+                    j++
+                    continue
+                }
+
+                if (bIndent == 4 && buffered.trimStart().startsWith("steps:")) {
+                    j++
+                    while (j < currentJobLines.size) {
+                        val stepLine = currentJobLines[j]
+                        if (stepLine.isBlank()) { j++; continue }
+                        val sIndent = stepLine.length - stepLine.trimStart().length
+                        if (sIndent < 4) break
+                        if (sIndent == 4 && !stepLine.trimStart().startsWith("-")) break
+                        j++
+                    }
+                    continue
+                }
+
+                output.add(buffered)
+                j++
             }
         }
+        currentJobLines = mutableListOf()
+        currentJobHasUses = false
     }
 
-    var currentJobId2: String? = null
-    var i = 0
     while (i < lines.size) {
         val line = lines[i]
         val indent = if (line.isBlank()) -1 else line.length - line.trimStart().length
 
-        if (indent == 2 && line.trimEnd().endsWith(":") && i > jobsLineIdx) {
-            currentJobId2 = line.trim().removeSuffix(":")
-        }
-
-        val inReusable = currentJobId2 in reusableJobIds
-
-        if (inReusable && indent == 4 && line.trimStart().startsWith("runs-on:")) {
+        if (!inJobsSection) {
+            output.add(line)
+            if (i == jobsLineIdx) inJobsSection = true
             i++
             continue
         }
 
-        if (inReusable && indent == 4 && line.trimStart().startsWith("steps:")) {
+        // New job header at indent 2
+        if (indent == 2 && line.trimEnd().endsWith(":")) {
+            flushJob()
+            currentJobLines.add(line)
             i++
-            while (i < lines.size) {
-                val nextLine = lines[i]
-                if (nextLine.isBlank()) { i++; continue }
-                val nextIndent = nextLine.length - nextLine.trimStart().length
-                if (nextIndent < 4) break
-                if (nextIndent == 4 && !nextLine.trimStart().startsWith("-")) break
-                i++
-            }
             continue
         }
 
-        output.add(line)
+        // Outside jobs section (indent 0, non-blank)
+        if (indent == 0 && !line.isBlank()) {
+            flushJob()
+            output.add(line)
+            inJobsSection = false
+            i++
+            continue
+        }
+
+        // Track uses: at indent 4
+        if (indent == 4 && line.trimStart().startsWith("uses:")) {
+            currentJobHasUses = true
+        }
+
+        currentJobLines.add(line)
         i++
     }
+
+    flushJob()
 
     targetFile.writeText(output.joinToString("\n") + "\n")
 }

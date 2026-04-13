@@ -40,7 +40,7 @@ workflow(
             "uses" to reusableWorkflow("conventional-commit-check.yml"),
         ),
     ) {
-        run(name = "noop", command = "true")
+        noop()
     }
 
     job(
@@ -60,7 +60,7 @@ workflow(
             ),
         ),
     ) {
-        run(name = "noop", command = "true")
+        noop()
     }
 }
 

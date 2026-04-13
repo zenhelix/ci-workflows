@@ -42,7 +42,7 @@ workflow(
             "uses" to reusableWorkflow("conventional-commit-check.yml"),
         ),
     ) {
-        run(name = "placeholder", command = "echo placeholder")
+        noop()
     }
 
     job(
@@ -62,7 +62,7 @@ workflow(
             ),
         ),
     ) {
-        run(name = "placeholder", command = "echo placeholder")
+        noop()
     }
 }
 

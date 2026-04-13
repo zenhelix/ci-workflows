@@ -29,14 +29,7 @@ workflow(
                         default = DEFAULT_CHANGELOG_CONFIG,
                     ),
                 ),
-                "secrets" to mapOf(
-                    "MAVEN_SONATYPE_USERNAME" to secretInput("MAVEN_SONATYPE_USERNAME"),
-                    "MAVEN_SONATYPE_TOKEN" to secretInput("MAVEN_SONATYPE_TOKEN"),
-                    "MAVEN_SONATYPE_SIGNING_KEY_ID" to secretInput("MAVEN_SONATYPE_SIGNING_KEY_ID"),
-                    "MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED" to secretInput("MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED"),
-                    "MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED" to secretInput("MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED"),
-                    "MAVEN_SONATYPE_SIGNING_PASSWORD" to secretInput("MAVEN_SONATYPE_SIGNING_PASSWORD"),
-                ),
+                "secrets" to MAVEN_SONATYPE_SECRETS,
             ),
         ),
     ),
@@ -51,7 +44,7 @@ workflow(
             ),
         ),
     ) {
-        run(name = "noop", command = "true")
+        noop()
     }
 
     job(
@@ -65,17 +58,10 @@ workflow(
                 "setup-params" to "{\"java-version\": \"\${{ inputs.java-version }}\"}",
                 "publish-command" to "\${{ inputs.publish-command }}",
             ),
-            "secrets" to mapOf(
-                "MAVEN_SONATYPE_USERNAME" to "\${{ secrets.MAVEN_SONATYPE_USERNAME }}",
-                "MAVEN_SONATYPE_TOKEN" to "\${{ secrets.MAVEN_SONATYPE_TOKEN }}",
-                "MAVEN_SONATYPE_SIGNING_KEY_ID" to "\${{ secrets.MAVEN_SONATYPE_SIGNING_KEY_ID }}",
-                "MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED" to "\${{ secrets.MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED }}",
-                "MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED" to "\${{ secrets.MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED }}",
-                "MAVEN_SONATYPE_SIGNING_PASSWORD" to "\${{ secrets.MAVEN_SONATYPE_SIGNING_PASSWORD }}",
-            ),
+            "secrets" to MAVEN_SONATYPE_SECRETS_PASSTHROUGH,
         ),
     ) {
-        run(name = "noop", command = "true")
+        noop()
     }
 }
 

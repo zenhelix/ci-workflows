@@ -17,25 +17,14 @@ workflow(
             "workflow_call" to mapOf(
                 "inputs" to mapOf(
                     SETUP_ACTION_INPUT,
-                    "setup-params" to stringInput(
-                        description = "JSON object with setup parameters",
-                        default = "{}",
-                    ),
+                    SETUP_PARAMS_INPUT,
                     "publish-command" to stringInput(
                         description = "Command to run for publishing",
                         required = true,
                     ),
                 ),
-                "secrets" to mapOf(
-                    "GRADLE_PUBLISH_KEY" to secretInput("Gradle Plugin Portal publish key", required = false),
-                    "GRADLE_PUBLISH_SECRET" to secretInput("Gradle Plugin Portal publish secret", required = false),
-                    "MAVEN_SONATYPE_SIGNING_KEY_ID" to secretInput("GPG signing key ID", required = false),
-                    "MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED" to secretInput("GPG signing public key (ASCII armored)", required = false),
-                    "MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED" to secretInput("GPG signing private key (ASCII armored)", required = false),
-                    "MAVEN_SONATYPE_SIGNING_PASSWORD" to secretInput("GPG signing key passphrase", required = false),
-                    "MAVEN_SONATYPE_USERNAME" to secretInput("Maven Central (Sonatype) username", required = false),
-                    "MAVEN_SONATYPE_TOKEN" to secretInput("Maven Central (Sonatype) token", required = false),
-                ),
+                "secrets" to (MAVEN_SONATYPE_SECRETS + GRADLE_PORTAL_SECRETS)
+                    .mapValues { (_, v) -> (v as Map<*, *>) + ("required" to false) },
             ),
         ),
         "permissions" to mapOf("contents" to "read"),
