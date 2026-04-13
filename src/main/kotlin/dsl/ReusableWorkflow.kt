@@ -1,6 +1,9 @@
 package dsl
 
 import config.reusableWorkflow
+import dsl.yaml.InputYaml
+import dsl.yaml.SecretYaml
+import dsl.yaml.YamlDefault
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 
 abstract class ReusableWorkflow(val fileName: String) {
@@ -42,6 +45,35 @@ abstract class ReusableWorkflow(val fileName: String) {
     val inputs: Map<String, WorkflowCall.Input> get() = _inputs.toMap()
     val secrets: Map<String, WorkflowCall.Secret> get() = _secrets.toMap()
     val usesString: String get() = reusableWorkflow(fileName)
+
+    fun toInputsYaml(): Map<String, InputYaml>? {
+        if (_inputs.isEmpty()) return null
+        return _inputs.map { (name, input) ->
+            val boolDefault = _booleanDefaults[name]
+            val default = when {
+                boolDefault != null  -> YamlDefault.BooleanValue(boolDefault)
+                input.default != null -> YamlDefault.StringValue(input.default!!)
+                else                  -> null
+            }
+            name to InputYaml(
+                description = input.description,
+                type = input.type.name.lowercase(),
+                required = input.required,
+                default = default,
+            )
+        }.toMap()
+    }
+
+    fun toSecretsYaml(): Map<String, SecretYaml>? {
+        if (_secrets.isEmpty()) return null
+        return _secrets.map { (name, secret) ->
+            name to SecretYaml(description = secret.description, required = secret.required)
+        }.toMap()
+    }
+
+    protected fun secrets(map: Map<String, WorkflowCall.Secret>) {
+        map.forEach { (name, s) -> secret(name, description = s.description, required = s.required) }
+    }
 
     /**
      * Creates a WorkflowCall trigger from this workflow's inputs and secrets.

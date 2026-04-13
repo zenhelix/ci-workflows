@@ -1,5 +1,9 @@
 package dsl
 
+import dsl.yaml.JobYaml
+import dsl.yaml.NeedsYaml
+import dsl.yaml.StrategyYaml
+
 class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
     private val withMap = mutableMapOf<String, String>()
     private val secretsMap = mutableMapOf<String, String>()
@@ -39,7 +43,21 @@ data class ReusableWorkflowJobDef(
     val with: Map<String, String> = emptyMap(),
     val secrets: Map<String, String> = emptyMap(),
     val strategy: Map<String, Any>? = null,
-)
+) {
+    @Suppress("UNCHECKED_CAST")
+    fun toJobYaml(): JobYaml = JobYaml(
+        needs = NeedsYaml.of(needs),
+        strategy = strategy?.let { s ->
+            val matrix = s["matrix"] as? Map<String, Any>
+            matrix?.let { m ->
+                StrategyYaml(matrix = m.mapValues { (_, v) -> v.toString() })
+            }
+        },
+        uses = uses.usesString,
+        with = with.takeIf { it.isNotEmpty() },
+        secrets = secrets.takeIf { it.isNotEmpty() },
+    )
+}
 
 fun reusableJob(
     id: String,
