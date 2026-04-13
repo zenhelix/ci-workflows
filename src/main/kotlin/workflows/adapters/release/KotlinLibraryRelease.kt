@@ -1,12 +1,13 @@
 package workflows.adapters.release
 
-import config.DEFAULT_CHANGELOG_CONFIG
-import config.DEFAULT_JAVA_VERSION
+import config.CommonInputs
 import config.MAVEN_SONATYPE_SECRETS
+import config.SetupTool
 import config.passthrough
 import dsl.PublishWorkflow
 import dsl.ReleaseWorkflow
 import dsl.cleanReusableWorkflowJobs
+import dsl.inputRef
 import dsl.reusableWorkflowJob
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
@@ -21,9 +22,9 @@ fun generateKotlinLibraryRelease(outputDir: File) {
         on = listOf(
             WorkflowCall(
                 inputs = mapOf(
-                    "java-version" to WorkflowCall.Input("JDK version to use", false, WorkflowCall.Type.String, DEFAULT_JAVA_VERSION),
-                    "publish-command" to WorkflowCall.Input("Gradle publish command for Maven Central", true, WorkflowCall.Type.String),
-                    "changelog-config" to WorkflowCall.Input("Path to changelog configuration file", false, WorkflowCall.Type.String, DEFAULT_CHANGELOG_CONFIG),
+                    CommonInputs.javaVersion(),
+                    CommonInputs.publishCommand("Gradle publish command for Maven Central"),
+                    CommonInputs.changelogConfig(),
                 ),
                 secrets = MAVEN_SONATYPE_SECRETS,
             ),
@@ -33,14 +34,14 @@ fun generateKotlinLibraryRelease(outputDir: File) {
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
     ) {
         reusableWorkflowJob(id = "release", uses = ReleaseWorkflow) {
-            ReleaseWorkflow.changelogConfig("\${{ inputs.changelog-config }}")
+            ReleaseWorkflow.changelogConfig(inputRef("changelog-config"))
         }
 
         reusableWorkflowJob(id = "publish", uses = PublishWorkflow) {
             needs("release")
-            PublishWorkflow.setupAction("gradle")
-            PublishWorkflow.setupParams("{\"java-version\": \"\${{ inputs.java-version }}\"}")
-            PublishWorkflow.publishCommand("\${{ inputs.publish-command }}")
+            PublishWorkflow.setupAction(SetupTool.Gradle.id)
+            PublishWorkflow.setupParams(SetupTool.Gradle.toParamsJson(inputRef("java-version")))
+            PublishWorkflow.publishCommand(inputRef("publish-command"))
             secrets(MAVEN_SONATYPE_SECRETS.passthrough())
         }
     }

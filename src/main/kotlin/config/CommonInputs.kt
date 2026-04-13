@@ -11,8 +11,8 @@ object CommonInputs {
             "JSON array of JDK versions for matrix build (overrides java-version)",
             false, WorkflowCall.Type.String, "")
 
-    fun gradleCommand(default: String = "./gradlew check") =
-        "gradle-command" to WorkflowCall.Input("Gradle check command", false, WorkflowCall.Type.String, default)
+    fun gradleCommand(description: String = "Gradle check command", default: String = "./gradlew check") =
+        "gradle-command" to WorkflowCall.Input(description, false, WorkflowCall.Type.String, default)
 
     fun publishCommand(description: String = "Gradle publish command") =
         "publish-command" to WorkflowCall.Input(description, true, WorkflowCall.Type.String)

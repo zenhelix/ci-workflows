@@ -1,11 +1,12 @@
 package workflows.adapters.tag
 
 import config.APP_SECRETS
+import config.CommonInputs
+import config.SetupTool
 import config.passthrough
-import config.DEFAULT_GO_VERSION
-import config.DEFAULT_RELEASE_BRANCHES
 import dsl.CreateTagWorkflow
 import dsl.cleanReusableWorkflowJobs
+import dsl.inputRef
 import dsl.reusableWorkflowJob
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
@@ -20,11 +21,11 @@ fun generateGoCreateTag(outputDir: File) {
         on = listOf(
             WorkflowCall(
                 inputs = mapOf(
-                    "go-version" to WorkflowCall.Input("Go version to use", false, WorkflowCall.Type.String, DEFAULT_GO_VERSION),
-                    "check-command" to WorkflowCall.Input("Go validation command", false, WorkflowCall.Type.String, "make test"),
-                    "default-bump" to WorkflowCall.Input("Default version bump type (major, minor, patch)", false, WorkflowCall.Type.String, "patch"),
-                    "tag-prefix" to WorkflowCall.Input("Prefix for the tag", false, WorkflowCall.Type.String, "v"),
-                    "release-branches" to WorkflowCall.Input("Comma-separated branch patterns for releases", false, WorkflowCall.Type.String, DEFAULT_RELEASE_BRANCHES),
+                    CommonInputs.goVersion(),
+                    CommonInputs.checkCommand(description = "Go validation command", default = "make test"),
+                    CommonInputs.defaultBump(),
+                    CommonInputs.tagPrefix(default = "v"),
+                    CommonInputs.releaseBranches(),
                 ),
                 secrets = APP_SECRETS,
             ),
@@ -34,12 +35,12 @@ fun generateGoCreateTag(outputDir: File) {
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
     ) {
         reusableWorkflowJob(id = "create-tag", uses = CreateTagWorkflow) {
-            CreateTagWorkflow.setupAction("go")
-            CreateTagWorkflow.setupParams("{\"go-version\": \"\${{ inputs.go-version }}\"}")
-            CreateTagWorkflow.checkCommand("\${{ inputs.check-command }}")
-            CreateTagWorkflow.defaultBump("\${{ inputs.default-bump }}")
-            CreateTagWorkflow.tagPrefix("\${{ inputs.tag-prefix }}")
-            CreateTagWorkflow.releaseBranches("\${{ inputs.release-branches }}")
+            CreateTagWorkflow.setupAction(SetupTool.Go.id)
+            CreateTagWorkflow.setupParams(SetupTool.Go.toParamsJson(inputRef("go-version")))
+            CreateTagWorkflow.checkCommand(inputRef("check-command"))
+            CreateTagWorkflow.defaultBump(inputRef("default-bump"))
+            CreateTagWorkflow.tagPrefix(inputRef("tag-prefix"))
+            CreateTagWorkflow.releaseBranches(inputRef("release-branches"))
             secrets(APP_SECRETS.passthrough())
         }
     }

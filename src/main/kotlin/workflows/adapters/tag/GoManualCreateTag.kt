@@ -1,10 +1,12 @@
 package workflows.adapters.tag
 
 import config.APP_SECRETS
+import config.CommonInputs
+import config.SetupTool
 import config.passthrough
-import config.DEFAULT_GO_VERSION
 import dsl.ManualCreateTagWorkflow
 import dsl.cleanReusableWorkflowJobs
+import dsl.inputRef
 import dsl.reusableWorkflowJob
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
@@ -19,10 +21,10 @@ fun generateGoManualCreateTag(outputDir: File) {
         on = listOf(
             WorkflowCall(
                 inputs = mapOf(
-                    "tag-version" to WorkflowCall.Input("Version to tag (e.g. 1.2.3)", true, WorkflowCall.Type.String),
-                    "go-version" to WorkflowCall.Input("Go version to use", false, WorkflowCall.Type.String, DEFAULT_GO_VERSION),
-                    "check-command" to WorkflowCall.Input("Go validation command", false, WorkflowCall.Type.String, "make test"),
-                    "tag-prefix" to WorkflowCall.Input("Prefix for the tag", false, WorkflowCall.Type.String, "v"),
+                    CommonInputs.tagVersion(),
+                    CommonInputs.goVersion(),
+                    CommonInputs.checkCommand(description = "Go validation command", default = "make test"),
+                    CommonInputs.tagPrefix(default = "v"),
                 ),
                 secrets = APP_SECRETS,
             ),
@@ -32,11 +34,11 @@ fun generateGoManualCreateTag(outputDir: File) {
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
     ) {
         reusableWorkflowJob(id = "manual-tag", uses = ManualCreateTagWorkflow) {
-            ManualCreateTagWorkflow.tagVersion("\${{ inputs.tag-version }}")
-            ManualCreateTagWorkflow.tagPrefix("\${{ inputs.tag-prefix }}")
-            ManualCreateTagWorkflow.setupAction("go")
-            ManualCreateTagWorkflow.setupParams("{\"go-version\": \"\${{ inputs.go-version }}\"}")
-            ManualCreateTagWorkflow.checkCommand("\${{ inputs.check-command }}")
+            ManualCreateTagWorkflow.tagVersion(inputRef("tag-version"))
+            ManualCreateTagWorkflow.tagPrefix(inputRef("tag-prefix"))
+            ManualCreateTagWorkflow.setupAction(SetupTool.Go.id)
+            ManualCreateTagWorkflow.setupParams(SetupTool.Go.toParamsJson(inputRef("go-version")))
+            ManualCreateTagWorkflow.checkCommand(inputRef("check-command"))
             secrets(APP_SECRETS.passthrough())
         }
     }

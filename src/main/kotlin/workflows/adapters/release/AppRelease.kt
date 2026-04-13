@@ -3,6 +3,7 @@ package workflows.adapters.release
 import config.DEFAULT_CHANGELOG_CONFIG
 import dsl.ReleaseWorkflow
 import dsl.cleanReusableWorkflowJobs
+import dsl.inputRef
 import dsl.reusableWorkflowJob
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
@@ -39,8 +40,8 @@ fun generateAppRelease(outputDir: File) {
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
     ) {
         reusableWorkflowJob(id = "release", uses = ReleaseWorkflow) {
-            ReleaseWorkflow.changelogConfig("\${{ inputs.changelog-config }}")
-            ReleaseWorkflow.draft("\${{ inputs.draft }}")
+            ReleaseWorkflow.changelogConfig(inputRef("changelog-config"))
+            ReleaseWorkflow.draft(inputRef("draft"))
         }
     }
 

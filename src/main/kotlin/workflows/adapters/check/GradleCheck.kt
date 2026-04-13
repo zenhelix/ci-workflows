@@ -1,10 +1,12 @@
 package workflows.adapters.check
 
-import config.DEFAULT_JAVA_VERSION
+import config.CommonInputs
 import config.JAVA_VERSION_MATRIX_EXPR
+import config.SetupTool
 import dsl.CheckWorkflow
 import dsl.ConventionalCommitCheckWorkflow
 import dsl.cleanReusableWorkflowJobs
+import dsl.inputRef
 import dsl.reusableWorkflowJob
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
@@ -22,9 +24,9 @@ internal fun generateGradleCheckWorkflow(
         name = workflowName,
         on = listOf(
             WorkflowCall(inputs = mapOf(
-                "java-version" to WorkflowCall.Input("JDK version to use", false, WorkflowCall.Type.String, DEFAULT_JAVA_VERSION),
-                "java-versions" to WorkflowCall.Input("JSON array of JDK versions for matrix build (overrides java-version)", false, WorkflowCall.Type.String, ""),
-                "gradle-command" to WorkflowCall.Input("Gradle check command", false, WorkflowCall.Type.String, "./gradlew check"),
+                CommonInputs.javaVersion(),
+                CommonInputs.javaVersions(),
+                CommonInputs.gradleCommand(),
             )),
         ),
         sourceFile = File(".github/workflow-src/$fileSlug.main.kts"),
@@ -38,9 +40,9 @@ internal fun generateGradleCheckWorkflow(
 
         reusableWorkflowJob(id = "check", uses = CheckWorkflow) {
             strategy(mapOf("java-version" to JAVA_VERSION_MATRIX_EXPR))
-            CheckWorkflow.setupAction("gradle")
-            CheckWorkflow.setupParams("{\"java-version\": \"\${{ matrix.java-version }}\"}")
-            CheckWorkflow.checkCommand("\${{ inputs.gradle-command }}")
+            CheckWorkflow.setupAction(SetupTool.Gradle.id)
+            CheckWorkflow.setupParams(SetupTool.Gradle.toParamsJson("\${{ matrix.java-version }}"))
+            CheckWorkflow.checkCommand(inputRef("gradle-command"))
         }
     }
 

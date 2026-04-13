@@ -1,11 +1,12 @@
 package workflows.adapters.tag
 
 import config.APP_SECRETS
+import config.CommonInputs
+import config.SetupTool
 import config.passthrough
-import config.DEFAULT_JAVA_VERSION
-import config.DEFAULT_RELEASE_BRANCHES
 import dsl.CreateTagWorkflow
 import dsl.cleanReusableWorkflowJobs
+import dsl.inputRef
 import dsl.reusableWorkflowJob
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
@@ -20,11 +21,11 @@ fun generateGradleCreateTag(outputDir: File) {
         on = listOf(
             WorkflowCall(
                 inputs = mapOf(
-                    "java-version" to WorkflowCall.Input("JDK version to use", false, WorkflowCall.Type.String, DEFAULT_JAVA_VERSION),
-                    "gradle-command" to WorkflowCall.Input("Gradle validation command", false, WorkflowCall.Type.String, "./gradlew check"),
-                    "default-bump" to WorkflowCall.Input("Default version bump type (major, minor, patch)", false, WorkflowCall.Type.String, "patch"),
-                    "tag-prefix" to WorkflowCall.Input("Prefix for the tag", false, WorkflowCall.Type.String, ""),
-                    "release-branches" to WorkflowCall.Input("Comma-separated branch patterns for releases", false, WorkflowCall.Type.String, DEFAULT_RELEASE_BRANCHES),
+                    CommonInputs.javaVersion(),
+                    CommonInputs.gradleCommand(description = "Gradle validation command"),
+                    CommonInputs.defaultBump(),
+                    CommonInputs.tagPrefix(),
+                    CommonInputs.releaseBranches(),
                 ),
                 secrets = APP_SECRETS,
             ),
@@ -34,12 +35,12 @@ fun generateGradleCreateTag(outputDir: File) {
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
     ) {
         reusableWorkflowJob(id = "create-tag", uses = CreateTagWorkflow) {
-            CreateTagWorkflow.setupAction("gradle")
-            CreateTagWorkflow.setupParams("{\"java-version\": \"\${{ inputs.java-version }}\"}")
-            CreateTagWorkflow.checkCommand("\${{ inputs.gradle-command }}")
-            CreateTagWorkflow.defaultBump("\${{ inputs.default-bump }}")
-            CreateTagWorkflow.tagPrefix("\${{ inputs.tag-prefix }}")
-            CreateTagWorkflow.releaseBranches("\${{ inputs.release-branches }}")
+            CreateTagWorkflow.setupAction(SetupTool.Gradle.id)
+            CreateTagWorkflow.setupParams(SetupTool.Gradle.toParamsJson(inputRef("java-version")))
+            CreateTagWorkflow.checkCommand(inputRef("gradle-command"))
+            CreateTagWorkflow.defaultBump(inputRef("default-bump"))
+            CreateTagWorkflow.tagPrefix(inputRef("tag-prefix"))
+            CreateTagWorkflow.releaseBranches(inputRef("release-branches"))
             secrets(APP_SECRETS.passthrough())
         }
     }
