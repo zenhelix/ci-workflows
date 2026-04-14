@@ -46,8 +46,8 @@ abstract class ReusableWorkflow(val fileName: String) {
         return WorkflowSecret(name)
     }
 
-    val inputs: Map<String, WorkflowCall.Input> get() = _inputs.toMap()
-    val secrets: Map<String, WorkflowCall.Secret> get() = _secrets.toMap()
+    val inputs: Map<String, WorkflowCall.Input> get() = _inputs
+    val secrets: Map<String, WorkflowCall.Secret> get() = _secrets
     val requiredInputNames: Set<String> by lazy {
         _inputs.filter { (_, input) -> input.required }.keys
     }

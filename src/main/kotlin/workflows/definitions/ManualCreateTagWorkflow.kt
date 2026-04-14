@@ -21,13 +21,13 @@ object ManualCreateTagWorkflow : ProjectWorkflow("manual-create-tag.yml") {
     )
     val setupAction = input(
         "setup-action",
-        description = "Setup action to use: gradle, go, python",
+        description = SetupConfigurable.SETUP_ACTION_DESCRIPTION,
         required = true
     )
     val setupParams = input(
         "setup-params",
-        description = "JSON object with setup parameters (e.g. {\"java-version\": \"21\"})",
-        default = "{}"
+        description = SetupConfigurable.SETUP_PARAMS_DESCRIPTION,
+        default = SetupConfigurable.SETUP_PARAMS_DEFAULT
     )
     val checkCommand = input(
         "check-command",

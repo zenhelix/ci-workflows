@@ -7,7 +7,7 @@ on:
   workflow_call:
     inputs:
       setup-action:
-        description: 'Setup action to use: gradle, go'
+        description: 'Setup action to use: gradle, go, python'
         type: 'string'
         required: true
       setup-params:
