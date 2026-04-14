@@ -2,7 +2,6 @@ package dsl
 
 import dsl.yaml.InputYaml
 import dsl.yaml.SecretYaml
-import dsl.yaml.YamlDefault
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 
 @JvmInline
@@ -56,20 +55,7 @@ abstract class ReusableWorkflow(val fileName: String) {
     abstract val usesString: String
 
     fun toInputsYaml(): Map<String, InputYaml>? =
-        _inputs.takeIf { it.isNotEmpty() }?.mapValues { (name, input) ->
-            val boolDefault = _booleanDefaults[name]
-            val default = when {
-                boolDefault != null  -> YamlDefault.BooleanValue(boolDefault)
-                input.default != null -> YamlDefault.StringValue(input.default!!)
-                else                  -> null
-            }
-            InputYaml(
-                description = input.description,
-                type = input.type.name.lowercase(),
-                required = input.required,
-                default = default,
-            )
-        }
+        toInputsYaml(_inputs, _booleanDefaults)
 
     fun toSecretsYaml(): Map<String, SecretYaml>? =
         _secrets.takeIf { it.isNotEmpty() }?.mapValues { (_, secret) ->
