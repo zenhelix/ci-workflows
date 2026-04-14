@@ -3,7 +3,7 @@ package workflows.base
 import actions.CreateAppTokenAction
 import actions.GithubTagAction
 import workflows.definitions.CreateTagWorkflow
-import workflows.conditionalSetupSteps
+import workflows.helpers.conditionalSetupSteps
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest

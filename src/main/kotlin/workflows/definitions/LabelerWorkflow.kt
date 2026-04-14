@@ -3,7 +3,7 @@ package workflows.definitions
 import dsl.AdapterWorkflowBuilder
 import dsl.ReusableWorkflowJobBuilder
 import dsl.refInput
-import workflows.ProjectWorkflow
+import workflows.core.ProjectWorkflow
 
 object LabelerWorkflow : ProjectWorkflow("labeler.yml") {
 

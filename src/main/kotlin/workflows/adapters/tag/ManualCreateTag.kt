@@ -4,7 +4,7 @@ import config.SetupTool
 import dsl.AdapterWorkflow
 import dsl.adapterWorkflow
 import workflows.definitions.ManualCreateTagWorkflow
-import workflows.setup
+import workflows.helpers.setup
 
 fun toolManualCreateTag(
     fileName: String,

@@ -6,7 +6,7 @@ import dsl.ReusableWorkflowJobBuilder
 import dsl.SetupConfigurable
 import dsl.stringInput
 import dsl.refInput
-import workflows.ProjectWorkflow
+import workflows.core.ProjectWorkflow
 
 object CreateTagWorkflow : ProjectWorkflow("create-tag.yml") {
 

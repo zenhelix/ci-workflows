@@ -1,4 +1,4 @@
-package workflows
+package workflows.core
 
 import config.reusableWorkflow
 import dsl.ReusableWorkflow

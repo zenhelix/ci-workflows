@@ -5,7 +5,7 @@ import dsl.ReusableWorkflowJobBuilder
 import dsl.SetupConfigurable
 import dsl.stringInput
 import dsl.refInput
-import workflows.ProjectWorkflow
+import workflows.core.ProjectWorkflow
 
 object CheckWorkflow : ProjectWorkflow("check.yml") {
 

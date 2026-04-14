@@ -7,7 +7,7 @@ import dsl.AdapterWorkflow
 import dsl.adapterWorkflow
 import workflows.definitions.PublishWorkflow
 import workflows.definitions.ReleaseWorkflow
-import workflows.setup
+import workflows.helpers.setup
 
 fun gradleReleaseWorkflow(
     fileName: String,

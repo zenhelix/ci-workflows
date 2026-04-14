@@ -1,6 +1,6 @@
 package workflows.base
 
-import workflows.conditionalSetupSteps
+import workflows.helpers.conditionalSetupSteps
 import workflows.definitions.AppDeployWorkflow
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission

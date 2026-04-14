@@ -4,7 +4,7 @@ import config.DEFAULT_CHANGELOG_CONFIG
 import dsl.AdapterWorkflowBuilder
 import dsl.ReusableWorkflowJobBuilder
 import dsl.refInput
-import workflows.ProjectWorkflow
+import workflows.core.ProjectWorkflow
 
 object ReleaseWorkflow : ProjectWorkflow("release.yml") {
 

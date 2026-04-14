@@ -1,4 +1,4 @@
-package workflows
+package workflows.helpers
 
 import actions.SetupAction
 import config.SetupTool
