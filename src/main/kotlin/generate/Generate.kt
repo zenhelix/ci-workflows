@@ -35,7 +35,7 @@ fun main() {
     GradleCheckAdapter("gradle-plugin-check.yml", "Gradle Plugin Check").generate(outputDir)
     GradleCheckAdapter("kotlin-library-check.yml", "Kotlin Library Check").generate(outputDir)
     AppReleaseAdapter.generate(outputDir)
-    generateAppDeploy(outputDir)
+    generateAppDeploy()
     GradleCreateTagAdapter.generate(outputDir)
     GradleManualCreateTagAdapter.generate(outputDir)
     GradlePluginReleaseAdapter.generate(outputDir)

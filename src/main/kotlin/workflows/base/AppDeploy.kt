@@ -1,6 +1,7 @@
 package workflows.base
 
 import workflows.conditionalSetupSteps
+import workflows.definitions.AppDeployWorkflow
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
@@ -9,27 +10,11 @@ import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import java.io.File
 
-fun generateAppDeploy(outputDir: File) {
+fun generateAppDeploy() {
     workflow(
         name = "Application Deploy",
         on = listOf(
-            WorkflowCall(
-                inputs = mapOf(
-                    "setup-action" to WorkflowCall.Input(
-                        "Setup action to use: gradle, go, python", true, WorkflowCall.Type.String
-                    ),
-                    "setup-params" to WorkflowCall.Input(
-                        "JSON object with setup parameters (e.g. {\"java-version\": \"21\"})",
-                        false, WorkflowCall.Type.String, "{}"
-                    ),
-                    "deploy-command" to WorkflowCall.Input(
-                        "Command to run for deployment", true, WorkflowCall.Type.String
-                    ),
-                    "tag" to WorkflowCall.Input(
-                        "Tag/version to deploy (checked out at this ref)", true, WorkflowCall.Type.String
-                    ),
-                )
-            ),
+            WorkflowCall(inputs = AppDeployWorkflow.inputs),
         ),
         sourceFile = File(".github/workflow-src/app-deploy.main.kts"),
         targetFileName = "app-deploy.yml",
@@ -44,11 +29,11 @@ fun generateAppDeploy(outputDir: File) {
             conditionalSetupSteps(fetchDepth = "0")
             run(
                 name = "Checkout tag",
-                command = "git checkout \"\${{ inputs.tag }}\"",
+                command = "git checkout \"${AppDeployWorkflow.tag.ref.expression}\"",
             )
             run(
                 name = "Deploy",
-                command = "\${{ inputs.deploy-command }}",
+                command = AppDeployWorkflow.deployCommand.ref.expression,
             )
         }
     }
