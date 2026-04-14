@@ -4,6 +4,7 @@ import actions.SetupAction
 import config.SetupTool
 import dsl.MatrixRefExpr
 import dsl.SetupConfigurable
+import dsl.WorkflowInput
 import io.github.typesafegithub.workflows.dsl.JobBuilder
 
 fun JobBuilder<*>.conditionalSetupSteps(fetchDepth: String? = null) {
@@ -28,4 +29,9 @@ fun SetupConfigurable.setup(tool: SetupTool, versionExpr: MatrixRefExpr) {
 fun SetupConfigurable.setup(tool: SetupTool, versionRef: String) {
     setupAction = tool.id
     setupParams = tool.toParamsJson(versionRef)
+}
+
+fun SetupConfigurable.setup(tool: SetupTool, versionInput: WorkflowInput) {
+    setupAction = tool.id
+    setupParams = tool.toParamsJson(versionInput.ref.expression)
 }

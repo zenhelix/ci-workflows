@@ -21,9 +21,10 @@ class AdapterWorkflowBuilder(private val fileName: String, private val name: Str
     fun booleanInput(
         name: String,
         description: String,
+        required: Boolean = false,
         default: Boolean? = null,
     ): WorkflowInput {
-        inputs[name] = WorkflowCall.Input(description, false, WorkflowCall.Type.Boolean, null)
+        inputs[name] = WorkflowCall.Input(description, required, WorkflowCall.Type.Boolean, null)
         default?.let { booleanDefaults[name] = it }
         return WorkflowInput(name)
     }

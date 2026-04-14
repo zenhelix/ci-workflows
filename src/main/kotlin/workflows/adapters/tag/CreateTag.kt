@@ -23,7 +23,7 @@ fun toolCreateTag(
     val releaseBranches = input("release-branches", description = "Comma-separated branch patterns for releases", default = DEFAULT_RELEASE_BRANCHES)
 
     CreateTagWorkflow.job("create-tag") {
-        setup(tool, version.ref.expression)
+        setup(tool, version)
         CreateTagWorkflow.checkCommand from checkCommand
         CreateTagWorkflow.defaultBump from defaultBump
         CreateTagWorkflow.tagPrefix from tagPrefix

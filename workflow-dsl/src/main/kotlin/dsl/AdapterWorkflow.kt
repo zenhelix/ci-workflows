@@ -48,9 +48,11 @@ class AdapterWorkflow(
     private fun collectSecretsFromJobs(jobDefs: List<ReusableWorkflowJobDef>): Map<String, SecretYaml>? =
         buildMap {
             for (job in jobDefs) {
-                val descriptions = job.uses.secrets.mapValues { it.value.description }
                 for (name in job.secrets.keys) {
-                    putIfAbsent(name, SecretYaml(description = descriptions[name] ?: name, required = true))
+                    putIfAbsent(name, SecretYaml(
+                        description = job.uses.secrets[name]?.description ?: name,
+                        required = true,
+                    ))
                 }
             }
         }.takeIf { it.isNotEmpty() }

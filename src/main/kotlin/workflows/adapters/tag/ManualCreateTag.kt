@@ -23,7 +23,7 @@ fun toolManualCreateTag(
     ManualCreateTagWorkflow.job("manual-tag") {
         ManualCreateTagWorkflow.tagVersion from tagVersion
         ManualCreateTagWorkflow.tagPrefix from tagPrefix
-        setup(tool, version.ref.expression)
+        setup(tool, version)
         ManualCreateTagWorkflow.checkCommand from checkCommand
         passthroughAllSecrets()
     }

@@ -37,7 +37,7 @@ fun gradleReleaseWorkflow(
 
     PublishWorkflow.job("publish") {
         needs("release")
-        setup(SetupTool.Gradle, javaVersion.ref.expression)
+        setup(SetupTool.Gradle, javaVersion)
         PublishWorkflow.publishCommand from publishCommand
         publishSecrets()
     }
