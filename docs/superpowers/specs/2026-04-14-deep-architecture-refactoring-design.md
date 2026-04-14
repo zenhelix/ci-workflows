@@ -221,17 +221,6 @@ interface SetupCapability {
     }
 }
 
-fun ReusableWorkflow.setupInputs(): Pair<WorkflowInput, WorkflowInput> {
-    val action = input("setup-action", SetupCapability.SETUP_ACTION_DESCRIPTION, required = true)
-    val params = input("setup-params", SetupCapability.SETUP_PARAMS_DESCRIPTION, default = SetupCapability.SETUP_PARAMS_DEFAULT)
-    return action to params
-}
-```
-
-### SetupCapableJobBuilder — job builder-level contract
-
-```kotlin
-// dsl/capability/SetupCapability.kt
 interface SetupCapableJobBuilder {
     var setupAction: String
     var setupParams: String
@@ -243,13 +232,14 @@ interface SetupCapableJobBuilder {
 }
 ```
 
+Note: `ReusableWorkflow.input()` is `protected`, so an extension function `setupInputs()` can't call it. Each workflow calls `input()` directly in its property declaration (accessible via inheritance).
+
 ### Usage in workflows
 
 ```kotlin
 object CheckWorkflow : ProjectWorkflow("check.yml", "Check"), SetupCapability {
-    override val setupAction: WorkflowInput
-    override val setupParams: WorkflowInput
-    init { val (a, p) = setupInputs(); setupAction = a; setupParams = p }
+    override val setupAction = input("setup-action", SetupCapability.SETUP_ACTION_DESCRIPTION, required = true)
+    override val setupParams = input("setup-params", SetupCapability.SETUP_PARAMS_DESCRIPTION, default = SetupCapability.SETUP_PARAMS_DEFAULT)
 
     val checkCommand = input("check-command", "Command to run for checking", required = true)
 
