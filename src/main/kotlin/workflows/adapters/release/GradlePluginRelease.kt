@@ -28,8 +28,6 @@ object GradlePluginReleaseAdapter : AdapterWorkflow("gradle-plugin-release.yml")
         default = DEFAULT_CHANGELOG_CONFIG,
     )
 
-    override fun createJobBuilder() = PublishWorkflow.JobBuilder()
-
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
         reusableJob<ReleaseWorkflow.JobBuilder>(id = "release", uses = ReleaseWorkflow) {
             changelogConfig(this@GradlePluginReleaseAdapter.changelogConfig.ref)
@@ -39,16 +37,7 @@ object GradlePluginReleaseAdapter : AdapterWorkflow("gradle-plugin-release.yml")
             setupAction(SetupTool.Gradle.id)
             setupParams(SetupTool.Gradle.toParamsJson(javaVersion.ref))
             publishCommand(this@GradlePluginReleaseAdapter.publishCommand.ref)
-            passthroughSecrets(
-                PublishWorkflow.mavenSonatypeUsername,
-                PublishWorkflow.mavenSonatypeToken,
-                PublishWorkflow.mavenSonatypeSigningKeyId,
-                PublishWorkflow.mavenSonatypeSigningPubKeyAsciiArmored,
-                PublishWorkflow.mavenSonatypeSigningKeyAsciiArmored,
-                PublishWorkflow.mavenSonatypeSigningPassword,
-                PublishWorkflow.gradlePublishKey,
-                PublishWorkflow.gradlePublishSecret,
-            )
+            passthroughAllSecrets()
         },
     )
 }

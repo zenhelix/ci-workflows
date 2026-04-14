@@ -44,6 +44,9 @@ abstract class ReusableWorkflow(val fileName: String) {
 
     val inputs: Map<String, WorkflowCall.Input> get() = _inputs.toMap()
     val secrets: Map<String, WorkflowCall.Secret> get() = _secrets.toMap()
+    val requiredInputNames: Set<String> by lazy {
+        _inputs.filter { (_, input) -> input.required }.keys
+    }
     val usesString: String get() = reusableWorkflow(fileName)
 
     abstract fun createJobBuilder(): ReusableWorkflowJobBuilder

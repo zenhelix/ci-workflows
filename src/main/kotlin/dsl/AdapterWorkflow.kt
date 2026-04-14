@@ -15,6 +15,9 @@ private fun unquoteYamlMapKeys(yaml: String): String =
 
 abstract class AdapterWorkflow(fileName: String) : ReusableWorkflow(fileName) {
 
+    override fun createJobBuilder(): ReusableWorkflowJobBuilder =
+        error("AdapterWorkflow does not support createJobBuilder(); use typed builders on individual workflow objects")
+
     abstract val workflowName: String
 
     abstract fun jobs(): List<ReusableWorkflowJobDef>
@@ -52,13 +55,13 @@ abstract class AdapterWorkflow(fileName: String) : ReusableWorkflow(fileName) {
         val secretNames = jobDefs.flatMap { it.secrets.keys }.toSet()
         if (secretNames.isEmpty()) return null
 
-        return secretNames.associateWith { name ->
-            val workflowSecret = jobDefs
-                .mapNotNull { job -> job.uses.secrets[name] }
-                .firstOrNull()
+        val workflowSecrets = jobDefs
+            .flatMap { job -> job.uses.secrets.entries }
+            .associate { (name, secret) -> name to secret }
 
+        return secretNames.associateWith { name ->
             SecretYaml(
-                description = workflowSecret?.description ?: name,
+                description = workflowSecrets[name]?.description ?: name,
                 required = true,
             )
         }

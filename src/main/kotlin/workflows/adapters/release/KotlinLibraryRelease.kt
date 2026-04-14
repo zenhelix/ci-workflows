@@ -28,8 +28,6 @@ object KotlinLibraryReleaseAdapter : AdapterWorkflow("kotlin-library-release.yml
         default = DEFAULT_CHANGELOG_CONFIG,
     )
 
-    override fun createJobBuilder() = PublishWorkflow.JobBuilder()
-
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
         reusableJob<ReleaseWorkflow.JobBuilder>(id = "release", uses = ReleaseWorkflow) {
             changelogConfig(this@KotlinLibraryReleaseAdapter.changelogConfig.ref)

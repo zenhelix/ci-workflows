@@ -17,8 +17,6 @@ object GoCreateTagAdapter : AdapterWorkflow("go-create-tag.yml") {
     val tagPrefix = input("tag-prefix", description = "Prefix for the tag", default = "v")
     val releaseBranches = input("release-branches", description = "Comma-separated branch patterns for releases", default = DEFAULT_RELEASE_BRANCHES)
 
-    override fun createJobBuilder() = CreateTagWorkflow.JobBuilder()
-
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
         reusableJob<CreateTagWorkflow.JobBuilder>(id = "create-tag", uses = CreateTagWorkflow) {
             setupAction(SetupTool.Go.id)

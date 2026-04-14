@@ -15,8 +15,6 @@ object GradleManualCreateTagAdapter : AdapterWorkflow("gradle-manual-create-tag.
     val gradleCommand = input("gradle-command", description = "Gradle check command", default = "./gradlew check")
     val tagPrefix = input("tag-prefix", description = "Prefix for the tag", default = "")
 
-    override fun createJobBuilder() = ManualCreateTagWorkflow.JobBuilder()
-
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
         reusableJob<ManualCreateTagWorkflow.JobBuilder>(id = "manual-tag", uses = ManualCreateTagWorkflow) {
             tagVersion(this@GradleManualCreateTagAdapter.tagVersion.ref)

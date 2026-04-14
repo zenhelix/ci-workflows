@@ -15,8 +15,6 @@ object GoManualCreateTagAdapter : AdapterWorkflow("go-manual-create-tag.yml") {
     val checkCommand = input("check-command", description = "Go validation command", default = "make test")
     val tagPrefix = input("tag-prefix", description = "Prefix for the tag", default = "v")
 
-    override fun createJobBuilder() = ManualCreateTagWorkflow.JobBuilder()
-
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
         reusableJob<ManualCreateTagWorkflow.JobBuilder>(id = "manual-tag", uses = ManualCreateTagWorkflow) {
             tagVersion(this@GoManualCreateTagAdapter.tagVersion.ref)

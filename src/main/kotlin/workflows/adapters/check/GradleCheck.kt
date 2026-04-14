@@ -34,8 +34,6 @@ class GradleCheckAdapter(
 
     private val javaVersionMatrix = MatrixRef("java-version")
 
-    override fun createJobBuilder() = CheckWorkflow.JobBuilder()
-
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
         reusableJob<ConventionalCommitCheckWorkflow.JobBuilder>(id = "conventional-commit", uses = ConventionalCommitCheckWorkflow),
         reusableJob<CheckWorkflow.JobBuilder>(id = "check", uses = CheckWorkflow) {

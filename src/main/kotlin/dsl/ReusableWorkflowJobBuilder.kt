@@ -35,10 +35,7 @@ abstract class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow
     }
 
     internal fun build(id: String): ReusableWorkflowJobDef {
-        val missingRequired = workflow.inputs
-            .filter { (_, input) -> input.required }
-            .keys
-            .filter { it !in withMap }
+        val missingRequired = workflow.requiredInputNames.filter { it !in withMap }
         require(missingRequired.isEmpty()) {
             "Job '$id' using '${workflow.fileName}' is missing required inputs: $missingRequired"
         }

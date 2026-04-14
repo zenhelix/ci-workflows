@@ -20,8 +20,6 @@ object AppReleaseAdapter : AdapterWorkflow("app-release.yml") {
         default = true,
     )
 
-    override fun createJobBuilder() = ReleaseWorkflow.JobBuilder()
-
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
         reusableJob<ReleaseWorkflow.JobBuilder>(id = "release", uses = ReleaseWorkflow) {
             changelogConfig(this@AppReleaseAdapter.changelogConfig.ref)
