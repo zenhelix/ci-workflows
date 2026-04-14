@@ -3,6 +3,7 @@ package workflows
 import actions.SetupAction
 import config.SetupTool
 import dsl.MatrixRefExpr
+import dsl.SetupConfigurable
 import io.github.typesafegithub.workflows.dsl.JobBuilder
 
 fun JobBuilder<*>.conditionalSetupSteps(fetchDepth: String? = null) {
@@ -19,27 +20,12 @@ fun JobBuilder<*>.conditionalSetupSteps(fetchDepth: String? = null) {
     }
 }
 
-fun CheckWorkflow.JobBuilder.setup(tool: SetupTool, versionExpr: MatrixRefExpr) {
+fun SetupConfigurable.setup(tool: SetupTool, versionExpr: MatrixRefExpr) {
     setupAction = tool.id
     setupParams = tool.toParamsJson(versionExpr)
 }
 
-fun CheckWorkflow.JobBuilder.setup(tool: SetupTool, versionRef: String) {
-    setupAction = tool.id
-    setupParams = tool.toParamsJson(versionRef)
-}
-
-fun CreateTagWorkflow.JobBuilder.setup(tool: SetupTool, versionRef: String) {
-    setupAction = tool.id
-    setupParams = tool.toParamsJson(versionRef)
-}
-
-fun ManualCreateTagWorkflow.JobBuilder.setup(tool: SetupTool, versionRef: String) {
-    setupAction = tool.id
-    setupParams = tool.toParamsJson(versionRef)
-}
-
-fun PublishWorkflow.JobBuilder.setup(tool: SetupTool, versionRef: String) {
+fun SetupConfigurable.setup(tool: SetupTool, versionRef: String) {
     setupAction = tool.id
     setupParams = tool.toParamsJson(versionRef)
 }

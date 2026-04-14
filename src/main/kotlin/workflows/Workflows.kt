@@ -2,13 +2,12 @@ package workflows
 
 import config.DEFAULT_CHANGELOG_CONFIG
 import config.DEFAULT_RELEASE_BRANCHES
-import config.reusableWorkflow
-import dsl.ReusableWorkflow
 import dsl.ReusableWorkflowJobBuilder
+import dsl.SetupConfigurable
 import dsl.inputProp
+import dsl.inputRefProp
 
-object CheckWorkflow : ReusableWorkflow("check.yml") {
-    override val usesString = reusableWorkflow(fileName)
+object CheckWorkflow : ProjectWorkflow("check.yml") {
 
     val setupAction = input(
         "setup-action",
@@ -26,15 +25,14 @@ object CheckWorkflow : ReusableWorkflow("check.yml") {
         required = true
     )
 
-    class JobBuilder : ReusableWorkflowJobBuilder(CheckWorkflow) {
-        var setupAction by inputProp(CheckWorkflow.setupAction)
-        var setupParams by inputProp(CheckWorkflow.setupParams)
-        var checkCommand by inputProp(CheckWorkflow.checkCommand)
+    class JobBuilder : ReusableWorkflowJobBuilder(CheckWorkflow), SetupConfigurable {
+        override var setupAction by inputProp(CheckWorkflow.setupAction)
+        override var setupParams by inputProp(CheckWorkflow.setupParams)
+        var checkCommand by inputRefProp(CheckWorkflow.checkCommand)
     }
 }
 
-object ConventionalCommitCheckWorkflow : ReusableWorkflow("conventional-commit-check.yml") {
-    override val usesString = reusableWorkflow(fileName)
+object ConventionalCommitCheckWorkflow : ProjectWorkflow("conventional-commit-check.yml") {
 
     val allowedTypes = input(
         "allowed-types",
@@ -43,12 +41,11 @@ object ConventionalCommitCheckWorkflow : ReusableWorkflow("conventional-commit-c
     )
 
     class JobBuilder : ReusableWorkflowJobBuilder(ConventionalCommitCheckWorkflow) {
-        var allowedTypes by inputProp(ConventionalCommitCheckWorkflow.allowedTypes)
+        var allowedTypes by inputRefProp(ConventionalCommitCheckWorkflow.allowedTypes)
     }
 }
 
-object CreateTagWorkflow : ReusableWorkflow("create-tag.yml") {
-    override val usesString = reusableWorkflow(fileName)
+object CreateTagWorkflow : ProjectWorkflow("create-tag.yml") {
 
     val setupAction = input(
         "setup-action",
@@ -89,18 +86,17 @@ object CreateTagWorkflow : ReusableWorkflow("create-tag.yml") {
         description = "GitHub App private key for generating commit token"
     )
 
-    class JobBuilder : ReusableWorkflowJobBuilder(CreateTagWorkflow) {
-        var setupAction by inputProp(CreateTagWorkflow.setupAction)
-        var setupParams by inputProp(CreateTagWorkflow.setupParams)
-        var checkCommand by inputProp(CreateTagWorkflow.checkCommand)
-        var defaultBump by inputProp(CreateTagWorkflow.defaultBump)
-        var tagPrefix by inputProp(CreateTagWorkflow.tagPrefix)
-        var releaseBranches by inputProp(CreateTagWorkflow.releaseBranches)
+    class JobBuilder : ReusableWorkflowJobBuilder(CreateTagWorkflow), SetupConfigurable {
+        override var setupAction by inputProp(CreateTagWorkflow.setupAction)
+        override var setupParams by inputProp(CreateTagWorkflow.setupParams)
+        var checkCommand by inputRefProp(CreateTagWorkflow.checkCommand)
+        var defaultBump by inputRefProp(CreateTagWorkflow.defaultBump)
+        var tagPrefix by inputRefProp(CreateTagWorkflow.tagPrefix)
+        var releaseBranches by inputRefProp(CreateTagWorkflow.releaseBranches)
     }
 }
 
-object ManualCreateTagWorkflow : ReusableWorkflow("manual-create-tag.yml") {
-    override val usesString = reusableWorkflow(fileName)
+object ManualCreateTagWorkflow : ProjectWorkflow("manual-create-tag.yml") {
 
     val tagVersion = input(
         "tag-version",
@@ -136,17 +132,16 @@ object ManualCreateTagWorkflow : ReusableWorkflow("manual-create-tag.yml") {
         description = "GitHub App private key for generating commit token"
     )
 
-    class JobBuilder : ReusableWorkflowJobBuilder(ManualCreateTagWorkflow) {
-        var tagVersion by inputProp(ManualCreateTagWorkflow.tagVersion)
-        var tagPrefix by inputProp(ManualCreateTagWorkflow.tagPrefix)
-        var setupAction by inputProp(ManualCreateTagWorkflow.setupAction)
-        var setupParams by inputProp(ManualCreateTagWorkflow.setupParams)
-        var checkCommand by inputProp(ManualCreateTagWorkflow.checkCommand)
+    class JobBuilder : ReusableWorkflowJobBuilder(ManualCreateTagWorkflow), SetupConfigurable {
+        var tagVersion by inputRefProp(ManualCreateTagWorkflow.tagVersion)
+        var tagPrefix by inputRefProp(ManualCreateTagWorkflow.tagPrefix)
+        override var setupAction by inputProp(ManualCreateTagWorkflow.setupAction)
+        override var setupParams by inputProp(ManualCreateTagWorkflow.setupParams)
+        var checkCommand by inputRefProp(ManualCreateTagWorkflow.checkCommand)
     }
 }
 
-object ReleaseWorkflow : ReusableWorkflow("release.yml") {
-    override val usesString = reusableWorkflow(fileName)
+object ReleaseWorkflow : ProjectWorkflow("release.yml") {
 
     val changelogConfig = input(
         "changelog-config",
@@ -160,13 +155,12 @@ object ReleaseWorkflow : ReusableWorkflow("release.yml") {
     )
 
     class JobBuilder : ReusableWorkflowJobBuilder(ReleaseWorkflow) {
-        var changelogConfig by inputProp(ReleaseWorkflow.changelogConfig)
-        var draft by inputProp(ReleaseWorkflow.draft)
+        var changelogConfig by inputRefProp(ReleaseWorkflow.changelogConfig)
+        var draft by inputRefProp(ReleaseWorkflow.draft)
     }
 }
 
-object PublishWorkflow : ReusableWorkflow("publish.yml") {
-    override val usesString = reusableWorkflow(fileName)
+object PublishWorkflow : ProjectWorkflow("publish.yml") {
 
     val setupAction = input(
         "setup-action",
@@ -216,15 +210,14 @@ object PublishWorkflow : ReusableWorkflow("publish.yml") {
         description = "Gradle Plugin Portal publish secret", required = false
     )
 
-    class JobBuilder : ReusableWorkflowJobBuilder(PublishWorkflow) {
-        var setupAction by inputProp(PublishWorkflow.setupAction)
-        var setupParams by inputProp(PublishWorkflow.setupParams)
-        var publishCommand by inputProp(PublishWorkflow.publishCommand)
+    class JobBuilder : ReusableWorkflowJobBuilder(PublishWorkflow), SetupConfigurable {
+        override var setupAction by inputProp(PublishWorkflow.setupAction)
+        override var setupParams by inputProp(PublishWorkflow.setupParams)
+        var publishCommand by inputRefProp(PublishWorkflow.publishCommand)
     }
 }
 
-object LabelerWorkflow : ReusableWorkflow("labeler.yml") {
-    override val usesString = reusableWorkflow(fileName)
+object LabelerWorkflow : ProjectWorkflow("labeler.yml") {
 
     val configPath = input(
         "config-path",
@@ -233,6 +226,6 @@ object LabelerWorkflow : ReusableWorkflow("labeler.yml") {
     )
 
     class JobBuilder : ReusableWorkflowJobBuilder(LabelerWorkflow) {
-        var configPath by inputProp(LabelerWorkflow.configPath)
+        var configPath by inputRefProp(LabelerWorkflow.configPath)
     }
 }

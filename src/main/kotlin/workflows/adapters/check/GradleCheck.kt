@@ -2,21 +2,19 @@ package workflows.adapters.check
 
 import config.DEFAULT_JAVA_VERSION
 import config.JAVA_VERSION_MATRIX_EXPR
-import config.reusableWorkflow
-import dsl.AdapterWorkflow
 import dsl.MatrixDef
 import dsl.MatrixRef
 import dsl.ReusableWorkflowJobDef
 import dsl.reusableJob
 import workflows.CheckWorkflow
 import workflows.ConventionalCommitCheckWorkflow
+import workflows.ProjectAdapterWorkflow
 import workflows.setup
 
 class GradleCheckAdapter(
     fileName: String,
     override val workflowName: String,
-) : AdapterWorkflow(fileName) {
-    override val usesString = reusableWorkflow(fileName)
+) : ProjectAdapterWorkflow(fileName) {
 
     val javaVersion = input(
         "java-version",
@@ -41,7 +39,7 @@ class GradleCheckAdapter(
         reusableJob(id = "check", uses = CheckWorkflow, CheckWorkflow::JobBuilder) {
             strategy(MatrixDef(mapOf(javaVersionMatrix.key to JAVA_VERSION_MATRIX_EXPR)))
             setup(config.SetupTool.Gradle, javaVersionMatrix.ref)
-            checkCommand = gradleCommand.ref.expression
+            checkCommand = gradleCommand.ref
         },
     )
 }

@@ -16,6 +16,17 @@ class InputProperty(private val input: WorkflowInput) {
 
 fun inputProp(input: WorkflowInput) = InputProperty(input)
 
+class InputRefProperty(private val input: WorkflowInput) {
+    operator fun getValue(builder: ReusableWorkflowJobBuilder, property: KProperty<*>): InputRef =
+        InputRef(builder.getInput(input))
+
+    operator fun setValue(builder: ReusableWorkflowJobBuilder, property: KProperty<*>, value: InputRef) {
+        builder.setInput(input, value)
+    }
+}
+
+fun inputRefProp(input: WorkflowInput) = InputRefProperty(input)
+
 abstract class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
     private val withMap = mutableMapOf<String, String>()
     private val secretsMap = mutableMapOf<String, String>()

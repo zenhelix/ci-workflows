@@ -3,16 +3,14 @@ package workflows.adapters.release
 import config.DEFAULT_CHANGELOG_CONFIG
 import config.DEFAULT_JAVA_VERSION
 import config.SetupTool
-import config.reusableWorkflow
-import dsl.AdapterWorkflow
 import dsl.ReusableWorkflowJobDef
 import dsl.reusableJob
+import workflows.ProjectAdapterWorkflow
 import workflows.PublishWorkflow
 import workflows.ReleaseWorkflow
 import workflows.setup
 
-object GradlePluginReleaseAdapter : AdapterWorkflow("gradle-plugin-release.yml") {
-    override val usesString = reusableWorkflow(fileName)
+object GradlePluginReleaseAdapter : ProjectAdapterWorkflow("gradle-plugin-release.yml") {
     override val workflowName = "Gradle Plugin Release"
 
     val javaVersion = input(
@@ -33,12 +31,12 @@ object GradlePluginReleaseAdapter : AdapterWorkflow("gradle-plugin-release.yml")
 
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
         reusableJob(id = "release", uses = ReleaseWorkflow, ReleaseWorkflow::JobBuilder) {
-            changelogConfig = this@GradlePluginReleaseAdapter.changelogConfig.ref.expression
+            changelogConfig = this@GradlePluginReleaseAdapter.changelogConfig.ref
         },
         reusableJob(id = "publish", uses = PublishWorkflow, PublishWorkflow::JobBuilder) {
             needs("release")
             setup(SetupTool.Gradle, javaVersion.ref.expression)
-            publishCommand = this@GradlePluginReleaseAdapter.publishCommand.ref.expression
+            publishCommand = this@GradlePluginReleaseAdapter.publishCommand.ref
             passthroughAllSecrets()
         },
     )
