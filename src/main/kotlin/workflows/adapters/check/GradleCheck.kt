@@ -2,20 +2,14 @@ package workflows.adapters.check
 
 import config.DEFAULT_JAVA_VERSION
 import config.JAVA_VERSION_MATRIX_EXPR
-import dsl.MatrixDef
-import dsl.MatrixRef
-import dsl.ReusableWorkflowJobDef
-import dsl.reusableJob
+import config.SetupTool
+import dsl.BuiltAdapterWorkflow
+import dsl.adapterWorkflow
 import workflows.definitions.CheckWorkflow
 import workflows.definitions.ConventionalCommitCheckWorkflow
-import workflows.ProjectAdapterWorkflow
 import workflows.setup
 
-class GradleCheckAdapter(
-    fileName: String,
-    override val workflowName: String,
-) : ProjectAdapterWorkflow(fileName) {
-
+fun gradleCheck(fileName: String, name: String): BuiltAdapterWorkflow = adapterWorkflow(fileName, name) {
     val javaVersion = input(
         "java-version",
         description = "JDK version to use",
@@ -32,14 +26,13 @@ class GradleCheckAdapter(
         default = "./gradlew check",
     )
 
-    private val javaVersionMatrix = MatrixRef("java-version")
+    val javaVersionMatrix = matrixRef("java-version")
 
-    override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
-        reusableJob(id = "conventional-commit", uses = ConventionalCommitCheckWorkflow, ConventionalCommitCheckWorkflow::JobBuilder),
-        reusableJob(id = "check", uses = CheckWorkflow, CheckWorkflow::JobBuilder) {
-            strategy(MatrixDef(mapOf(javaVersionMatrix.key to JAVA_VERSION_MATRIX_EXPR)))
-            setup(config.SetupTool.Gradle, javaVersionMatrix.ref)
-            checkCommand = gradleCommand.ref
-        },
-    )
+    ConventionalCommitCheckWorkflow.job("conventional-commit")
+
+    CheckWorkflow.job("check") {
+        strategy(matrix(javaVersionMatrix.key to JAVA_VERSION_MATRIX_EXPR))
+        setup(SetupTool.Gradle, javaVersionMatrix.ref)
+        CheckWorkflow.checkCommand from gradleCommand
+    }
 }

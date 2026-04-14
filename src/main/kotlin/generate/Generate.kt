@@ -1,7 +1,7 @@
 package generate
 
 import config.SetupTool
-import workflows.adapters.check.GradleCheckAdapter
+import workflows.adapters.check.gradleCheck
 import workflows.adapters.release.AppReleaseAdapter
 import workflows.adapters.release.GradlePluginReleaseAdapter
 import workflows.adapters.release.KotlinLibraryReleaseAdapter
@@ -29,10 +29,10 @@ fun main() {
     generateLabeler()
     generateAppDeploy()
 
-    GradleCheckAdapter("app-check.yml", "Application Check").generate(outputDir)
-    GradleCheckAdapter("gradle-check.yml", "Gradle Check").generate(outputDir)
-    GradleCheckAdapter("gradle-plugin-check.yml", "Gradle Plugin Check").generate(outputDir)
-    GradleCheckAdapter("kotlin-library-check.yml", "Kotlin Library Check").generate(outputDir)
+    gradleCheck("app-check.yml", "Application Check").generate(outputDir)
+    gradleCheck("gradle-check.yml", "Gradle Check").generate(outputDir)
+    gradleCheck("gradle-plugin-check.yml", "Gradle Plugin Check").generate(outputDir)
+    gradleCheck("kotlin-library-check.yml", "Kotlin Library Check").generate(outputDir)
     AppReleaseAdapter.generate(outputDir)
     GradlePluginReleaseAdapter.generate(outputDir)
     KotlinLibraryReleaseAdapter.generate(outputDir)
