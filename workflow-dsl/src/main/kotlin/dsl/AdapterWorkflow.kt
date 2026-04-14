@@ -42,20 +42,17 @@ abstract class AdapterWorkflow(fileName: String) : ReusableWorkflow(fileName) {
         val rawBody = adapterWorkflowYaml.encodeToString(AdapterWorkflowYaml.serializer(), dto)
         val body = unquoteYamlMapKeys(rawBody)
 
-        outputDir.mkdirs()
         File(outputDir, fileName).writeText("$header\n\n$body\n")
     }
 
     private fun collectSecretsFromJobs(jobDefs: List<ReusableWorkflowJobDef>): Map<String, SecretYaml>? {
-        val referencedNames = jobDefs.flatMapTo(mutableSetOf()) { it.secrets.keys }
-        if (referencedNames.isEmpty()) return null
-
-        val descriptions = jobDefs
-            .flatMap { it.uses.secrets.entries }
-            .associate { (name, secret) -> name to secret.description }
-
-        return referencedNames.associateWith { name ->
-            SecretYaml(description = descriptions[name] ?: name, required = true)
+        val result = linkedMapOf<String, SecretYaml>()
+        for (job in jobDefs) {
+            val descriptions = job.uses.secrets.mapValues { (_, secret) -> secret.description }
+            for (name in job.secrets.keys) {
+                result.putIfAbsent(name, SecretYaml(description = descriptions[name] ?: name, required = true))
+            }
         }
+        return result.takeIf { it.isNotEmpty() }
     }
 }

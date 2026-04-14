@@ -18,7 +18,7 @@ import workflows.base.generateRelease
 import java.io.File
 
 fun main() {
-    val outputDir = File(".github/workflows")
+    val outputDir = File(".github/workflows").apply { mkdirs() }
 
     generateCheck()
     generateConventionalCommitCheck()
