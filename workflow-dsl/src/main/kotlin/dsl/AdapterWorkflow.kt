@@ -1,5 +1,6 @@
 package dsl
 
+import dsl.core.ReusableWorkflow
 import dsl.yaml.AdapterWorkflowYaml
 import dsl.yaml.InputYaml
 import dsl.yaml.SecretYaml

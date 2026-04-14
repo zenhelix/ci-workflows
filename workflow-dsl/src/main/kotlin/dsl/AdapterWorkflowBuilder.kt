@@ -1,5 +1,11 @@
 package dsl
 
+import dsl.core.InputRegistry
+import dsl.core.MatrixDef
+import dsl.core.MatrixRef
+import dsl.core.WorkflowInput
+import dsl.yaml.toInputsYaml
+
 class AdapterWorkflowBuilder(private val fileName: String, private val name: String) {
     private val inputRegistry = InputRegistry()
     private val jobs = mutableListOf<ReusableWorkflowJobDef>()

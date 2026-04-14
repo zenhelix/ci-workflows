@@ -1,7 +1,5 @@
-package dsl
+package dsl.yaml
 
-import dsl.yaml.InputYaml
-import dsl.yaml.YamlDefault
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 
 fun toInputsYaml(

@@ -1,14 +1,10 @@
-package dsl
+package dsl.core
 
+import dsl.ReusableWorkflowJobBuilder
+import dsl.ReusableWorkflowJobDef
 import dsl.yaml.InputYaml
 import dsl.yaml.SecretYaml
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-
-@JvmInline
-value class InputRef(val expression: String)
-
-@JvmInline
-value class SecretRef(val expression: String)
 
 abstract class ReusableWorkflow(val fileName: String) {
     private val inputRegistry = InputRegistry()
@@ -47,7 +43,7 @@ abstract class ReusableWorkflow(val fileName: String) {
     abstract val usesString: String
 
     fun toInputsYaml(): Map<String, InputYaml>? =
-        toInputsYaml(inputRegistry.inputs, inputRegistry.booleanDefaults)
+        dsl.yaml.toInputsYaml(inputRegistry.inputs, inputRegistry.booleanDefaults)
 
     fun toSecretsYaml(): Map<String, SecretYaml>? =
         _secrets.takeIf { it.isNotEmpty() }?.mapValues { (_, secret) ->
@@ -86,12 +82,4 @@ abstract class ReusableWorkflow(val fileName: String) {
                     ?: input.default?.let { put("default", it) }
             }
         }
-}
-
-class WorkflowInput(val name: String) {
-    val ref: InputRef = InputRef("\${{ inputs.$name }}")
-}
-
-class WorkflowSecret(val name: String) {
-    val ref: SecretRef = SecretRef("\${{ secrets.$name }}")
 }

@@ -1,5 +1,10 @@
 package dsl
 
+import dsl.core.InputRef
+import dsl.core.MatrixDef
+import dsl.core.ReusableWorkflow
+import dsl.core.WorkflowInput
+import dsl.core.WorkflowSecret
 import dsl.yaml.JobYaml
 import dsl.yaml.NeedsYaml
 import dsl.yaml.StrategyYaml

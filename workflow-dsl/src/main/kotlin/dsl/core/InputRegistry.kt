@@ -1,4 +1,4 @@
-package dsl
+package dsl.core
 
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 

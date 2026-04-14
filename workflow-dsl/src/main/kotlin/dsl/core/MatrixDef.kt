@@ -1,4 +1,4 @@
-package dsl
+package dsl.core
 
 @JvmInline
 value class MatrixRefExpr(val expression: String)
