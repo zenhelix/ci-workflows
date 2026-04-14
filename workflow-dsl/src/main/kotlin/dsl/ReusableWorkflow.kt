@@ -105,11 +105,11 @@ abstract class ReusableWorkflow(val fileName: String) {
 }
 
 class WorkflowInput(val name: String) {
-    val ref: InputRef get() = InputRef("\${{ inputs.$name }}")
+    val ref: InputRef = InputRef("\${{ inputs.$name }}")
 }
 
 class WorkflowSecret(val name: String) {
-    val ref: SecretRef get() = SecretRef("\${{ secrets.$name }}")
+    val ref: SecretRef = SecretRef("\${{ secrets.$name }}")
 }
 
 inline fun <B : ReusableWorkflowJobBuilder> reusableJob(

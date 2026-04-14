@@ -1,7 +1,5 @@
 package generate
 
-import config.DEFAULT_GO_VERSION
-import config.DEFAULT_JAVA_VERSION
 import config.SetupTool
 import workflows.adapters.check.GradleCheckAdapter
 import workflows.adapters.release.AppReleaseAdapter
@@ -31,7 +29,6 @@ fun main() {
     generateLabeler()
     generateAppDeploy()
 
-    // Adapters
     GradleCheckAdapter("app-check.yml", "Application Check").generate(outputDir)
     GradleCheckAdapter("gradle-check.yml", "Gradle Check").generate(outputDir)
     GradleCheckAdapter("gradle-plugin-check.yml", "Gradle Plugin Check").generate(outputDir)
@@ -43,8 +40,6 @@ fun main() {
         fileName = "gradle-create-tag.yml",
         workflowName = "Gradle Create Tag",
         tool = SetupTool.Gradle,
-        defaultVersion = DEFAULT_JAVA_VERSION,
-        versionDescription = "JDK version to use",
         commandInputName = "gradle-command",
         commandDescription = "Gradle check command",
         defaultCommand = "./gradlew check",
@@ -54,8 +49,6 @@ fun main() {
         fileName = "go-create-tag.yml",
         workflowName = "Go Create Tag",
         tool = SetupTool.Go,
-        defaultVersion = DEFAULT_GO_VERSION,
-        versionDescription = "Go version to use",
         commandInputName = "check-command",
         commandDescription = "Go validation command",
         defaultCommand = "make test",
@@ -65,8 +58,6 @@ fun main() {
         fileName = "gradle-manual-create-tag.yml",
         workflowName = "Gradle Manual Create Tag",
         tool = SetupTool.Gradle,
-        defaultVersion = DEFAULT_JAVA_VERSION,
-        versionDescription = "JDK version to use",
         commandInputName = "gradle-command",
         commandDescription = "Gradle check command",
         defaultCommand = "./gradlew check",
@@ -76,8 +67,6 @@ fun main() {
         fileName = "go-manual-create-tag.yml",
         workflowName = "Go Manual Create Tag",
         tool = SetupTool.Go,
-        defaultVersion = DEFAULT_GO_VERSION,
-        versionDescription = "Go version to use",
         commandInputName = "check-command",
         commandDescription = "Go validation command",
         defaultCommand = "make test",
