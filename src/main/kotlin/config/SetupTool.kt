@@ -21,6 +21,6 @@ sealed class SetupTool(
     data object Python : SetupTool("setup-python", "python-version", DEFAULT_PYTHON_VERSION, "Python version to use")
 
     companion object {
-        val entries: List<SetupTool> = listOf(Gradle, Go, Python)
+        val entries: List<SetupTool> by lazy { listOf(Gradle, Go, Python) }
     }
 }

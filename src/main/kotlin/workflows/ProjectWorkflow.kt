@@ -11,9 +11,9 @@ import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import java.io.File
 
 abstract class ProjectWorkflow(
-    override val fileName: String,
+    fileName: String,
     private val workflowName: String,
-    private val permissions: Map<Permission, Mode> = mapOf(Permission.Contents to Mode.Read),
+    private val permissions: Map<Permission, Mode>? = mapOf(Permission.Contents to Mode.Read),
 ) : ReusableWorkflow(fileName), GeneratableWorkflow {
 
     override val usesString: String = reusableWorkflow(fileName)

@@ -7,7 +7,7 @@ import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
 import workflows.ProjectWorkflow
 
-object ConventionalCommitCheckWorkflow : ProjectWorkflow("conventional-commit-check.yml", "Conventional Commit Check") {
+object ConventionalCommitCheckWorkflow : ProjectWorkflow("conventional-commit-check.yml", "Conventional Commit Check", permissions = null) {
     val allowedTypes = input("allowed-types", "Comma-separated list of allowed commit types", default = "feat,fix,refactor,docs,test,chore,perf,ci")
 
     class JobBuilder : ReusableWorkflowJobBuilder(ConventionalCommitCheckWorkflow) {
