@@ -1,11 +1,11 @@
 package workflows.adapters.release
 
 import config.DEFAULT_CHANGELOG_CONFIG
-import dsl.BuiltAdapterWorkflow
+import dsl.AdapterWorkflow
 import dsl.adapterWorkflow
 import workflows.definitions.ReleaseWorkflow
 
-val appRelease: BuiltAdapterWorkflow = adapterWorkflow("app-release.yml", "Application Release") {
+val appRelease: AdapterWorkflow = adapterWorkflow("app-release.yml", "Application Release") {
     val changelogConfig = input(
         "changelog-config",
         description = "Path to changelog configuration file",

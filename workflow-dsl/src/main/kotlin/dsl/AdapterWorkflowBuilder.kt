@@ -14,7 +14,7 @@ private val QUOTED_MAP_KEY = Regex("""^(\s*)'([^']*?)'\s*:""", RegexOption.MULTI
 private fun unquoteYamlMapKeys(yaml: String): String =
     yaml.replace(QUOTED_MAP_KEY, "$1$2:")
 
-class BuiltAdapterWorkflow(
+class AdapterWorkflow(
     val fileName: String,
     val workflowName: String,
     private val inputsYaml: Map<String, InputYaml>?,
@@ -91,7 +91,7 @@ class AdapterWorkflowBuilder(private val fileName: String, private val name: Str
         jobs += job
     }
 
-    fun build(): BuiltAdapterWorkflow = BuiltAdapterWorkflow(
+    fun build(): AdapterWorkflow = AdapterWorkflow(
         fileName = fileName,
         workflowName = name,
         inputsYaml = toInputsYaml(inputs, booleanDefaults),
@@ -103,7 +103,7 @@ fun adapterWorkflow(
     fileName: String,
     name: String,
     block: AdapterWorkflowBuilder.() -> Unit,
-): BuiltAdapterWorkflow {
+): AdapterWorkflow {
     val builder = AdapterWorkflowBuilder(fileName, name)
     builder.block()
     return builder.build()

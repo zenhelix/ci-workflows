@@ -3,7 +3,7 @@ package workflows.adapters.release
 import config.DEFAULT_CHANGELOG_CONFIG
 import config.DEFAULT_JAVA_VERSION
 import config.SetupTool
-import dsl.BuiltAdapterWorkflow
+import dsl.AdapterWorkflow
 import dsl.adapterWorkflow
 import workflows.definitions.PublishWorkflow
 import workflows.definitions.ReleaseWorkflow
@@ -14,7 +14,7 @@ fun gradleReleaseWorkflow(
     name: String,
     publishDescription: String,
     publishSecrets: PublishWorkflow.JobBuilder.() -> Unit = { passthroughAllSecrets() },
-): BuiltAdapterWorkflow = adapterWorkflow(fileName, name) {
+): AdapterWorkflow = adapterWorkflow(fileName, name) {
     val javaVersion = input(
         "java-version",
         description = "JDK version to use",

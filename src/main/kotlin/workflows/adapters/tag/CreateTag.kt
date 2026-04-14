@@ -2,7 +2,7 @@ package workflows.adapters.tag
 
 import config.DEFAULT_RELEASE_BRANCHES
 import config.SetupTool
-import dsl.BuiltAdapterWorkflow
+import dsl.AdapterWorkflow
 import dsl.adapterWorkflow
 import workflows.definitions.CreateTagWorkflow
 import workflows.setup
@@ -15,7 +15,7 @@ fun toolCreateTag(
     commandDescription: String,
     defaultCommand: String,
     defaultTagPrefix: String,
-): BuiltAdapterWorkflow = adapterWorkflow(fileName, name) {
+): AdapterWorkflow = adapterWorkflow(fileName, name) {
     val version = input(tool.versionKey, description = tool.versionDescription, default = tool.defaultVersion)
     val checkCommand = input(commandInputName, description = commandDescription, default = defaultCommand)
     val defaultBump = input("default-bump", description = "Default version bump type (major, minor, patch)", default = "patch")

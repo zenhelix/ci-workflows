@@ -1,7 +1,7 @@
 package workflows.adapters.tag
 
 import config.SetupTool
-import dsl.BuiltAdapterWorkflow
+import dsl.AdapterWorkflow
 import dsl.adapterWorkflow
 import workflows.definitions.ManualCreateTagWorkflow
 import workflows.setup
@@ -14,7 +14,7 @@ fun toolManualCreateTag(
     commandDescription: String,
     defaultCommand: String,
     defaultTagPrefix: String,
-): BuiltAdapterWorkflow = adapterWorkflow(fileName, name) {
+): AdapterWorkflow = adapterWorkflow(fileName, name) {
     val tagVersion = input("tag-version", description = "Version to tag (e.g. 1.2.3)", required = true)
     val version = input(tool.versionKey, description = tool.versionDescription, default = tool.defaultVersion)
     val checkCommand = input(commandInputName, description = commandDescription, default = defaultCommand)

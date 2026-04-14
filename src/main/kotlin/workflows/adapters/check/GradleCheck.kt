@@ -3,13 +3,13 @@ package workflows.adapters.check
 import config.DEFAULT_JAVA_VERSION
 import config.JAVA_VERSION_MATRIX_EXPR
 import config.SetupTool
-import dsl.BuiltAdapterWorkflow
+import dsl.AdapterWorkflow
 import dsl.adapterWorkflow
 import workflows.definitions.CheckWorkflow
 import workflows.definitions.ConventionalCommitCheckWorkflow
 import workflows.setup
 
-fun gradleCheck(fileName: String, name: String): BuiltAdapterWorkflow = adapterWorkflow(fileName, name) {
+fun gradleCheck(fileName: String, name: String): AdapterWorkflow = adapterWorkflow(fileName, name) {
     val javaVersion = input(
         "java-version",
         description = "JDK version to use",
