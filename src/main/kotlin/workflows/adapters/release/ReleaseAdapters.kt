@@ -1,0 +1,63 @@
+package workflows.adapters.release
+
+import config.DEFAULT_CHANGELOG_CONFIG
+import config.DEFAULT_JAVA_VERSION
+import config.SetupTool
+import dsl.builder.AdapterWorkflow
+import dsl.builder.adapterWorkflow
+import workflows.base.PublishWorkflow
+import workflows.base.ReleaseWorkflow
+import workflows.support.setup
+
+object ReleaseAdapters {
+    val app: AdapterWorkflow = adapterWorkflow("app-release.yml", "Application Release") {
+        val changelogConfig = input("changelog-config", description = "Path to changelog configuration file", default = DEFAULT_CHANGELOG_CONFIG)
+        val draft = booleanInput("draft", description = "Create release as draft (default true for apps)", default = true)
+
+        ReleaseWorkflow.job("release") {
+            ReleaseWorkflow.changelogConfig from changelogConfig
+            ReleaseWorkflow.draft from draft
+        }
+    }
+
+    val gradlePlugin = gradleRelease(
+        "gradle-plugin-release.yml", "Gradle Plugin Release",
+        "Gradle publish command (publishes to both Maven Central and Gradle Portal)",
+    )
+
+    val kotlinLibrary = gradleRelease(
+        "kotlin-library-release.yml", "Kotlin Library Release",
+        "Gradle publish command for Maven Central",
+    ) {
+        passthroughSecrets(
+            PublishWorkflow.mavenSonatypeUsername,
+            PublishWorkflow.mavenSonatypeToken,
+            PublishWorkflow.mavenSonatypeSigningKeyId,
+            PublishWorkflow.mavenSonatypeSigningPubKeyAsciiArmored,
+            PublishWorkflow.mavenSonatypeSigningKeyAsciiArmored,
+            PublishWorkflow.mavenSonatypeSigningPassword,
+        )
+    }
+
+    private fun gradleRelease(
+        fileName: String,
+        name: String,
+        publishDescription: String,
+        publishSecrets: PublishWorkflow.JobBuilder.() -> Unit = { passthroughAllSecrets() },
+    ): AdapterWorkflow = adapterWorkflow(fileName, name) {
+        val javaVersion = input("java-version", description = "JDK version to use", default = DEFAULT_JAVA_VERSION)
+        val publishCommand = input("publish-command", description = publishDescription, required = true)
+        val changelogConfig = input("changelog-config", description = "Path to changelog configuration file", default = DEFAULT_CHANGELOG_CONFIG)
+
+        ReleaseWorkflow.job("release") {
+            ReleaseWorkflow.changelogConfig from changelogConfig
+        }
+
+        PublishWorkflow.job("publish") {
+            needs("release")
+            setup(SetupTool.Gradle, javaVersion)
+            PublishWorkflow.publishCommand from publishCommand
+            publishSecrets()
+        }
+    }
+}
