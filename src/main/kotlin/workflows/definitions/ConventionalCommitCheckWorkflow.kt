@@ -1,7 +1,7 @@
 package workflows.definitions
 
 import dsl.ReusableWorkflowJobBuilder
-import dsl.inputRefProp
+import dsl.refInput
 import workflows.ProjectWorkflow
 
 object ConventionalCommitCheckWorkflow : ProjectWorkflow("conventional-commit-check.yml") {
@@ -13,6 +13,6 @@ object ConventionalCommitCheckWorkflow : ProjectWorkflow("conventional-commit-ch
     )
 
     class JobBuilder : ReusableWorkflowJobBuilder(ConventionalCommitCheckWorkflow) {
-        var allowedTypes by inputRefProp(ConventionalCommitCheckWorkflow.allowedTypes)
+        var allowedTypes by refInput(ConventionalCommitCheckWorkflow.allowedTypes)
     }
 }

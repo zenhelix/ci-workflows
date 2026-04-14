@@ -3,8 +3,8 @@ package workflows.definitions
 import config.DEFAULT_RELEASE_BRANCHES
 import dsl.ReusableWorkflowJobBuilder
 import dsl.SetupConfigurable
-import dsl.inputProp
-import dsl.inputRefProp
+import dsl.stringInput
+import dsl.refInput
 import workflows.ProjectWorkflow
 
 object CreateTagWorkflow : ProjectWorkflow("create-tag.yml") {
@@ -49,11 +49,11 @@ object CreateTagWorkflow : ProjectWorkflow("create-tag.yml") {
     )
 
     class JobBuilder : ReusableWorkflowJobBuilder(CreateTagWorkflow), SetupConfigurable {
-        override var setupAction by inputProp(CreateTagWorkflow.setupAction)
-        override var setupParams by inputProp(CreateTagWorkflow.setupParams)
-        var checkCommand by inputRefProp(CreateTagWorkflow.checkCommand)
-        var defaultBump by inputRefProp(CreateTagWorkflow.defaultBump)
-        var tagPrefix by inputRefProp(CreateTagWorkflow.tagPrefix)
-        var releaseBranches by inputRefProp(CreateTagWorkflow.releaseBranches)
+        override var setupAction by stringInput(CreateTagWorkflow.setupAction)
+        override var setupParams by stringInput(CreateTagWorkflow.setupParams)
+        var checkCommand by refInput(CreateTagWorkflow.checkCommand)
+        var defaultBump by refInput(CreateTagWorkflow.defaultBump)
+        var tagPrefix by refInput(CreateTagWorkflow.tagPrefix)
+        var releaseBranches by refInput(CreateTagWorkflow.releaseBranches)
     }
 }

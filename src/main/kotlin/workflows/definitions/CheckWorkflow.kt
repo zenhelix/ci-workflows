@@ -2,8 +2,8 @@ package workflows.definitions
 
 import dsl.ReusableWorkflowJobBuilder
 import dsl.SetupConfigurable
-import dsl.inputProp
-import dsl.inputRefProp
+import dsl.stringInput
+import dsl.refInput
 import workflows.ProjectWorkflow
 
 object CheckWorkflow : ProjectWorkflow("check.yml") {
@@ -25,8 +25,8 @@ object CheckWorkflow : ProjectWorkflow("check.yml") {
     )
 
     class JobBuilder : ReusableWorkflowJobBuilder(CheckWorkflow), SetupConfigurable {
-        override var setupAction by inputProp(CheckWorkflow.setupAction)
-        override var setupParams by inputProp(CheckWorkflow.setupParams)
-        var checkCommand by inputRefProp(CheckWorkflow.checkCommand)
+        override var setupAction by stringInput(CheckWorkflow.setupAction)
+        override var setupParams by stringInput(CheckWorkflow.setupParams)
+        var checkCommand by refInput(CheckWorkflow.checkCommand)
     }
 }

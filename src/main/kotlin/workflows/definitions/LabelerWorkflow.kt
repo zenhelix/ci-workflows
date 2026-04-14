@@ -1,7 +1,7 @@
 package workflows.definitions
 
 import dsl.ReusableWorkflowJobBuilder
-import dsl.inputRefProp
+import dsl.refInput
 import workflows.ProjectWorkflow
 
 object LabelerWorkflow : ProjectWorkflow("labeler.yml") {
@@ -13,6 +13,6 @@ object LabelerWorkflow : ProjectWorkflow("labeler.yml") {
     )
 
     class JobBuilder : ReusableWorkflowJobBuilder(LabelerWorkflow) {
-        var configPath by inputRefProp(LabelerWorkflow.configPath)
+        var configPath by refInput(LabelerWorkflow.configPath)
     }
 }

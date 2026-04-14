@@ -2,8 +2,8 @@ package workflows.definitions
 
 import dsl.ReusableWorkflowJobBuilder
 import dsl.SetupConfigurable
-import dsl.inputProp
-import dsl.inputRefProp
+import dsl.stringInput
+import dsl.refInput
 import workflows.ProjectWorkflow
 
 object PublishWorkflow : ProjectWorkflow("publish.yml") {
@@ -57,8 +57,8 @@ object PublishWorkflow : ProjectWorkflow("publish.yml") {
     )
 
     class JobBuilder : ReusableWorkflowJobBuilder(PublishWorkflow), SetupConfigurable {
-        override var setupAction by inputProp(PublishWorkflow.setupAction)
-        override var setupParams by inputProp(PublishWorkflow.setupParams)
-        var publishCommand by inputRefProp(PublishWorkflow.publishCommand)
+        override var setupAction by stringInput(PublishWorkflow.setupAction)
+        override var setupParams by stringInput(PublishWorkflow.setupParams)
+        var publishCommand by refInput(PublishWorkflow.publishCommand)
     }
 }

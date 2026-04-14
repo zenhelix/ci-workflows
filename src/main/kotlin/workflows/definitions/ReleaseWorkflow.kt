@@ -2,7 +2,7 @@ package workflows.definitions
 
 import config.DEFAULT_CHANGELOG_CONFIG
 import dsl.ReusableWorkflowJobBuilder
-import dsl.inputRefProp
+import dsl.refInput
 import workflows.ProjectWorkflow
 
 object ReleaseWorkflow : ProjectWorkflow("release.yml") {
@@ -19,7 +19,7 @@ object ReleaseWorkflow : ProjectWorkflow("release.yml") {
     )
 
     class JobBuilder : ReusableWorkflowJobBuilder(ReleaseWorkflow) {
-        var changelogConfig by inputRefProp(ReleaseWorkflow.changelogConfig)
-        var draft by inputRefProp(ReleaseWorkflow.draft)
+        var changelogConfig by refInput(ReleaseWorkflow.changelogConfig)
+        var draft by refInput(ReleaseWorkflow.draft)
     }
 }
