@@ -5,8 +5,8 @@ import config.DEFAULT_JAVA_VERSION
 import config.SetupTool
 import dsl.AdapterWorkflow
 import dsl.adapterWorkflow
-import workflows.definitions.PublishWorkflow
-import workflows.definitions.ReleaseWorkflow
+import workflows.PublishWorkflow
+import workflows.ReleaseWorkflow
 import workflows.helpers.setup
 
 fun gradleReleaseWorkflow(

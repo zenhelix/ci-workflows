@@ -3,7 +3,7 @@ package workflows.adapters.release
 import config.DEFAULT_CHANGELOG_CONFIG
 import dsl.AdapterWorkflow
 import dsl.adapterWorkflow
-import workflows.definitions.ReleaseWorkflow
+import workflows.ReleaseWorkflow
 
 val appRelease: AdapterWorkflow = adapterWorkflow("app-release.yml", "Application Release") {
     val changelogConfig = input(

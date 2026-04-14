@@ -1,4 +1,4 @@
-package workflows.definitions
+package workflows
 
 import dsl.AdapterWorkflowBuilder
 import dsl.ReusableWorkflowJobBuilder
@@ -6,6 +6,14 @@ import dsl.SetupConfigurable
 import dsl.stringInput
 import dsl.refInput
 import workflows.core.ProjectWorkflow
+import workflows.helpers.conditionalSetupSteps
+import io.github.typesafegithub.workflows.domain.Mode
+import io.github.typesafegithub.workflows.domain.Permission
+import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
+import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
+import io.github.typesafegithub.workflows.dsl.workflow
+import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
+import java.io.File
 
 object PublishWorkflow : ProjectWorkflow("publish.yml") {
 
@@ -71,5 +79,43 @@ object PublishWorkflow : ProjectWorkflow("publish.yml") {
     context(builder: AdapterWorkflowBuilder)
     fun job(id: String, block: JobBuilder.() -> Unit = {}) {
         builder.registerJob(buildJob(id, ::JobBuilder, block))
+    }
+
+    fun generate() {
+        workflow(
+            name = "Publish",
+            on = listOf(
+                WorkflowCall(
+                    inputs = inputs,
+                    secrets = secrets,
+                ),
+            ),
+            sourceFile = File("src/main/kotlin/workflows/PublishWorkflow.kt"),
+            targetFileName = "publish.yml",
+            consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
+            permissions = mapOf(Permission.Contents to Mode.Read),
+        ) {
+            job(
+                id = "publish",
+                name = "Publish",
+                runsOn = UbuntuLatest,
+            ) {
+                conditionalSetupSteps()
+                run(
+                    name = "Publish",
+                    command = publishCommand.ref.expression,
+                    env = linkedMapOf(
+                        "GRADLE_PUBLISH_KEY" to gradlePublishKey.ref.expression,
+                        "GRADLE_PUBLISH_SECRET" to gradlePublishSecret.ref.expression,
+                        "ORG_GRADLE_PROJECT_signingKeyId" to mavenSonatypeSigningKeyId.ref.expression,
+                        "ORG_GRADLE_PROJECT_signingPublicKey" to mavenSonatypeSigningPubKeyAsciiArmored.ref.expression,
+                        "ORG_GRADLE_PROJECT_signingKey" to mavenSonatypeSigningKeyAsciiArmored.ref.expression,
+                        "ORG_GRADLE_PROJECT_signingPassword" to mavenSonatypeSigningPassword.ref.expression,
+                        "MAVEN_SONATYPE_USERNAME" to mavenSonatypeUsername.ref.expression,
+                        "MAVEN_SONATYPE_TOKEN" to mavenSonatypeToken.ref.expression,
+                    ),
+                )
+            }
+        }
     }
 }

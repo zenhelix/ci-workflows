@@ -1,20 +1,19 @@
 package generate
 
 import config.SetupTool
+import workflows.CheckWorkflow
+import workflows.ConventionalCommitCheckWorkflow
+import workflows.CreateTagWorkflow
+import workflows.ManualCreateTagWorkflow
+import workflows.ReleaseWorkflow
+import workflows.PublishWorkflow
+import workflows.LabelerWorkflow
+import workflows.AppDeployWorkflow
 import workflows.adapters.check.gradleCheck
 import workflows.adapters.release.appRelease
 import workflows.adapters.release.gradleReleaseWorkflow
 import workflows.adapters.tag.toolCreateTag
 import workflows.adapters.tag.toolManualCreateTag
-import workflows.base.generateAppDeploy
-import workflows.base.generateCheck
-import workflows.base.generateConventionalCommitCheck
-import workflows.base.generateCreateTag
-import workflows.base.generateLabeler
-import workflows.base.generateManualCreateTag
-import workflows.base.generatePublish
-import workflows.base.generateRelease
-import workflows.definitions.PublishWorkflow
 import java.io.File
 
 fun main() {
@@ -25,14 +24,14 @@ fun main() {
 }
 
 private fun generateBaseWorkflows() {
-    generateCheck()
-    generateConventionalCommitCheck()
-    generateCreateTag()
-    generateManualCreateTag()
-    generateRelease()
-    generatePublish()
-    generateLabeler()
-    generateAppDeploy()
+    CheckWorkflow.generate()
+    ConventionalCommitCheckWorkflow.generate()
+    CreateTagWorkflow.generate()
+    ManualCreateTagWorkflow.generate()
+    ReleaseWorkflow.generate()
+    PublishWorkflow.generate()
+    LabelerWorkflow.generate()
+    AppDeployWorkflow.generate()
 }
 
 private fun generateAdapterWorkflows(outputDir: File) {

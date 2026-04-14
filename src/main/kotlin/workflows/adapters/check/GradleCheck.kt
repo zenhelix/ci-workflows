@@ -5,8 +5,8 @@ import config.JAVA_VERSION_MATRIX_EXPR
 import config.SetupTool
 import dsl.AdapterWorkflow
 import dsl.adapterWorkflow
-import workflows.definitions.CheckWorkflow
-import workflows.definitions.ConventionalCommitCheckWorkflow
+import workflows.CheckWorkflow
+import workflows.ConventionalCommitCheckWorkflow
 import workflows.helpers.setup
 
 fun gradleCheck(fileName: String, name: String): AdapterWorkflow = adapterWorkflow(fileName, name) {

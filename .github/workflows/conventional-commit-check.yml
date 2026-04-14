@@ -1,4 +1,4 @@
-# This file was generated using Kotlin DSL (src/main/kotlin/workflows/base/ConventionalCommitCheck.kt).
+# This file was generated using Kotlin DSL (src/main/kotlin/workflows/ConventionalCommitCheckWorkflow.kt).
 # If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
 # Generated with https://github.com/typesafegithub/github-workflows-kt
 

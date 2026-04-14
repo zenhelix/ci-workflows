@@ -1,5 +1,7 @@
-package workflows.definitions
+package workflows
 
+import actions.CreateAppTokenAction
+import actions.GithubTagAction
 import config.DEFAULT_RELEASE_BRANCHES
 import dsl.AdapterWorkflowBuilder
 import dsl.ReusableWorkflowJobBuilder
@@ -7,6 +9,14 @@ import dsl.SetupConfigurable
 import dsl.stringInput
 import dsl.refInput
 import workflows.core.ProjectWorkflow
+import workflows.helpers.conditionalSetupSteps
+import io.github.typesafegithub.workflows.domain.Mode
+import io.github.typesafegithub.workflows.domain.Permission
+import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
+import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
+import io.github.typesafegithub.workflows.dsl.workflow
+import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
+import java.io.File
 
 object CreateTagWorkflow : ProjectWorkflow("create-tag.yml") {
 
@@ -66,5 +76,50 @@ object CreateTagWorkflow : ProjectWorkflow("create-tag.yml") {
     context(builder: AdapterWorkflowBuilder)
     fun job(id: String, block: JobBuilder.() -> Unit = {}) {
         builder.registerJob(buildJob(id, ::JobBuilder, block))
+    }
+
+    fun generate() {
+        workflow(
+            name = "Create Tag",
+            on = listOf(
+                WorkflowCall(
+                    inputs = inputs,
+                    secrets = secrets,
+                ),
+            ),
+            sourceFile = File("src/main/kotlin/workflows/CreateTagWorkflow.kt"),
+            targetFileName = "create-tag.yml",
+            consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
+            permissions = mapOf(Permission.Contents to Mode.Write),
+        ) {
+            job(
+                id = "create_tag",
+                name = "Create Tag",
+                runsOn = UbuntuLatest,
+            ) {
+                conditionalSetupSteps(fetchDepth = "0")
+                run(
+                    name = "Run validation",
+                    command = checkCommand.ref.expression,
+                )
+                uses(
+                    name = "Generate App Token",
+                    action = CreateAppTokenAction(
+                        appId = appId.ref.expression,
+                        appPrivateKey = appPrivateKey.ref.expression,
+                    ),
+                    id = "app-token",
+                )
+                uses(
+                    name = "Bump version and push tag",
+                    action = GithubTagAction(
+                        githubToken = "\${{ steps.app-token.outputs.token }}",
+                        defaultBump = defaultBump.ref.expression,
+                        tagPrefix = tagPrefix.ref.expression,
+                        releaseBranches = releaseBranches.ref.expression,
+                    ),
+                )
+            }
+        }
     }
 }

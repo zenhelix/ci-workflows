@@ -4,7 +4,7 @@ import config.DEFAULT_RELEASE_BRANCHES
 import config.SetupTool
 import dsl.AdapterWorkflow
 import dsl.adapterWorkflow
-import workflows.definitions.CreateTagWorkflow
+import workflows.CreateTagWorkflow
 import workflows.helpers.setup
 
 fun toolCreateTag(

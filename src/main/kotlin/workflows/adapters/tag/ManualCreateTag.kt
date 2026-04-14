@@ -3,7 +3,7 @@ package workflows.adapters.tag
 import config.SetupTool
 import dsl.AdapterWorkflow
 import dsl.adapterWorkflow
-import workflows.definitions.ManualCreateTagWorkflow
+import workflows.ManualCreateTagWorkflow
 import workflows.helpers.setup
 
 fun toolManualCreateTag(
