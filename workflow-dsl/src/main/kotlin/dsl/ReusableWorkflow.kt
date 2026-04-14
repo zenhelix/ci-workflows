@@ -108,13 +108,3 @@ class WorkflowSecret(val name: String) {
     val ref: SecretRef = SecretRef("\${{ secrets.$name }}")
 }
 
-inline fun <B : ReusableWorkflowJobBuilder> reusableJob(
-    id: String,
-    uses: ReusableWorkflow,
-    builderFactory: () -> B,
-    block: B.() -> Unit = {},
-): ReusableWorkflowJobDef {
-    val builder = builderFactory()
-    builder.block()
-    return builder.build(id)
-}
