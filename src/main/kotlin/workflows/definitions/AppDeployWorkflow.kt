@@ -31,10 +31,15 @@ object AppDeployWorkflow : ProjectWorkflow("app-deploy.yml") {
     )
 
     class JobBuilder : ReusableWorkflowJobBuilder(AppDeployWorkflow), SetupConfigurable {
-        override var setupAction by stringInput(AppDeployWorkflow.setupAction)
-        override var setupParams by stringInput(AppDeployWorkflow.setupParams)
+        var setupAction by stringInput(AppDeployWorkflow.setupAction)
+        var setupParams by stringInput(AppDeployWorkflow.setupParams)
         var deployCommand by refInput(AppDeployWorkflow.deployCommand)
         var tag by refInput(AppDeployWorkflow.tag)
+
+        override fun applySetup(action: String, params: String) {
+            setupAction = action
+            setupParams = params
+        }
     }
 
     context(builder: AdapterWorkflowBuilder)

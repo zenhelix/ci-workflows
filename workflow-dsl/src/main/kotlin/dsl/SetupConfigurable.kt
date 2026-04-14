@@ -1,8 +1,7 @@
 package dsl
 
 interface SetupConfigurable {
-    var setupAction: String
-    var setupParams: String
+    fun applySetup(action: String, params: String)
 
     companion object {
         const val SETUP_ACTION_DESCRIPTION = "Setup action to use: gradle, go, python"

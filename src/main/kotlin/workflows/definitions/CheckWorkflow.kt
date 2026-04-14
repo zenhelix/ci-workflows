@@ -26,9 +26,14 @@ object CheckWorkflow : ProjectWorkflow("check.yml") {
     )
 
     class JobBuilder : ReusableWorkflowJobBuilder(CheckWorkflow), SetupConfigurable {
-        override var setupAction by stringInput(CheckWorkflow.setupAction)
-        override var setupParams by stringInput(CheckWorkflow.setupParams)
+        var setupAction by stringInput(CheckWorkflow.setupAction)
+        var setupParams by stringInput(CheckWorkflow.setupParams)
         var checkCommand by refInput(CheckWorkflow.checkCommand)
+
+        override fun applySetup(action: String, params: String) {
+            setupAction = action
+            setupParams = params
+        }
     }
 
     context(builder: AdapterWorkflowBuilder)

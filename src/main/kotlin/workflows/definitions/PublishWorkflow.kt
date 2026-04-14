@@ -58,9 +58,14 @@ object PublishWorkflow : ProjectWorkflow("publish.yml") {
     )
 
     class JobBuilder : ReusableWorkflowJobBuilder(PublishWorkflow), SetupConfigurable {
-        override var setupAction by stringInput(PublishWorkflow.setupAction)
-        override var setupParams by stringInput(PublishWorkflow.setupParams)
+        var setupAction by stringInput(PublishWorkflow.setupAction)
+        var setupParams by stringInput(PublishWorkflow.setupParams)
         var publishCommand by refInput(PublishWorkflow.publishCommand)
+
+        override fun applySetup(action: String, params: String) {
+            setupAction = action
+            setupParams = params
+        }
     }
 
     context(builder: AdapterWorkflowBuilder)

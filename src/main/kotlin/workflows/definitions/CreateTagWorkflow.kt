@@ -50,12 +50,17 @@ object CreateTagWorkflow : ProjectWorkflow("create-tag.yml") {
     )
 
     class JobBuilder : ReusableWorkflowJobBuilder(CreateTagWorkflow), SetupConfigurable {
-        override var setupAction by stringInput(CreateTagWorkflow.setupAction)
-        override var setupParams by stringInput(CreateTagWorkflow.setupParams)
+        var setupAction by stringInput(CreateTagWorkflow.setupAction)
+        var setupParams by stringInput(CreateTagWorkflow.setupParams)
         var checkCommand by refInput(CreateTagWorkflow.checkCommand)
         var defaultBump by refInput(CreateTagWorkflow.defaultBump)
         var tagPrefix by refInput(CreateTagWorkflow.tagPrefix)
         var releaseBranches by refInput(CreateTagWorkflow.releaseBranches)
+
+        override fun applySetup(action: String, params: String) {
+            setupAction = action
+            setupParams = params
+        }
     }
 
     context(builder: AdapterWorkflowBuilder)

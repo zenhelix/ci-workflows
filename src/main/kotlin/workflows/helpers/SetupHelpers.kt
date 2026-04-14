@@ -22,16 +22,13 @@ fun JobBuilder<*>.conditionalSetupSteps(fetchDepth: String? = null) {
 }
 
 fun SetupConfigurable.setup(tool: SetupTool, versionExpr: MatrixRefExpr) {
-    setupAction = tool.id
-    setupParams = tool.toParamsJson(versionExpr)
+    applySetup(tool.id, tool.toParamsJson(versionExpr))
 }
 
 fun SetupConfigurable.setup(tool: SetupTool, versionRef: String) {
-    setupAction = tool.id
-    setupParams = tool.toParamsJson(versionRef)
+    applySetup(tool.id, tool.toParamsJson(versionRef))
 }
 
 fun SetupConfigurable.setup(tool: SetupTool, versionInput: WorkflowInput) {
-    setupAction = tool.id
-    setupParams = tool.toParamsJson(versionInput.ref.expression)
+    applySetup(tool.id, tool.toParamsJson(versionInput.ref.expression))
 }
