@@ -2,9 +2,9 @@ package generate
 
 import config.SetupTool
 import workflows.adapters.check.gradleCheck
-import workflows.adapters.release.AppReleaseAdapter
-import workflows.adapters.release.GradlePluginReleaseAdapter
-import workflows.adapters.release.KotlinLibraryReleaseAdapter
+import workflows.adapters.release.appRelease
+import workflows.adapters.release.gradleReleaseWorkflow
+import workflows.definitions.PublishWorkflow
 import workflows.adapters.tag.toolCreateTag
 import workflows.adapters.tag.toolManualCreateTag
 import workflows.base.generateAppDeploy
@@ -33,9 +33,27 @@ fun main() {
     gradleCheck("gradle-check.yml", "Gradle Check").generate(outputDir)
     gradleCheck("gradle-plugin-check.yml", "Gradle Plugin Check").generate(outputDir)
     gradleCheck("kotlin-library-check.yml", "Kotlin Library Check").generate(outputDir)
-    AppReleaseAdapter.generate(outputDir)
-    GradlePluginReleaseAdapter.generate(outputDir)
-    KotlinLibraryReleaseAdapter.generate(outputDir)
+    appRelease.generate(outputDir)
+    gradleReleaseWorkflow(
+        fileName = "gradle-plugin-release.yml",
+        name = "Gradle Plugin Release",
+        publishDescription = "Gradle publish command (publishes to both Maven Central and Gradle Portal)",
+    ).generate(outputDir)
+    gradleReleaseWorkflow(
+        fileName = "kotlin-library-release.yml",
+        name = "Kotlin Library Release",
+        publishDescription = "Gradle publish command for Maven Central",
+        publishSecrets = {
+            passthroughSecrets(
+                PublishWorkflow.mavenSonatypeUsername,
+                PublishWorkflow.mavenSonatypeToken,
+                PublishWorkflow.mavenSonatypeSigningKeyId,
+                PublishWorkflow.mavenSonatypeSigningPubKeyAsciiArmored,
+                PublishWorkflow.mavenSonatypeSigningKeyAsciiArmored,
+                PublishWorkflow.mavenSonatypeSigningPassword,
+            )
+        },
+    ).generate(outputDir)
     toolCreateTag(
         fileName = "gradle-create-tag.yml",
         name = "Gradle Create Tag",

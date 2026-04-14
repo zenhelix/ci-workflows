@@ -1,14 +1,11 @@
 package workflows.adapters.release
 
 import config.DEFAULT_CHANGELOG_CONFIG
-import dsl.ReusableWorkflowJobDef
-import dsl.reusableJob
-import workflows.ProjectAdapterWorkflow
+import dsl.BuiltAdapterWorkflow
+import dsl.adapterWorkflow
 import workflows.definitions.ReleaseWorkflow
 
-object AppReleaseAdapter : ProjectAdapterWorkflow("app-release.yml") {
-    override val workflowName = "Application Release"
-
+val appRelease: BuiltAdapterWorkflow = adapterWorkflow("app-release.yml", "Application Release") {
     val changelogConfig = input(
         "changelog-config",
         description = "Path to changelog configuration file",
@@ -20,10 +17,8 @@ object AppReleaseAdapter : ProjectAdapterWorkflow("app-release.yml") {
         default = true,
     )
 
-    override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
-        reusableJob(id = "release", uses = ReleaseWorkflow, ReleaseWorkflow::JobBuilder) {
-            changelogConfig = this@AppReleaseAdapter.changelogConfig.ref
-            draft = this@AppReleaseAdapter.draft.ref
-        },
-    )
+    ReleaseWorkflow.job("release") {
+        ReleaseWorkflow.changelogConfig from changelogConfig
+        ReleaseWorkflow.draft from draft
+    }
 }
