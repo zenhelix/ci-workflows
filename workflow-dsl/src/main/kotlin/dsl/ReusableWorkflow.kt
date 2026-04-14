@@ -86,16 +86,12 @@ abstract class ReusableWorkflow(val fileName: String) {
 
     private fun inputsAsRawMap(): Map<String, Map<String, Any?>> =
         _inputs.mapValues { (name, input) ->
-            buildMap<String, Any?> {
+            buildMap {
                 put("description", input.description)
                 put("type", input.type.name.lowercase())
                 put("required", input.required)
-                val boolDefault = _booleanDefaults[name]
-                if (boolDefault != null) {
-                    put("default", boolDefault)
-                } else if (input.default != null) {
-                    put("default", input.default)
-                }
+                _booleanDefaults[name]?.let { put("default", it) }
+                    ?: input.default?.let { put("default", it) }
             }
         }
 }
