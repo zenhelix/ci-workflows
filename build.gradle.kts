@@ -24,3 +24,9 @@ dependencies {
     implementation("softprops:action-gh-release:v2")
     implementation("actions:labeler:v6")
 }
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
+}

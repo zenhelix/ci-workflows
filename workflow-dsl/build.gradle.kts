@@ -12,3 +12,9 @@ dependencies {
     implementation(libs.kaml)
     implementation(libs.kotlinx.serialization.core)
 }
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
+}
