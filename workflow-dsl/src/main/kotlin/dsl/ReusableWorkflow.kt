@@ -11,9 +11,8 @@ value class InputRef(val expression: String)
 value class SecretRef(val expression: String)
 
 abstract class ReusableWorkflow(val fileName: String) {
-    private val _inputs = linkedMapOf<String, WorkflowCall.Input>()
+    private val inputRegistry = InputRegistry()
     private val _secrets = mutableMapOf<String, WorkflowCall.Secret>()
-    private val _booleanDefaults = mutableMapOf<String, Boolean>()
 
     protected fun input(
         name: String,
@@ -21,21 +20,14 @@ abstract class ReusableWorkflow(val fileName: String) {
         required: Boolean = false,
         type: WorkflowCall.Type = WorkflowCall.Type.String,
         default: String? = null,
-    ): WorkflowInput {
-        _inputs[name] = WorkflowCall.Input(description, required, type, default)
-        return WorkflowInput(name)
-    }
+    ): WorkflowInput = inputRegistry.input(name, description, required, type, default)
 
     protected fun booleanInput(
         name: String,
         description: String,
         required: Boolean = false,
         default: Boolean? = null,
-    ): WorkflowInput {
-        _inputs[name] = WorkflowCall.Input(description, required, WorkflowCall.Type.Boolean, null)
-        if (default != null) _booleanDefaults[name] = default
-        return WorkflowInput(name)
-    }
+    ): WorkflowInput = inputRegistry.booleanInput(name, description, required, default)
 
     protected fun secret(
         name: String,
@@ -46,16 +38,16 @@ abstract class ReusableWorkflow(val fileName: String) {
         return WorkflowSecret(name)
     }
 
-    val inputs: Map<String, WorkflowCall.Input> get() = _inputs
+    val inputs: Map<String, WorkflowCall.Input> get() = inputRegistry.inputs
     val secrets: Map<String, WorkflowCall.Secret> get() = _secrets
     val requiredInputNames: Set<String> by lazy {
-        _inputs.filter { (_, input) -> input.required }.keys
+        inputRegistry.inputs.filter { (_, input) -> input.required }.keys
     }
 
     abstract val usesString: String
 
     fun toInputsYaml(): Map<String, InputYaml>? =
-        toInputsYaml(_inputs, _booleanDefaults)
+        toInputsYaml(inputRegistry.inputs, inputRegistry.booleanDefaults)
 
     fun toSecretsYaml(): Map<String, SecretYaml>? =
         _secrets.takeIf { it.isNotEmpty() }?.mapValues { (_, secret) ->
@@ -64,8 +56,8 @@ abstract class ReusableWorkflow(val fileName: String) {
 
     fun toWorkflowCallTrigger(): WorkflowCall {
         val secretsMap = _secrets.takeIf { it.isNotEmpty() }?.toMap()
-        return if (_booleanDefaults.isEmpty()) {
-            WorkflowCall(inputs = _inputs.toMap(), secrets = secretsMap)
+        return if (inputRegistry.booleanDefaults.isEmpty()) {
+            WorkflowCall(inputs = inputRegistry.inputs.toMap(), secrets = secretsMap)
         } else {
             WorkflowCall(
                 secrets = secretsMap,
@@ -85,12 +77,12 @@ abstract class ReusableWorkflow(val fileName: String) {
     }
 
     private fun inputsAsRawMap(): Map<String, Map<String, Any?>> =
-        _inputs.mapValues { (name, input) ->
+        inputRegistry.inputs.mapValues { (name, input) ->
             buildMap {
                 put("description", input.description)
                 put("type", input.type.name.lowercase())
                 put("required", input.required)
-                _booleanDefaults[name]?.let { put("default", it) }
+                inputRegistry.booleanDefaults[name]?.let { put("default", it) }
                     ?: input.default?.let { put("default", it) }
             }
         }
@@ -103,4 +95,3 @@ class WorkflowInput(val name: String) {
 class WorkflowSecret(val name: String) {
     val ref: SecretRef = SecretRef("\${{ secrets.$name }}")
 }
-

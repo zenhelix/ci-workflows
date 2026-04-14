@@ -1,33 +1,22 @@
 package dsl
 
-import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-
 class AdapterWorkflowBuilder(private val fileName: String, private val name: String) {
-    private val inputs = linkedMapOf<String, WorkflowCall.Input>()
-    private val booleanDefaults = mutableMapOf<String, Boolean>()
+    private val inputRegistry = InputRegistry()
     private val jobs = mutableListOf<ReusableWorkflowJobDef>()
 
     fun input(
         name: String,
         description: String,
         required: Boolean = false,
-        type: WorkflowCall.Type = WorkflowCall.Type.String,
         default: String? = null,
-    ): WorkflowInput {
-        inputs[name] = WorkflowCall.Input(description, required, type, default)
-        return WorkflowInput(name)
-    }
+    ): WorkflowInput = inputRegistry.input(name, description, required = required, default = default)
 
     fun booleanInput(
         name: String,
         description: String,
         required: Boolean = false,
         default: Boolean? = null,
-    ): WorkflowInput {
-        inputs[name] = WorkflowCall.Input(description, required, WorkflowCall.Type.Boolean, null)
-        default?.let { booleanDefaults[name] = it }
-        return WorkflowInput(name)
-    }
+    ): WorkflowInput = inputRegistry.booleanInput(name, description, required, default)
 
     fun matrixRef(key: String) = MatrixRef(key)
 
@@ -40,7 +29,7 @@ class AdapterWorkflowBuilder(private val fileName: String, private val name: Str
     fun build(): AdapterWorkflow = AdapterWorkflow(
         fileName = fileName,
         workflowName = name,
-        inputsYaml = toInputsYaml(inputs, booleanDefaults),
+        inputsYaml = toInputsYaml(inputRegistry.inputs, inputRegistry.booleanDefaults),
         jobs = jobs.toList(),
     )
 }
