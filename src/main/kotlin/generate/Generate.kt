@@ -39,8 +39,48 @@ fun main() {
     AppReleaseAdapter.generate(outputDir)
     GradlePluginReleaseAdapter.generate(outputDir)
     KotlinLibraryReleaseAdapter.generate(outputDir)
-    CreateTagAdapter("gradle-create-tag.yml", "Gradle Create Tag", SetupTool.Gradle, DEFAULT_JAVA_VERSION, "gradle-command", "./gradlew check", "").generate(outputDir)
-    CreateTagAdapter("go-create-tag.yml", "Go Create Tag", SetupTool.Go, DEFAULT_GO_VERSION, "check-command", "make test", "v").generate(outputDir)
-    ManualCreateTagAdapter("gradle-manual-create-tag.yml", "Gradle Manual Create Tag", SetupTool.Gradle, DEFAULT_JAVA_VERSION, "gradle-command", "./gradlew check", "").generate(outputDir)
-    ManualCreateTagAdapter("go-manual-create-tag.yml", "Go Manual Create Tag", SetupTool.Go, DEFAULT_GO_VERSION, "check-command", "make test", "v").generate(outputDir)
+    CreateTagAdapter(
+        fileName = "gradle-create-tag.yml",
+        workflowName = "Gradle Create Tag",
+        tool = SetupTool.Gradle,
+        defaultVersion = DEFAULT_JAVA_VERSION,
+        versionDescription = "JDK version to use",
+        commandInputName = "gradle-command",
+        commandDescription = "Gradle check command",
+        defaultCommand = "./gradlew check",
+        defaultTagPrefix = "",
+    ).generate(outputDir)
+    CreateTagAdapter(
+        fileName = "go-create-tag.yml",
+        workflowName = "Go Create Tag",
+        tool = SetupTool.Go,
+        defaultVersion = DEFAULT_GO_VERSION,
+        versionDescription = "Go version to use",
+        commandInputName = "check-command",
+        commandDescription = "Go validation command",
+        defaultCommand = "make test",
+        defaultTagPrefix = "v",
+    ).generate(outputDir)
+    ManualCreateTagAdapter(
+        fileName = "gradle-manual-create-tag.yml",
+        workflowName = "Gradle Manual Create Tag",
+        tool = SetupTool.Gradle,
+        defaultVersion = DEFAULT_JAVA_VERSION,
+        versionDescription = "JDK version to use",
+        commandInputName = "gradle-command",
+        commandDescription = "Gradle check command",
+        defaultCommand = "./gradlew check",
+        defaultTagPrefix = "",
+    ).generate(outputDir)
+    ManualCreateTagAdapter(
+        fileName = "go-manual-create-tag.yml",
+        workflowName = "Go Manual Create Tag",
+        tool = SetupTool.Go,
+        defaultVersion = DEFAULT_GO_VERSION,
+        versionDescription = "Go version to use",
+        commandInputName = "check-command",
+        commandDescription = "Go validation command",
+        defaultCommand = "make test",
+        defaultTagPrefix = "v",
+    ).generate(outputDir)
 }

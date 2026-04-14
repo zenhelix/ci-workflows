@@ -12,7 +12,7 @@ on:
         required: false
         default: '1.22'
       check-command:
-        description: 'Validation command to run before tagging'
+        description: 'Go validation command'
         type: 'string'
         required: false
         default: 'make test'

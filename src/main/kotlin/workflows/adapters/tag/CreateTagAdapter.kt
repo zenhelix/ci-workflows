@@ -13,13 +13,15 @@ class CreateTagAdapter(
     override val workflowName: String,
     private val tool: SetupTool,
     private val defaultVersion: String,
+    private val versionDescription: String,
     private val commandInputName: String,
+    private val commandDescription: String,
     private val defaultCommand: String,
     private val defaultTagPrefix: String,
 ) : ProjectAdapterWorkflow(fileName) {
 
-    val version = input("${tool.versionKey}", description = "${tool.id.replaceFirstChar { it.uppercase() }} version to use", default = defaultVersion)
-    val checkCommand = input(commandInputName, description = "Validation command to run before tagging", default = defaultCommand)
+    val version = input(tool.versionKey, description = versionDescription, default = defaultVersion)
+    val checkCommand = input(commandInputName, description = commandDescription, default = defaultCommand)
     val defaultBump = input("default-bump", description = "Default version bump type (major, minor, patch)", default = "patch")
     val tagPrefix = input("tag-prefix", description = "Prefix for the tag", default = defaultTagPrefix)
     val releaseBranches = input("release-branches", description = "Comma-separated branch patterns for releases", default = DEFAULT_RELEASE_BRANCHES)
