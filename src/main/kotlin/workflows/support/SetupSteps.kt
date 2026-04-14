@@ -1,14 +1,17 @@
-package workflows.helpers
+package workflows.support
 
 import actions.SetupAction
 import config.SetupTool
-import dsl.MatrixRefExpr
-import dsl.SetupConfigurable
-import dsl.WorkflowInput
+import dsl.capability.SetupCapableJobBuilder
+import dsl.core.MatrixRefExpr
+import dsl.core.WorkflowInput
 import io.github.typesafegithub.workflows.dsl.JobBuilder
 
-fun JobBuilder<*>.conditionalSetupSteps(fetchDepth: String? = null) {
-    listOf(SetupTool.Gradle, SetupTool.Go, SetupTool.Python).forEach { tool ->
+fun JobBuilder<*>.conditionalSetupSteps(
+    tools: List<SetupTool> = SetupTool.entries,
+    fetchDepth: String? = null,
+) {
+    tools.forEach { tool ->
         uses(
             name = "Setup ${tool.id.replaceFirstChar { c -> c.uppercase() }}",
             action = SetupAction(
@@ -21,14 +24,14 @@ fun JobBuilder<*>.conditionalSetupSteps(fetchDepth: String? = null) {
     }
 }
 
-fun SetupConfigurable.setup(tool: SetupTool, versionExpr: MatrixRefExpr) {
+fun SetupCapableJobBuilder.setup(tool: SetupTool, versionExpr: MatrixRefExpr) {
     applySetup(tool.id, tool.toParamsJson(versionExpr))
 }
 
-fun SetupConfigurable.setup(tool: SetupTool, versionRef: String) {
+fun SetupCapableJobBuilder.setup(tool: SetupTool, versionRef: String) {
     applySetup(tool.id, tool.toParamsJson(versionRef))
 }
 
-fun SetupConfigurable.setup(tool: SetupTool, versionInput: WorkflowInput) {
+fun SetupCapableJobBuilder.setup(tool: SetupTool, versionInput: WorkflowInput) {
     applySetup(tool.id, tool.toParamsJson(versionInput.ref.expression))
 }
