@@ -1,6 +1,6 @@
 package workflows.base
 
-import dsl.LabelerWorkflow
+import workflows.LabelerWorkflow
 import io.github.typesafegithub.workflows.actions.actions.Labeler
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
@@ -33,7 +33,7 @@ fun generateLabeler() {
                 name = "Label PR based on file paths",
                 action = Labeler(
                     repoToken_Untyped = "\${{ secrets.GITHUB_TOKEN }}",
-                    configurationPath_Untyped = LabelerWorkflow.configPath.ref,
+                    configurationPath_Untyped = LabelerWorkflow.configPath.ref.expression,
                     syncLabels = true,
                 ),
             )

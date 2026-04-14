@@ -1,9 +1,15 @@
-package dsl
+package workflows
 
 import config.DEFAULT_CHANGELOG_CONFIG
 import config.DEFAULT_RELEASE_BRANCHES
+import config.reusableWorkflow
+import dsl.ReusableWorkflow
+import dsl.ReusableWorkflowJobBuilder
+import dsl.inputProp
 
 object CheckWorkflow : ReusableWorkflow("check.yml") {
+    override val usesString = reusableWorkflow(fileName)
+
     val setupAction = input(
         "setup-action",
         description = "Setup action to use: gradle, go",
@@ -20,30 +26,30 @@ object CheckWorkflow : ReusableWorkflow("check.yml") {
         required = true
     )
 
-    override fun createJobBuilder() = JobBuilder()
-
     class JobBuilder : ReusableWorkflowJobBuilder(CheckWorkflow) {
-        fun setupAction(value: String) = set(CheckWorkflow.setupAction, value)
-        fun setupParams(value: String) = set(CheckWorkflow.setupParams, value)
-        fun checkCommand(value: String) = set(CheckWorkflow.checkCommand, value)
+        var setupAction by inputProp(CheckWorkflow.setupAction)
+        var setupParams by inputProp(CheckWorkflow.setupParams)
+        var checkCommand by inputProp(CheckWorkflow.checkCommand)
     }
 }
 
 object ConventionalCommitCheckWorkflow : ReusableWorkflow("conventional-commit-check.yml") {
+    override val usesString = reusableWorkflow(fileName)
+
     val allowedTypes = input(
         "allowed-types",
         description = "Comma-separated list of allowed commit types",
         default = "feat,fix,refactor,docs,test,chore,perf,ci"
     )
 
-    override fun createJobBuilder() = JobBuilder()
-
     class JobBuilder : ReusableWorkflowJobBuilder(ConventionalCommitCheckWorkflow) {
-        fun allowedTypes(value: String) = set(ConventionalCommitCheckWorkflow.allowedTypes, value)
+        var allowedTypes by inputProp(ConventionalCommitCheckWorkflow.allowedTypes)
     }
 }
 
 object CreateTagWorkflow : ReusableWorkflow("create-tag.yml") {
+    override val usesString = reusableWorkflow(fileName)
+
     val setupAction = input(
         "setup-action",
         description = "Setup action to use: gradle, go",
@@ -83,19 +89,19 @@ object CreateTagWorkflow : ReusableWorkflow("create-tag.yml") {
         description = "GitHub App private key for generating commit token"
     )
 
-    override fun createJobBuilder() = JobBuilder()
-
     class JobBuilder : ReusableWorkflowJobBuilder(CreateTagWorkflow) {
-        fun setupAction(value: String) = set(CreateTagWorkflow.setupAction, value)
-        fun setupParams(value: String) = set(CreateTagWorkflow.setupParams, value)
-        fun checkCommand(value: String) = set(CreateTagWorkflow.checkCommand, value)
-        fun defaultBump(value: String) = set(CreateTagWorkflow.defaultBump, value)
-        fun tagPrefix(value: String) = set(CreateTagWorkflow.tagPrefix, value)
-        fun releaseBranches(value: String) = set(CreateTagWorkflow.releaseBranches, value)
+        var setupAction by inputProp(CreateTagWorkflow.setupAction)
+        var setupParams by inputProp(CreateTagWorkflow.setupParams)
+        var checkCommand by inputProp(CreateTagWorkflow.checkCommand)
+        var defaultBump by inputProp(CreateTagWorkflow.defaultBump)
+        var tagPrefix by inputProp(CreateTagWorkflow.tagPrefix)
+        var releaseBranches by inputProp(CreateTagWorkflow.releaseBranches)
     }
 }
 
 object ManualCreateTagWorkflow : ReusableWorkflow("manual-create-tag.yml") {
+    override val usesString = reusableWorkflow(fileName)
+
     val tagVersion = input(
         "tag-version",
         description = "Version to tag (e.g. 1.2.3)",
@@ -130,18 +136,18 @@ object ManualCreateTagWorkflow : ReusableWorkflow("manual-create-tag.yml") {
         description = "GitHub App private key for generating commit token"
     )
 
-    override fun createJobBuilder() = JobBuilder()
-
     class JobBuilder : ReusableWorkflowJobBuilder(ManualCreateTagWorkflow) {
-        fun tagVersion(value: String) = set(ManualCreateTagWorkflow.tagVersion, value)
-        fun tagPrefix(value: String) = set(ManualCreateTagWorkflow.tagPrefix, value)
-        fun setupAction(value: String) = set(ManualCreateTagWorkflow.setupAction, value)
-        fun setupParams(value: String) = set(ManualCreateTagWorkflow.setupParams, value)
-        fun checkCommand(value: String) = set(ManualCreateTagWorkflow.checkCommand, value)
+        var tagVersion by inputProp(ManualCreateTagWorkflow.tagVersion)
+        var tagPrefix by inputProp(ManualCreateTagWorkflow.tagPrefix)
+        var setupAction by inputProp(ManualCreateTagWorkflow.setupAction)
+        var setupParams by inputProp(ManualCreateTagWorkflow.setupParams)
+        var checkCommand by inputProp(ManualCreateTagWorkflow.checkCommand)
     }
 }
 
 object ReleaseWorkflow : ReusableWorkflow("release.yml") {
+    override val usesString = reusableWorkflow(fileName)
+
     val changelogConfig = input(
         "changelog-config",
         description = "Path to changelog configuration file",
@@ -153,15 +159,15 @@ object ReleaseWorkflow : ReusableWorkflow("release.yml") {
         default = false
     )
 
-    override fun createJobBuilder() = JobBuilder()
-
     class JobBuilder : ReusableWorkflowJobBuilder(ReleaseWorkflow) {
-        fun changelogConfig(value: String) = set(ReleaseWorkflow.changelogConfig, value)
-        fun draft(value: String) = set(ReleaseWorkflow.draft, value)
+        var changelogConfig by inputProp(ReleaseWorkflow.changelogConfig)
+        var draft by inputProp(ReleaseWorkflow.draft)
     }
 }
 
 object PublishWorkflow : ReusableWorkflow("publish.yml") {
+    override val usesString = reusableWorkflow(fileName)
+
     val setupAction = input(
         "setup-action",
         description = "Setup action to use: gradle, go",
@@ -210,25 +216,23 @@ object PublishWorkflow : ReusableWorkflow("publish.yml") {
         description = "Gradle Plugin Portal publish secret", required = false
     )
 
-    override fun createJobBuilder() = JobBuilder()
-
     class JobBuilder : ReusableWorkflowJobBuilder(PublishWorkflow) {
-        fun setupAction(value: String) = set(PublishWorkflow.setupAction, value)
-        fun setupParams(value: String) = set(PublishWorkflow.setupParams, value)
-        fun publishCommand(value: String) = set(PublishWorkflow.publishCommand, value)
+        var setupAction by inputProp(PublishWorkflow.setupAction)
+        var setupParams by inputProp(PublishWorkflow.setupParams)
+        var publishCommand by inputProp(PublishWorkflow.publishCommand)
     }
 }
 
 object LabelerWorkflow : ReusableWorkflow("labeler.yml") {
+    override val usesString = reusableWorkflow(fileName)
+
     val configPath = input(
         "config-path",
         description = "Path to labeler configuration file",
         default = ".github/labeler.yml"
     )
 
-    override fun createJobBuilder() = JobBuilder()
-
     class JobBuilder : ReusableWorkflowJobBuilder(LabelerWorkflow) {
-        fun configPath(value: String) = set(LabelerWorkflow.configPath, value)
+        var configPath by inputProp(LabelerWorkflow.configPath)
     }
 }

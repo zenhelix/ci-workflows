@@ -1,8 +1,8 @@
 package workflows.base
 
 import actions.CreateAppTokenAction
-import dsl.ManualCreateTagWorkflow
-import dsl.conditionalSetupSteps
+import workflows.ManualCreateTagWorkflow
+import workflows.conditionalSetupSteps
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
@@ -43,13 +43,13 @@ fun generateManualCreateTag() {
             conditionalSetupSteps(fetchDepth = "0")
             run(
                 name = "Run validation",
-                command = ManualCreateTagWorkflow.checkCommand.ref,
+                command = ManualCreateTagWorkflow.checkCommand.ref.expression,
             )
             uses(
                 name = "Generate App Token",
                 action = CreateAppTokenAction(
-                    appId = ManualCreateTagWorkflow.appId.ref,
-                    appPrivateKey = ManualCreateTagWorkflow.appPrivateKey.ref,
+                    appId = ManualCreateTagWorkflow.appId.ref.expression,
+                    appPrivateKey = ManualCreateTagWorkflow.appPrivateKey.ref.expression,
                 ),
                 id = "app-token",
             )

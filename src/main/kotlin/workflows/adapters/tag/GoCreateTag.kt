@@ -3,12 +3,15 @@ package workflows.adapters.tag
 import config.DEFAULT_GO_VERSION
 import config.DEFAULT_RELEASE_BRANCHES
 import config.SetupTool
+import config.reusableWorkflow
 import dsl.AdapterWorkflow
-import dsl.CreateTagWorkflow
 import dsl.ReusableWorkflowJobDef
 import dsl.reusableJob
+import workflows.CreateTagWorkflow
+import workflows.setup
 
 object GoCreateTagAdapter : AdapterWorkflow("go-create-tag.yml") {
+    override val usesString = reusableWorkflow(fileName)
     override val workflowName = "Go Create Tag"
 
     val goVersion = input("go-version", description = "Go version to use", default = DEFAULT_GO_VERSION)
@@ -18,13 +21,12 @@ object GoCreateTagAdapter : AdapterWorkflow("go-create-tag.yml") {
     val releaseBranches = input("release-branches", description = "Comma-separated branch patterns for releases", default = DEFAULT_RELEASE_BRANCHES)
 
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
-        reusableJob<CreateTagWorkflow.JobBuilder>(id = "create-tag", uses = CreateTagWorkflow) {
-            setupAction(SetupTool.Go.id)
-            setupParams(SetupTool.Go.toParamsJson(goVersion.ref))
-            checkCommand(this@GoCreateTagAdapter.checkCommand.ref)
-            defaultBump(this@GoCreateTagAdapter.defaultBump.ref)
-            tagPrefix(this@GoCreateTagAdapter.tagPrefix.ref)
-            releaseBranches(this@GoCreateTagAdapter.releaseBranches.ref)
+        reusableJob(id = "create-tag", uses = CreateTagWorkflow, CreateTagWorkflow::JobBuilder) {
+            setup(SetupTool.Go, goVersion.ref.expression)
+            checkCommand = this@GoCreateTagAdapter.checkCommand.ref.expression
+            defaultBump = this@GoCreateTagAdapter.defaultBump.ref.expression
+            tagPrefix = this@GoCreateTagAdapter.tagPrefix.ref.expression
+            releaseBranches = this@GoCreateTagAdapter.releaseBranches.ref.expression
             passthroughAllSecrets()
         },
     )

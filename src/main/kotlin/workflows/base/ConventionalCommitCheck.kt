@@ -1,6 +1,6 @@
 package workflows.base
 
-import dsl.ConventionalCommitCheckWorkflow
+import workflows.ConventionalCommitCheckWorkflow
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow
@@ -37,7 +37,7 @@ fun generateConventionalCommitCheck() {
                 """.trimIndent(),
                 env = linkedMapOf(
                     "PR_TITLE" to "\${{ github.event.pull_request.title }}",
-                    "ALLOWED_TYPES" to ConventionalCommitCheckWorkflow.allowedTypes.ref,
+                    "ALLOWED_TYPES" to ConventionalCommitCheckWorkflow.allowedTypes.ref.expression,
                 ),
             )
         }

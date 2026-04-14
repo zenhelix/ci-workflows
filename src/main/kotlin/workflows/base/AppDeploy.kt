@@ -1,6 +1,6 @@
-package workflows.adapters.deploy
+package workflows.base
 
-import dsl.conditionalSetupSteps
+import workflows.conditionalSetupSteps
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest

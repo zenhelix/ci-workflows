@@ -3,12 +3,15 @@ package workflows.adapters.tag
 import config.DEFAULT_JAVA_VERSION
 import config.DEFAULT_RELEASE_BRANCHES
 import config.SetupTool
+import config.reusableWorkflow
 import dsl.AdapterWorkflow
-import dsl.CreateTagWorkflow
 import dsl.ReusableWorkflowJobDef
 import dsl.reusableJob
+import workflows.CreateTagWorkflow
+import workflows.setup
 
 object GradleCreateTagAdapter : AdapterWorkflow("gradle-create-tag.yml") {
+    override val usesString = reusableWorkflow(fileName)
     override val workflowName = "Gradle Create Tag"
 
     val javaVersion = input("java-version", description = "JDK version to use", default = DEFAULT_JAVA_VERSION)
@@ -18,13 +21,12 @@ object GradleCreateTagAdapter : AdapterWorkflow("gradle-create-tag.yml") {
     val releaseBranches = input("release-branches", description = "Comma-separated branch patterns for releases", default = DEFAULT_RELEASE_BRANCHES)
 
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
-        reusableJob<CreateTagWorkflow.JobBuilder>(id = "create-tag", uses = CreateTagWorkflow) {
-            setupAction(SetupTool.Gradle.id)
-            setupParams(SetupTool.Gradle.toParamsJson(javaVersion.ref))
-            checkCommand(gradleCommand.ref)
-            defaultBump(this@GradleCreateTagAdapter.defaultBump.ref)
-            tagPrefix(this@GradleCreateTagAdapter.tagPrefix.ref)
-            releaseBranches(this@GradleCreateTagAdapter.releaseBranches.ref)
+        reusableJob(id = "create-tag", uses = CreateTagWorkflow, CreateTagWorkflow::JobBuilder) {
+            setup(SetupTool.Gradle, javaVersion.ref.expression)
+            checkCommand = gradleCommand.ref.expression
+            defaultBump = this@GradleCreateTagAdapter.defaultBump.ref.expression
+            tagPrefix = this@GradleCreateTagAdapter.tagPrefix.ref.expression
+            releaseBranches = this@GradleCreateTagAdapter.releaseBranches.ref.expression
             passthroughAllSecrets()
         },
     )

@@ -1,7 +1,7 @@
 package workflows.base
 
-import dsl.PublishWorkflow
-import dsl.conditionalSetupSteps
+import workflows.PublishWorkflow
+import workflows.conditionalSetupSteps
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
@@ -32,16 +32,16 @@ fun generatePublish() {
             conditionalSetupSteps()
             run(
                 name = "Publish",
-                command = PublishWorkflow.publishCommand.ref,
+                command = PublishWorkflow.publishCommand.ref.expression,
                 env = linkedMapOf(
-                    "GRADLE_PUBLISH_KEY" to PublishWorkflow.gradlePublishKey.ref,
-                    "GRADLE_PUBLISH_SECRET" to PublishWorkflow.gradlePublishSecret.ref,
-                    "ORG_GRADLE_PROJECT_signingKeyId" to PublishWorkflow.mavenSonatypeSigningKeyId.ref,
-                    "ORG_GRADLE_PROJECT_signingPublicKey" to PublishWorkflow.mavenSonatypeSigningPubKeyAsciiArmored.ref,
-                    "ORG_GRADLE_PROJECT_signingKey" to PublishWorkflow.mavenSonatypeSigningKeyAsciiArmored.ref,
-                    "ORG_GRADLE_PROJECT_signingPassword" to PublishWorkflow.mavenSonatypeSigningPassword.ref,
-                    "MAVEN_SONATYPE_USERNAME" to PublishWorkflow.mavenSonatypeUsername.ref,
-                    "MAVEN_SONATYPE_TOKEN" to PublishWorkflow.mavenSonatypeToken.ref,
+                    "GRADLE_PUBLISH_KEY" to PublishWorkflow.gradlePublishKey.ref.expression,
+                    "GRADLE_PUBLISH_SECRET" to PublishWorkflow.gradlePublishSecret.ref.expression,
+                    "ORG_GRADLE_PROJECT_signingKeyId" to PublishWorkflow.mavenSonatypeSigningKeyId.ref.expression,
+                    "ORG_GRADLE_PROJECT_signingPublicKey" to PublishWorkflow.mavenSonatypeSigningPubKeyAsciiArmored.ref.expression,
+                    "ORG_GRADLE_PROJECT_signingKey" to PublishWorkflow.mavenSonatypeSigningKeyAsciiArmored.ref.expression,
+                    "ORG_GRADLE_PROJECT_signingPassword" to PublishWorkflow.mavenSonatypeSigningPassword.ref.expression,
+                    "MAVEN_SONATYPE_USERNAME" to PublishWorkflow.mavenSonatypeUsername.ref.expression,
+                    "MAVEN_SONATYPE_TOKEN" to PublishWorkflow.mavenSonatypeToken.ref.expression,
                 ),
             )
         }

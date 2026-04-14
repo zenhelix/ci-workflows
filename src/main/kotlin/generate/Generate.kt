@@ -1,7 +1,7 @@
 package generate
 
 import workflows.adapters.check.GradleCheckAdapter
-import workflows.adapters.deploy.generateAppDeploy
+import workflows.base.generateAppDeploy
 import workflows.adapters.release.AppReleaseAdapter
 import workflows.adapters.release.GradlePluginReleaseAdapter
 import workflows.adapters.release.KotlinLibraryReleaseAdapter

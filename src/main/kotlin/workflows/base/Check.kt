@@ -1,7 +1,7 @@
 package workflows.base
 
-import dsl.CheckWorkflow
-import dsl.conditionalSetupSteps
+import workflows.CheckWorkflow
+import workflows.conditionalSetupSteps
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
@@ -29,7 +29,7 @@ fun generateCheck() {
             conditionalSetupSteps()
             run(
                 name = "Run check",
-                command = CheckWorkflow.checkCommand.ref,
+                command = CheckWorkflow.checkCommand.ref.expression,
             )
         }
     }

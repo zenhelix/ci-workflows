@@ -1,6 +1,6 @@
 package workflows.base
 
-import dsl.ReleaseWorkflow
+import workflows.ReleaseWorkflow
 import io.github.typesafegithub.workflows.actions.actions.Checkout
 import io.github.typesafegithub.workflows.actions.mikepenz.ReleaseChangelogBuilderAction_Untyped
 import io.github.typesafegithub.workflows.actions.softprops.ActionGhRelease
@@ -34,7 +34,7 @@ fun generateRelease() {
             uses(
                 name = "Build Changelog",
                 action = ReleaseChangelogBuilderAction_Untyped(
-                    configuration_Untyped = ReleaseWorkflow.changelogConfig.ref,
+                    configuration_Untyped = ReleaseWorkflow.changelogConfig.ref.expression,
                     toTag_Untyped = "\${{ github.ref_name }}",
                 ),
                 id = "changelog",
@@ -48,7 +48,7 @@ fun generateRelease() {
                     body = "\${{ steps.changelog.outputs.changelog }}",
                     name = "\${{ github.ref_name }}",
                     tagName = "\${{ github.ref_name }}",
-                    draft_Untyped = ReleaseWorkflow.draft.ref,
+                    draft_Untyped = ReleaseWorkflow.draft.ref.expression,
                 ),
                 env = linkedMapOf(
                     "GITHUB_TOKEN" to "\${{ secrets.GITHUB_TOKEN }}",

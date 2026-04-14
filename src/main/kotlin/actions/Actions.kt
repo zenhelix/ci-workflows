@@ -13,7 +13,7 @@ class SetupAction(
     override fun toYamlArguments() = linkedMapOf(
         versionKey to version,
     ).apply {
-        if (fetchDepth != null) put("fetch-depth", fetchDepth)
+        fetchDepth?.let { put("fetch-depth", it) }
     }
 
     override fun buildOutputObject(stepId: String) = Outputs(stepId)

@@ -2,8 +2,8 @@ package workflows.base
 
 import actions.CreateAppTokenAction
 import actions.GithubTagAction
-import dsl.CreateTagWorkflow
-import dsl.conditionalSetupSteps
+import workflows.CreateTagWorkflow
+import workflows.conditionalSetupSteps
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
@@ -34,13 +34,13 @@ fun generateCreateTag() {
             conditionalSetupSteps(fetchDepth = "0")
             run(
                 name = "Run validation",
-                command = CreateTagWorkflow.checkCommand.ref,
+                command = CreateTagWorkflow.checkCommand.ref.expression,
             )
             uses(
                 name = "Generate App Token",
                 action = CreateAppTokenAction(
-                    appId = CreateTagWorkflow.appId.ref,
-                    appPrivateKey = CreateTagWorkflow.appPrivateKey.ref,
+                    appId = CreateTagWorkflow.appId.ref.expression,
+                    appPrivateKey = CreateTagWorkflow.appPrivateKey.ref.expression,
                 ),
                 id = "app-token",
             )
@@ -48,9 +48,9 @@ fun generateCreateTag() {
                 name = "Bump version and push tag",
                 action = GithubTagAction(
                     githubToken = "\${{ steps.app-token.outputs.token }}",
-                    defaultBump = CreateTagWorkflow.defaultBump.ref,
-                    tagPrefix = CreateTagWorkflow.tagPrefix.ref,
-                    releaseBranches = CreateTagWorkflow.releaseBranches.ref,
+                    defaultBump = CreateTagWorkflow.defaultBump.ref.expression,
+                    tagPrefix = CreateTagWorkflow.tagPrefix.ref.expression,
+                    releaseBranches = CreateTagWorkflow.releaseBranches.ref.expression,
                 ),
             )
         }

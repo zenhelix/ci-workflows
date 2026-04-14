@@ -3,13 +3,16 @@ package workflows.adapters.release
 import config.DEFAULT_CHANGELOG_CONFIG
 import config.DEFAULT_JAVA_VERSION
 import config.SetupTool
+import config.reusableWorkflow
 import dsl.AdapterWorkflow
-import dsl.PublishWorkflow
-import dsl.ReleaseWorkflow
 import dsl.ReusableWorkflowJobDef
 import dsl.reusableJob
+import workflows.PublishWorkflow
+import workflows.ReleaseWorkflow
+import workflows.setup
 
 object KotlinLibraryReleaseAdapter : AdapterWorkflow("kotlin-library-release.yml") {
+    override val usesString = reusableWorkflow(fileName)
     override val workflowName = "Kotlin Library Release"
 
     val javaVersion = input(
@@ -29,14 +32,13 @@ object KotlinLibraryReleaseAdapter : AdapterWorkflow("kotlin-library-release.yml
     )
 
     override fun jobs(): List<ReusableWorkflowJobDef> = listOf(
-        reusableJob<ReleaseWorkflow.JobBuilder>(id = "release", uses = ReleaseWorkflow) {
-            changelogConfig(this@KotlinLibraryReleaseAdapter.changelogConfig.ref)
+        reusableJob(id = "release", uses = ReleaseWorkflow, ReleaseWorkflow::JobBuilder) {
+            changelogConfig = this@KotlinLibraryReleaseAdapter.changelogConfig.ref.expression
         },
-        reusableJob<PublishWorkflow.JobBuilder>(id = "publish", uses = PublishWorkflow) {
+        reusableJob(id = "publish", uses = PublishWorkflow, PublishWorkflow::JobBuilder) {
             needs("release")
-            setupAction(SetupTool.Gradle.id)
-            setupParams(SetupTool.Gradle.toParamsJson(javaVersion.ref))
-            publishCommand(this@KotlinLibraryReleaseAdapter.publishCommand.ref)
+            setup(SetupTool.Gradle, javaVersion.ref.expression)
+            publishCommand = this@KotlinLibraryReleaseAdapter.publishCommand.ref.expression
             passthroughSecrets(
                 PublishWorkflow.mavenSonatypeUsername,
                 PublishWorkflow.mavenSonatypeToken,
