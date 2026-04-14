@@ -11,12 +11,12 @@ on:
         type: 'string'
         required: true
       java-version:
-        description: 'JDK version to use'
+        description: 'Gradle version to use'
         type: 'string'
         required: false
         default: '17'
       gradle-command:
-        description: 'Gradle check command'
+        description: 'Validation command to run before tagging'
         type: 'string'
         required: false
         default: './gradlew check'
