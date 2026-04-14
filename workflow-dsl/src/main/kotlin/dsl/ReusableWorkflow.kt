@@ -11,7 +11,7 @@ value class InputRef(val expression: String)
 value class SecretRef(val expression: String)
 
 abstract class ReusableWorkflow(val fileName: String) {
-    private val _inputs = mutableMapOf<String, WorkflowCall.Input>()
+    private val _inputs = linkedMapOf<String, WorkflowCall.Input>()
     private val _secrets = mutableMapOf<String, WorkflowCall.Secret>()
     private val _booleanDefaults = mutableMapOf<String, Boolean>()
 
