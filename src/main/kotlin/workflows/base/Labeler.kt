@@ -1,6 +1,6 @@
 package workflows.base
 
-import workflows.LabelerWorkflow
+import workflows.definitions.LabelerWorkflow
 import io.github.typesafegithub.workflows.actions.actions.Labeler
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission

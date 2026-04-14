@@ -1,0 +1,52 @@
+package workflows.definitions
+
+import dsl.ReusableWorkflowJobBuilder
+import dsl.SetupConfigurable
+import dsl.inputProp
+import dsl.inputRefProp
+import workflows.ProjectWorkflow
+
+object ManualCreateTagWorkflow : ProjectWorkflow("manual-create-tag.yml") {
+
+    val tagVersion = input(
+        "tag-version",
+        description = "Version to tag (e.g. 1.2.3)",
+        required = true
+    )
+    val tagPrefix = input(
+        "tag-prefix",
+        description = "Prefix for the tag (e.g. v)",
+        default = ""
+    )
+    val setupAction = input(
+        "setup-action",
+        description = "Setup action to use: gradle, go, python",
+        required = true
+    )
+    val setupParams = input(
+        "setup-params",
+        description = "JSON object with setup parameters (e.g. {\"java-version\": \"21\"})",
+        default = "{}"
+    )
+    val checkCommand = input(
+        "check-command",
+        description = "Validation command to run before tagging",
+        required = true
+    )
+    val appId = secret(
+        "app-id",
+        description = "GitHub App ID for generating commit token"
+    )
+    val appPrivateKey = secret(
+        "app-private-key",
+        description = "GitHub App private key for generating commit token"
+    )
+
+    class JobBuilder : ReusableWorkflowJobBuilder(ManualCreateTagWorkflow), SetupConfigurable {
+        var tagVersion by inputRefProp(ManualCreateTagWorkflow.tagVersion)
+        var tagPrefix by inputRefProp(ManualCreateTagWorkflow.tagPrefix)
+        override var setupAction by inputProp(ManualCreateTagWorkflow.setupAction)
+        override var setupParams by inputProp(ManualCreateTagWorkflow.setupParams)
+        var checkCommand by inputRefProp(ManualCreateTagWorkflow.checkCommand)
+    }
+}

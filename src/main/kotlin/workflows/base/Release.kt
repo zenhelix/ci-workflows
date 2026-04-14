@@ -1,6 +1,6 @@
 package workflows.base
 
-import workflows.ReleaseWorkflow
+import workflows.definitions.ReleaseWorkflow
 import io.github.typesafegithub.workflows.actions.actions.Checkout
 import io.github.typesafegithub.workflows.actions.mikepenz.ReleaseChangelogBuilderAction_Untyped
 import io.github.typesafegithub.workflows.actions.softprops.ActionGhRelease

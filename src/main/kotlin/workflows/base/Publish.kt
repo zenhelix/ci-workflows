@@ -1,6 +1,6 @@
 package workflows.base
 
-import workflows.PublishWorkflow
+import workflows.definitions.PublishWorkflow
 import workflows.conditionalSetupSteps
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission

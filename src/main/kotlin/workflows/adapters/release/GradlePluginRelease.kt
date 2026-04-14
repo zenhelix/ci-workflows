@@ -6,8 +6,8 @@ import config.SetupTool
 import dsl.ReusableWorkflowJobDef
 import dsl.reusableJob
 import workflows.ProjectAdapterWorkflow
-import workflows.PublishWorkflow
-import workflows.ReleaseWorkflow
+import workflows.definitions.PublishWorkflow
+import workflows.definitions.ReleaseWorkflow
 import workflows.setup
 
 object GradlePluginReleaseAdapter : ProjectAdapterWorkflow("gradle-plugin-release.yml") {

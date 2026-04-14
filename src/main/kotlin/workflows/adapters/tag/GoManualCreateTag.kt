@@ -4,7 +4,7 @@ import config.DEFAULT_GO_VERSION
 import config.SetupTool
 import dsl.ReusableWorkflowJobDef
 import dsl.reusableJob
-import workflows.ManualCreateTagWorkflow
+import workflows.definitions.ManualCreateTagWorkflow
 import workflows.ProjectAdapterWorkflow
 import workflows.setup
 

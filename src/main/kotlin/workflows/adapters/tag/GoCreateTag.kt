@@ -5,7 +5,7 @@ import config.DEFAULT_RELEASE_BRANCHES
 import config.SetupTool
 import dsl.ReusableWorkflowJobDef
 import dsl.reusableJob
-import workflows.CreateTagWorkflow
+import workflows.definitions.CreateTagWorkflow
 import workflows.ProjectAdapterWorkflow
 import workflows.setup
 

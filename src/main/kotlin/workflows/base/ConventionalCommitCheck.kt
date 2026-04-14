@@ -1,6 +1,6 @@
 package workflows.base
 
-import workflows.ConventionalCommitCheckWorkflow
+import workflows.definitions.ConventionalCommitCheckWorkflow
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 import io.github.typesafegithub.workflows.dsl.workflow

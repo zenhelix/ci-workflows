@@ -6,8 +6,8 @@ import dsl.MatrixDef
 import dsl.MatrixRef
 import dsl.ReusableWorkflowJobDef
 import dsl.reusableJob
-import workflows.CheckWorkflow
-import workflows.ConventionalCommitCheckWorkflow
+import workflows.definitions.CheckWorkflow
+import workflows.definitions.ConventionalCommitCheckWorkflow
 import workflows.ProjectAdapterWorkflow
 import workflows.setup
 

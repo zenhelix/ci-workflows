@@ -2,7 +2,7 @@ package workflows.base
 
 import actions.CreateAppTokenAction
 import actions.GithubTagAction
-import workflows.CreateTagWorkflow
+import workflows.definitions.CreateTagWorkflow
 import workflows.conditionalSetupSteps
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission

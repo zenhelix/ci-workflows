@@ -4,7 +4,7 @@ import config.DEFAULT_CHANGELOG_CONFIG
 import dsl.ReusableWorkflowJobDef
 import dsl.reusableJob
 import workflows.ProjectAdapterWorkflow
-import workflows.ReleaseWorkflow
+import workflows.definitions.ReleaseWorkflow
 
 object AppReleaseAdapter : ProjectAdapterWorkflow("app-release.yml") {
     override val workflowName = "Application Release"
