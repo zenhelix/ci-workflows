@@ -5,8 +5,8 @@ import workflows.adapters.check.gradleCheck
 import workflows.adapters.release.AppReleaseAdapter
 import workflows.adapters.release.GradlePluginReleaseAdapter
 import workflows.adapters.release.KotlinLibraryReleaseAdapter
-import workflows.adapters.tag.CreateTagAdapter
-import workflows.adapters.tag.ManualCreateTagAdapter
+import workflows.adapters.tag.toolCreateTag
+import workflows.adapters.tag.toolManualCreateTag
 import workflows.base.generateAppDeploy
 import workflows.base.generateCheck
 import workflows.base.generateConventionalCommitCheck
@@ -36,36 +36,36 @@ fun main() {
     AppReleaseAdapter.generate(outputDir)
     GradlePluginReleaseAdapter.generate(outputDir)
     KotlinLibraryReleaseAdapter.generate(outputDir)
-    CreateTagAdapter(
+    toolCreateTag(
         fileName = "gradle-create-tag.yml",
-        workflowName = "Gradle Create Tag",
+        name = "Gradle Create Tag",
         tool = SetupTool.Gradle,
         commandInputName = "gradle-command",
         commandDescription = "Gradle check command",
         defaultCommand = "./gradlew check",
         defaultTagPrefix = "",
     ).generate(outputDir)
-    CreateTagAdapter(
+    toolCreateTag(
         fileName = "go-create-tag.yml",
-        workflowName = "Go Create Tag",
+        name = "Go Create Tag",
         tool = SetupTool.Go,
         commandInputName = "check-command",
         commandDescription = "Go validation command",
         defaultCommand = "make test",
         defaultTagPrefix = "v",
     ).generate(outputDir)
-    ManualCreateTagAdapter(
+    toolManualCreateTag(
         fileName = "gradle-manual-create-tag.yml",
-        workflowName = "Gradle Manual Create Tag",
+        name = "Gradle Manual Create Tag",
         tool = SetupTool.Gradle,
         commandInputName = "gradle-command",
         commandDescription = "Gradle check command",
         defaultCommand = "./gradlew check",
         defaultTagPrefix = "",
     ).generate(outputDir)
-    ManualCreateTagAdapter(
+    toolManualCreateTag(
         fileName = "go-manual-create-tag.yml",
-        workflowName = "Go Manual Create Tag",
+        name = "Go Manual Create Tag",
         tool = SetupTool.Go,
         commandInputName = "check-command",
         commandDescription = "Go validation command",
