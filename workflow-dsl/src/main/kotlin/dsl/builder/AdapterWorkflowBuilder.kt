@@ -1,4 +1,4 @@
-package dsl
+package dsl.builder
 
 import dsl.core.InputRegistry
 import dsl.core.MatrixDef

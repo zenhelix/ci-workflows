@@ -1,6 +1,5 @@
-package dsl
+package dsl.builder
 
-import dsl.core.ReusableWorkflow
 import dsl.yaml.AdapterWorkflowYaml
 import dsl.yaml.InputYaml
 import dsl.yaml.SecretYaml
@@ -9,18 +8,23 @@ import dsl.yaml.WorkflowCallBodyYaml
 import dsl.yaml.adapterWorkflowYaml
 import java.io.File
 
+interface GeneratableWorkflow {
+    val fileName: String
+    fun generate(outputDir: File)
+}
+
 private val QUOTED_MAP_KEY = Regex("""^(\s*)'([^']*?)'\s*:""", RegexOption.MULTILINE)
 
 private fun unquoteYamlMapKeys(yaml: String): String =
     yaml.replace(QUOTED_MAP_KEY, "$1$2:")
 
 class AdapterWorkflow(
-    val fileName: String,
+    override val fileName: String,
     val workflowName: String,
     private val inputsYaml: Map<String, InputYaml>?,
     private val jobs: List<ReusableWorkflowJobDef>,
-) {
-    fun generate(outputDir: File) {
+) : GeneratableWorkflow {
+    override fun generate(outputDir: File) {
         val collectedSecrets = collectSecretsFromJobs(jobs)
 
         val dto = AdapterWorkflowYaml(

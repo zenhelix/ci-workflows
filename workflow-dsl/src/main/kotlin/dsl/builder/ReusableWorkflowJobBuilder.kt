@@ -1,4 +1,4 @@
-package dsl
+package dsl.builder
 
 import dsl.core.InputRef
 import dsl.core.MatrixDef
@@ -8,29 +8,6 @@ import dsl.core.WorkflowSecret
 import dsl.yaml.JobYaml
 import dsl.yaml.NeedsYaml
 import dsl.yaml.StrategyYaml
-import kotlin.reflect.KProperty
-
-class StringInputProperty(private val input: WorkflowInput) {
-    operator fun getValue(builder: ReusableWorkflowJobBuilder, property: KProperty<*>): String =
-        builder.getInput(input)
-
-    operator fun setValue(builder: ReusableWorkflowJobBuilder, property: KProperty<*>, value: String) {
-        builder.setInput(input, value)
-    }
-}
-
-fun stringInput(input: WorkflowInput) = StringInputProperty(input)
-
-class RefInputProperty(private val input: WorkflowInput) {
-    operator fun getValue(builder: ReusableWorkflowJobBuilder, property: KProperty<*>): InputRef =
-        InputRef(builder.getInput(input))
-
-    operator fun setValue(builder: ReusableWorkflowJobBuilder, property: KProperty<*>, value: InputRef) {
-        builder.setInput(input, value)
-    }
-}
-
-fun refInput(input: WorkflowInput) = RefInputProperty(input)
 
 abstract class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
     private val withMap = mutableMapOf<String, String>()

@@ -1,7 +1,7 @@
 package dsl.core
 
-import dsl.ReusableWorkflowJobBuilder
-import dsl.ReusableWorkflowJobDef
+import dsl.builder.ReusableWorkflowJobBuilder
+import dsl.builder.ReusableWorkflowJobDef
 import dsl.yaml.InputYaml
 import dsl.yaml.SecretYaml
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
