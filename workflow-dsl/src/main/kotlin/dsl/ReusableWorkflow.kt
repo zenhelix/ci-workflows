@@ -88,6 +88,16 @@ abstract class ReusableWorkflow(val fileName: String) {
         }
     }
 
+    protected inline fun <B : ReusableWorkflowJobBuilder> buildJob(
+        id: String,
+        crossinline builderFactory: () -> B,
+        block: B.() -> Unit = {},
+    ): ReusableWorkflowJobDef {
+        val builder = builderFactory()
+        builder.block()
+        return builder.build(id)
+    }
+
     private fun inputsAsRawMap(): Map<String, Map<String, Any?>> =
         _inputs.mapValues { (name, input) ->
             buildMap<String, Any?> {

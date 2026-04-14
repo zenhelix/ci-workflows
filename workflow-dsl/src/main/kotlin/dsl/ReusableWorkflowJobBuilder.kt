@@ -64,6 +64,10 @@ abstract class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow
         }
     }
 
+    infix fun WorkflowInput.from(source: WorkflowInput) {
+        setInput(this, source.ref)
+    }
+
     @PublishedApi
     internal fun build(id: String): ReusableWorkflowJobDef {
         val missingRequired = workflow.requiredInputNames.filter { it !in withMap }
