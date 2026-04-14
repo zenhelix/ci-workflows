@@ -1,5 +1,6 @@
 package workflows.definitions
 
+import dsl.AdapterWorkflowBuilder
 import dsl.ReusableWorkflowJobBuilder
 import dsl.SetupConfigurable
 import dsl.stringInput
@@ -28,5 +29,10 @@ object CheckWorkflow : ProjectWorkflow("check.yml") {
         override var setupAction by stringInput(CheckWorkflow.setupAction)
         override var setupParams by stringInput(CheckWorkflow.setupParams)
         var checkCommand by refInput(CheckWorkflow.checkCommand)
+    }
+
+    context(builder: AdapterWorkflowBuilder)
+    fun job(id: String, block: JobBuilder.() -> Unit = {}) {
+        builder.registerJob(buildJob(id, ::JobBuilder, block))
     }
 }

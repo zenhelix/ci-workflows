@@ -1,6 +1,7 @@
 package workflows.definitions
 
 import config.DEFAULT_CHANGELOG_CONFIG
+import dsl.AdapterWorkflowBuilder
 import dsl.ReusableWorkflowJobBuilder
 import dsl.refInput
 import workflows.ProjectWorkflow
@@ -21,5 +22,10 @@ object ReleaseWorkflow : ProjectWorkflow("release.yml") {
     class JobBuilder : ReusableWorkflowJobBuilder(ReleaseWorkflow) {
         var changelogConfig by refInput(ReleaseWorkflow.changelogConfig)
         var draft by refInput(ReleaseWorkflow.draft)
+    }
+
+    context(builder: AdapterWorkflowBuilder)
+    fun job(id: String, block: JobBuilder.() -> Unit = {}) {
+        builder.registerJob(buildJob(id, ::JobBuilder, block))
     }
 }

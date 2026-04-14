@@ -1,5 +1,6 @@
 package workflows.definitions
 
+import dsl.AdapterWorkflowBuilder
 import dsl.ReusableWorkflowJobBuilder
 import dsl.SetupConfigurable
 import dsl.stringInput
@@ -60,5 +61,10 @@ object PublishWorkflow : ProjectWorkflow("publish.yml") {
         override var setupAction by stringInput(PublishWorkflow.setupAction)
         override var setupParams by stringInput(PublishWorkflow.setupParams)
         var publishCommand by refInput(PublishWorkflow.publishCommand)
+    }
+
+    context(builder: AdapterWorkflowBuilder)
+    fun job(id: String, block: JobBuilder.() -> Unit = {}) {
+        builder.registerJob(buildJob(id, ::JobBuilder, block))
     }
 }

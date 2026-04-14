@@ -1,5 +1,6 @@
 package workflows.definitions
 
+import dsl.AdapterWorkflowBuilder
 import dsl.ReusableWorkflowJobBuilder
 import dsl.SetupConfigurable
 import dsl.stringInput
@@ -48,5 +49,10 @@ object ManualCreateTagWorkflow : ProjectWorkflow("manual-create-tag.yml") {
         override var setupAction by stringInput(ManualCreateTagWorkflow.setupAction)
         override var setupParams by stringInput(ManualCreateTagWorkflow.setupParams)
         var checkCommand by refInput(ManualCreateTagWorkflow.checkCommand)
+    }
+
+    context(builder: AdapterWorkflowBuilder)
+    fun job(id: String, block: JobBuilder.() -> Unit = {}) {
+        builder.registerJob(buildJob(id, ::JobBuilder, block))
     }
 }

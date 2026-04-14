@@ -1,6 +1,7 @@
 package workflows.definitions
 
 import config.DEFAULT_RELEASE_BRANCHES
+import dsl.AdapterWorkflowBuilder
 import dsl.ReusableWorkflowJobBuilder
 import dsl.SetupConfigurable
 import dsl.stringInput
@@ -55,5 +56,10 @@ object CreateTagWorkflow : ProjectWorkflow("create-tag.yml") {
         var defaultBump by refInput(CreateTagWorkflow.defaultBump)
         var tagPrefix by refInput(CreateTagWorkflow.tagPrefix)
         var releaseBranches by refInput(CreateTagWorkflow.releaseBranches)
+    }
+
+    context(builder: AdapterWorkflowBuilder)
+    fun job(id: String, block: JobBuilder.() -> Unit = {}) {
+        builder.registerJob(buildJob(id, ::JobBuilder, block))
     }
 }

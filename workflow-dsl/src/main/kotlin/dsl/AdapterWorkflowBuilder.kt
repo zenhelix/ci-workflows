@@ -87,7 +87,7 @@ class AdapterWorkflowBuilder(private val fileName: String, private val name: Str
 
     fun matrix(vararg entries: Pair<String, String>) = MatrixDef(mapOf(*entries))
 
-    internal fun registerJob(job: ReusableWorkflowJobDef) {
+    fun registerJob(job: ReusableWorkflowJobDef) {
         jobs += job
     }
 
