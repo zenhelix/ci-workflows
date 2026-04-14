@@ -7,16 +7,12 @@ import dsl.yaml.WorkflowCallBodyYaml
 import dsl.yaml.adapterWorkflowYaml
 import java.io.File
 
-// Kaml SingleQuoted style quotes map keys too; strip quotes to match GitHub Actions convention.
 private val QUOTED_MAP_KEY = Regex("""^(\s*)'([^']*?)'\s*:""", RegexOption.MULTILINE)
 
 private fun unquoteYamlMapKeys(yaml: String): String =
     yaml.replace(QUOTED_MAP_KEY, "$1$2:")
 
 abstract class AdapterWorkflow(fileName: String) : ReusableWorkflow(fileName) {
-
-    override fun createJobBuilder(): ReusableWorkflowJobBuilder =
-        error("AdapterWorkflow does not support createJobBuilder(); use typed builders on individual workflow objects")
 
     abstract val workflowName: String
 
@@ -52,18 +48,15 @@ abstract class AdapterWorkflow(fileName: String) : ReusableWorkflow(fileName) {
     }
 
     private fun collectSecretsFromJobs(jobDefs: List<ReusableWorkflowJobDef>): Map<String, SecretYaml>? {
-        val secretNames = jobDefs.flatMap { it.secrets.keys }.toSet()
-        if (secretNames.isEmpty()) return null
+        val referencedNames = jobDefs.flatMapTo(mutableSetOf()) { it.secrets.keys }
+        if (referencedNames.isEmpty()) return null
 
-        val workflowSecrets = jobDefs
-            .flatMap { job -> job.uses.secrets.entries }
-            .associate { (name, secret) -> name to secret }
+        val descriptions = jobDefs
+            .flatMap { it.uses.secrets.entries }
+            .associate { (name, secret) -> name to secret.description }
 
-        return secretNames.associateWith { name ->
-            SecretYaml(
-                description = workflowSecrets[name]?.description ?: name,
-                required = true,
-            )
+        return referencedNames.associateWith { name ->
+            SecretYaml(description = descriptions[name] ?: name, required = true)
         }
     }
 }

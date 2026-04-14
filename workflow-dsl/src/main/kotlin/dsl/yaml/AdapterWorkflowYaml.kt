@@ -14,8 +14,6 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-// ---- kaml config ------------------------------------------------------------
-
 val adapterWorkflowYaml: Yaml = Yaml(
     configuration = YamlConfiguration(
         encodeDefaults = false,
@@ -23,8 +21,6 @@ val adapterWorkflowYaml: Yaml = Yaml(
         breakScalarsAt = Int.MAX_VALUE,
     )
 )
-
-// ---- Top-level structure ----------------------------------------------------
 
 @Serializable
 data class AdapterWorkflowYaml(
@@ -45,8 +41,6 @@ data class WorkflowCallBodyYaml(
     val secrets: Map<String, SecretYaml>? = null,
 )
 
-// ---- Input / Secret ---------------------------------------------------------
-
 @Serializable
 data class InputYaml(
     val description: String,
@@ -60,8 +54,6 @@ data class SecretYaml(
     val description: String,
     val required: Boolean,
 )
-
-// ---- Job --------------------------------------------------------------------
 
 @Serializable
 data class JobYaml(
@@ -77,17 +69,10 @@ data class StrategyYaml(
     val matrix: Map<String, String>,
 )
 
-// ---- needs: scalar-or-list --------------------------------------------------
-
-/**
- * When there is exactly one dependency GitHub Actions accepts a scalar string;
- * when there are multiple it must be a list.  We model this with a sealed
- * class so the serializer can emit the right YAML form.
- */
 @Serializable(with = NeedsYamlSerializer::class)
-sealed class NeedsYaml {
-    data class Single(val value: String) : NeedsYaml()
-    data class Multiple(val values: List<String>) : NeedsYaml()
+sealed interface NeedsYaml {
+    data class Single(val value: String) : NeedsYaml
+    data class Multiple(val values: List<String>) : NeedsYaml
 
     companion object {
         fun of(list: List<String>): NeedsYaml? = when (list.size) {
@@ -115,16 +100,10 @@ object NeedsYamlSerializer : KSerializer<NeedsYaml> {
         NeedsYaml.Single(decoder.decodeString())
 }
 
-// ---- default: string-or-boolean ---------------------------------------------
-
-/**
- * Input defaults can be a string ('17') or a boolean (true / false).
- * Booleans must NOT be single-quoted in YAML; strings must be.
- */
 @Serializable(with = YamlDefaultSerializer::class)
-sealed class YamlDefault {
-    data class StringValue(val value: String) : YamlDefault()
-    data class BooleanValue(val value: Boolean) : YamlDefault()
+sealed interface YamlDefault {
+    data class StringValue(val value: String) : YamlDefault
+    data class BooleanValue(val value: Boolean) : YamlDefault
 }
 
 object YamlDefaultSerializer : KSerializer<YamlDefault> {

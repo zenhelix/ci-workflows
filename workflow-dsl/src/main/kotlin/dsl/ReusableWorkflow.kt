@@ -1,10 +1,15 @@
 package dsl
 
-import config.reusableWorkflow
 import dsl.yaml.InputYaml
 import dsl.yaml.SecretYaml
 import dsl.yaml.YamlDefault
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
+
+@JvmInline
+value class InputRef(val expression: String)
+
+@JvmInline
+value class SecretRef(val expression: String)
 
 abstract class ReusableWorkflow(val fileName: String) {
     private val _inputs = mutableMapOf<String, WorkflowCall.Input>()
@@ -47,40 +52,30 @@ abstract class ReusableWorkflow(val fileName: String) {
     val requiredInputNames: Set<String> by lazy {
         _inputs.filter { (_, input) -> input.required }.keys
     }
-    val usesString: String get() = reusableWorkflow(fileName)
 
-    abstract fun createJobBuilder(): ReusableWorkflowJobBuilder
+    abstract val usesString: String
 
-    fun toInputsYaml(): Map<String, InputYaml>? {
-        if (_inputs.isEmpty()) return null
-        return _inputs.map { (name, input) ->
+    fun toInputsYaml(): Map<String, InputYaml>? =
+        _inputs.takeIf { it.isNotEmpty() }?.mapValues { (name, input) ->
             val boolDefault = _booleanDefaults[name]
             val default = when {
                 boolDefault != null  -> YamlDefault.BooleanValue(boolDefault)
                 input.default != null -> YamlDefault.StringValue(input.default!!)
                 else                  -> null
             }
-            name to InputYaml(
+            InputYaml(
                 description = input.description,
                 type = input.type.name.lowercase(),
                 required = input.required,
                 default = default,
             )
-        }.toMap()
-    }
+        }
 
-    fun toSecretsYaml(): Map<String, SecretYaml>? {
-        if (_secrets.isEmpty()) return null
-        return _secrets.map { (name, secret) ->
-            name to SecretYaml(description = secret.description, required = secret.required)
-        }.toMap()
-    }
+    fun toSecretsYaml(): Map<String, SecretYaml>? =
+        _secrets.takeIf { it.isNotEmpty() }?.mapValues { (_, secret) ->
+            SecretYaml(description = secret.description, required = secret.required)
+        }
 
-    /**
-     * Creates a WorkflowCall trigger from this workflow's inputs and secrets.
-     * Handles boolean defaults correctly by falling back to _customArguments
-     * when boolean inputs with defaults exist (WorkflowCall.Input only supports String? defaults).
-     */
     fun toWorkflowCallTrigger(): WorkflowCall {
         val secretsMap = _secrets.takeIf { it.isNotEmpty() }?.toMap()
         return if (_booleanDefaults.isEmpty()) {
@@ -94,8 +89,8 @@ abstract class ReusableWorkflow(val fileName: String) {
     }
 
     private fun inputsAsRawMap(): Map<String, Map<String, Any?>> =
-        _inputs.map { (name, input) ->
-            name to buildMap<String, Any?> {
+        _inputs.mapValues { (name, input) ->
+            buildMap<String, Any?> {
                 put("description", input.description)
                 put("type", input.type.name.lowercase())
                 put("required", input.required)
@@ -106,24 +101,24 @@ abstract class ReusableWorkflow(val fileName: String) {
                     put("default", input.default)
                 }
             }
-        }.toMap()
+        }
 }
 
 class WorkflowInput(val name: String) {
-    val ref: String get() = "\${{ inputs.$name }}"
+    val ref: InputRef get() = InputRef("\${{ inputs.$name }}")
 }
 
 class WorkflowSecret(val name: String) {
-    val ref: String get() = "\${{ secrets.$name }}"
+    val ref: SecretRef get() = SecretRef("\${{ secrets.$name }}")
 }
 
-fun <B : ReusableWorkflowJobBuilder> reusableJob(
+inline fun <B : ReusableWorkflowJobBuilder> reusableJob(
     id: String,
     uses: ReusableWorkflow,
+    builderFactory: () -> B,
     block: B.() -> Unit = {},
 ): ReusableWorkflowJobDef {
-    @Suppress("UNCHECKED_CAST")
-    val builder = uses.createJobBuilder() as B
+    val builder = builderFactory()
     builder.block()
     return builder.build(id)
 }

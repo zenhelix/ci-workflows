@@ -3,6 +3,18 @@ package dsl
 import dsl.yaml.JobYaml
 import dsl.yaml.NeedsYaml
 import dsl.yaml.StrategyYaml
+import kotlin.reflect.KProperty
+
+class InputProperty(private val input: WorkflowInput) {
+    operator fun getValue(builder: ReusableWorkflowJobBuilder, property: KProperty<*>): String =
+        builder.getInput(input)
+
+    operator fun setValue(builder: ReusableWorkflowJobBuilder, property: KProperty<*>, value: String) {
+        builder.setInput(input, value)
+    }
+}
+
+fun inputProp(input: WorkflowInput) = InputProperty(input)
 
 abstract class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
     private val withMap = mutableMapOf<String, String>()
@@ -10,8 +22,15 @@ abstract class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow
     private var needsList = emptyList<String>()
     private var matrixDef: MatrixDef? = null
 
-    protected fun set(input: WorkflowInput, value: String) {
+    fun getInput(input: WorkflowInput): String =
+        withMap[input.name] ?: error("Input '${input.name}' has not been set")
+
+    fun setInput(input: WorkflowInput, value: String) {
         withMap[input.name] = value
+    }
+
+    fun setInput(input: WorkflowInput, value: InputRef) {
+        withMap[input.name] = value.expression
     }
 
     fun needs(vararg jobIds: String) {
@@ -24,7 +43,7 @@ abstract class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow
 
     fun passthroughSecrets(vararg secrets: WorkflowSecret) {
         secrets.forEach { secret ->
-            secretsMap[secret.name] = secret.ref
+            secretsMap[secret.name] = secret.ref.expression
         }
     }
 
@@ -34,6 +53,7 @@ abstract class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow
         }
     }
 
+    @PublishedApi
     internal fun build(id: String): ReusableWorkflowJobDef {
         val missingRequired = workflow.requiredInputNames.filter { it !in withMap }
         require(missingRequired.isEmpty()) {
