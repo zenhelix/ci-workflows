@@ -16,7 +16,7 @@ fun generateLabeler() {
         on = listOf(
             WorkflowCall(inputs = LabelerWorkflow.inputs),
         ),
-        sourceFile = File(".github/workflow-src/labeler.main.kts"),
+        sourceFile = File("src/main/kotlin/workflows/base/Labeler.kt"),
         targetFileName = "labeler.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
         permissions = mapOf(

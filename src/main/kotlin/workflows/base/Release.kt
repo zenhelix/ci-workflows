@@ -17,7 +17,7 @@ fun generateRelease() {
         on = listOf(
             ReleaseWorkflow.toWorkflowCallTrigger(),
         ),
-        sourceFile = File(".github/workflow-src/release.main.kts"),
+        sourceFile = File("src/main/kotlin/workflows/base/Release.kt"),
         targetFileName = "release.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
         permissions = mapOf(Permission.Contents to Mode.Write),

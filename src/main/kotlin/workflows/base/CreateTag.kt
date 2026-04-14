@@ -21,7 +21,7 @@ fun generateCreateTag() {
                 secrets = CreateTagWorkflow.secrets,
             ),
         ),
-        sourceFile = File(".github/workflow-src/create-tag.main.kts"),
+        sourceFile = File("src/main/kotlin/workflows/base/CreateTag.kt"),
         targetFileName = "create-tag.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
         permissions = mapOf(Permission.Contents to Mode.Write),

@@ -20,7 +20,7 @@ fun generateManualCreateTag() {
                 secrets = ManualCreateTagWorkflow.secrets,
             ),
         ),
-        sourceFile = File(".github/workflow-src/manual-create-tag.main.kts"),
+        sourceFile = File("src/main/kotlin/workflows/base/ManualCreateTag.kt"),
         targetFileName = "manual-create-tag.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
         permissions = mapOf(Permission.Contents to Mode.Write),

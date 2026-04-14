@@ -16,7 +16,7 @@ fun generateAppDeploy() {
         on = listOf(
             WorkflowCall(inputs = AppDeployWorkflow.inputs),
         ),
-        sourceFile = File(".github/workflow-src/app-deploy.main.kts"),
+        sourceFile = File("src/main/kotlin/workflows/base/AppDeploy.kt"),
         targetFileName = "app-deploy.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
         permissions = mapOf(Permission.Contents to Mode.Read),

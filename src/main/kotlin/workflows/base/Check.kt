@@ -16,7 +16,7 @@ fun generateCheck() {
         on = listOf(
             WorkflowCall(inputs = CheckWorkflow.inputs),
         ),
-        sourceFile = File(".github/workflow-src/check.main.kts"),
+        sourceFile = File("src/main/kotlin/workflows/base/Check.kt"),
         targetFileName = "check.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
         permissions = mapOf(Permission.Contents to Mode.Read),

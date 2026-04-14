@@ -13,7 +13,7 @@ fun generateConventionalCommitCheck() {
         on = listOf(
             WorkflowCall(inputs = ConventionalCommitCheckWorkflow.inputs),
         ),
-        sourceFile = File(".github/workflow-src/conventional-commit-check.main.kts"),
+        sourceFile = File("src/main/kotlin/workflows/base/ConventionalCommitCheck.kt"),
         targetFileName = "conventional-commit-check.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
     ) {

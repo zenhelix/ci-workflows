@@ -19,7 +19,7 @@ fun generatePublish() {
                 secrets = PublishWorkflow.secrets,
             ),
         ),
-        sourceFile = File(".github/workflow-src/publish.main.kts"),
+        sourceFile = File("src/main/kotlin/workflows/base/Publish.kt"),
         targetFileName = "publish.yml",
         consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
         permissions = mapOf(Permission.Contents to Mode.Read),

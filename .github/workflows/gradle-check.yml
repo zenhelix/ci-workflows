@@ -1,5 +1,5 @@
-# This file was generated using Kotlin DSL (.github/workflow-src/gradle-check.main.kts).
-# If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
+# This file was generated using Kotlin DSL (src/main/kotlin/).
+# If you want to modify the workflow, please change the Kotlin source and regenerate this YAML file.
 # Generated with https://github.com/typesafegithub/github-workflows-kt
 
 name: 'Gradle Check'
