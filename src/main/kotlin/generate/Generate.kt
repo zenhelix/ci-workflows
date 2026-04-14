@@ -1,6 +1,7 @@
 package generate
 
-import config.SetupTool
+import config.GO_TAG
+import config.GRADLE_TAG
 import workflows.CheckWorkflow
 import workflows.ConventionalCommitCheckWorkflow
 import workflows.CreateTagWorkflow
@@ -42,42 +43,10 @@ private fun generateAdapterWorkflows(outputDir: File) {
     gradleCheck("kotlin-library-check.yml", "Kotlin Library Check").generate(outputDir)
 
     // Tag adapters
-    toolCreateTag(
-        fileName = "gradle-create-tag.yml",
-        name = "Gradle Create Tag",
-        tool = SetupTool.Gradle,
-        commandInputName = "gradle-command",
-        commandDescription = "Gradle check command",
-        defaultCommand = "./gradlew check",
-        defaultTagPrefix = "",
-    ).generate(outputDir)
-    toolCreateTag(
-        fileName = "go-create-tag.yml",
-        name = "Go Create Tag",
-        tool = SetupTool.Go,
-        commandInputName = "check-command",
-        commandDescription = "Go validation command",
-        defaultCommand = "make test",
-        defaultTagPrefix = "v",
-    ).generate(outputDir)
-    toolManualCreateTag(
-        fileName = "gradle-manual-create-tag.yml",
-        name = "Gradle Manual Create Tag",
-        tool = SetupTool.Gradle,
-        commandInputName = "gradle-command",
-        commandDescription = "Gradle check command",
-        defaultCommand = "./gradlew check",
-        defaultTagPrefix = "",
-    ).generate(outputDir)
-    toolManualCreateTag(
-        fileName = "go-manual-create-tag.yml",
-        name = "Go Manual Create Tag",
-        tool = SetupTool.Go,
-        commandInputName = "check-command",
-        commandDescription = "Go validation command",
-        defaultCommand = "make test",
-        defaultTagPrefix = "v",
-    ).generate(outputDir)
+    toolCreateTag("gradle-create-tag.yml", "Gradle Create Tag", GRADLE_TAG).generate(outputDir)
+    toolCreateTag("go-create-tag.yml", "Go Create Tag", GO_TAG).generate(outputDir)
+    toolManualCreateTag("gradle-manual-create-tag.yml", "Gradle Manual Create Tag", GRADLE_TAG).generate(outputDir)
+    toolManualCreateTag("go-manual-create-tag.yml", "Go Manual Create Tag", GO_TAG).generate(outputDir)
 
     // Release adapters
     appRelease.generate(outputDir)
