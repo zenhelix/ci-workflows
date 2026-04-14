@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm")
-    kotlin("plugin.serialization")
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 repositories {
@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.typesafegithub:github-workflows-kt:3.7.0")
-    implementation("com.charleskorn.kaml:kaml:0.104.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.11.0")
+    implementation(libs.github.workflows.kt)
+    implementation(libs.kaml)
+    implementation(libs.kotlinx.serialization.core)
 }

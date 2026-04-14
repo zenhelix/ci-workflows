@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "2.3.20"
-    kotlin("plugin.serialization") version "2.3.20"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
     application
 }
 
@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     implementation(project(":workflow-dsl"))
-    implementation("io.github.typesafegithub:github-workflows-kt:3.7.0")
+    implementation(libs.github.workflows.kt)
 
     // JIT action bindings
     implementation("actions:checkout:v6")
