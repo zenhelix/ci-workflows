@@ -10,7 +10,7 @@ class SetupAction(
     private val fetchDepth: String? = null,
 ) : Action<Action.Outputs>() {
     override val usesString = localAction(actionName)
-    override fun toYamlArguments() = linkedMapOf(
+    override fun toYamlArguments(): LinkedHashMap<String, String> = linkedMapOf(
         versionKey to version,
     ).apply {
         fetchDepth?.let { put("fetch-depth", it) }

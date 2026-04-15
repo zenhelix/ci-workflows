@@ -25,7 +25,7 @@ fun JobBuilder<*>.conditionalSetupSteps(
 }
 
 fun SetupCapableJobBuilder.setup(tool: SetupTool, versionExpr: MatrixRefExpr) {
-    applySetup(tool.id, tool.toParamsJson(versionExpr))
+    applySetup(tool.id, tool.toParamsJson(versionExpr.expression))
 }
 
 fun SetupCapableJobBuilder.setup(tool: SetupTool, versionRef: String) {

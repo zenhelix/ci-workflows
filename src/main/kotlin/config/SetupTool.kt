@@ -1,7 +1,5 @@
 package config
 
-import dsl.core.MatrixRefExpr
-
 sealed class SetupTool(
     val actionName: String,
     val versionKey: String,
@@ -12,9 +10,6 @@ sealed class SetupTool(
 
     fun toParamsJson(versionExpr: String): String =
         """{"$versionKey": "$versionExpr"}"""
-
-    fun toParamsJson(versionExpr: MatrixRefExpr): String =
-        """{"$versionKey": "${versionExpr.expression}"}"""
 
     data object Gradle : SetupTool("setup-gradle", "java-version", DEFAULT_JAVA_VERSION, "JDK version to use")
     data object Go : SetupTool("setup-go", "go-version", DEFAULT_GO_VERSION, "Go version to use")
