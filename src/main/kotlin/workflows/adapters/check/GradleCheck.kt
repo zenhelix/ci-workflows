@@ -4,6 +4,8 @@ import config.JAVA_VERSION_MATRIX_EXPR
 import config.SetupTool
 import dsl.builder.AdapterWorkflow
 import dsl.builder.adapterWorkflow
+import dsl.capability.setupJob
+import dsl.core.simpleJob
 import workflows.base.CheckWorkflow
 import workflows.base.ConventionalCommitCheckWorkflow
 import workflows.support.setup
@@ -21,9 +23,9 @@ object GradleCheck {
 
         val javaVersionMatrix = matrixRef("java-version")
 
-        ConventionalCommitCheckWorkflow.job("conventional-commit")
+        ConventionalCommitCheckWorkflow.simpleJob("conventional-commit")
 
-        CheckWorkflow.job("check") {
+        CheckWorkflow.setupJob("check") {
             strategy(matrix(javaVersionMatrix.key to JAVA_VERSION_MATRIX_EXPR))
             setup(SetupTool.Gradle, javaVersionMatrix.ref.expression)
             CheckWorkflow.checkCommand from gradleCommand

@@ -101,3 +101,9 @@ abstract class ReusableWorkflow(val fileName: String) {
             }
         }
 }
+
+context(builder: AdapterWorkflowBuilder)
+fun ReusableWorkflow.simpleJob(
+    id: String,
+    block: ReusableWorkflowJobBuilder.() -> Unit = {},
+) = job(id, { ReusableWorkflowJobBuilder(this@simpleJob) }, block)

@@ -6,6 +6,7 @@ import config.GRADLE
 import dsl.builder.AdapterWorkflow
 import dsl.builder.adapterWorkflow
 import dsl.core.expr
+import dsl.capability.setupJob
 import workflows.base.ManualCreateTagWorkflow
 import workflows.support.setup
 
@@ -21,7 +22,7 @@ fun ecosystemManualCreateTag(fileName: String, name: String, eco: EcosystemConfi
         val checkCommand = input(eco.checkCommandName, description = eco.checkCommandDescription, default = eco.defaultCheckCommand)
         val tagPrefix = input("tag-prefix", description = "Prefix for the tag", default = eco.defaultTagPrefix)
 
-        ManualCreateTagWorkflow.job("manual-tag") {
+        ManualCreateTagWorkflow.setupJob("manual-tag") {
             ManualCreateTagWorkflow.tagVersion from tagVersion
             ManualCreateTagWorkflow.tagPrefix from tagPrefix
             setup(eco.tool, version.expr)

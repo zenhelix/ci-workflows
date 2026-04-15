@@ -1,7 +1,5 @@
 package workflows.base
 
-import dsl.builder.AdapterWorkflowBuilder
-import dsl.builder.SetupAwareJobBuilder
 import dsl.capability.SetupCapability
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
@@ -28,10 +26,6 @@ object PublishWorkflow : ProjectWorkflow("publish.yml", "Publish"), SetupCapabil
         mavenSonatypeSigningKeyAsciiArmored, mavenSonatypeSigningPassword,
     )
     val gradlePortalSecrets = listOf(gradlePublishKey, gradlePublishSecret)
-
-    context(builder: AdapterWorkflowBuilder)
-    fun job(id: String, block: SetupAwareJobBuilder<PublishWorkflow>.() -> Unit = {}) =
-        job(id, { SetupAwareJobBuilder(this@PublishWorkflow) }, block)
 
     override fun WorkflowBuilder.implementation() {
         job(id = "publish", name = "Publish", runsOn = UbuntuLatest) {

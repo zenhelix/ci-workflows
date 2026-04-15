@@ -3,8 +3,6 @@ package workflows.base
 import actions.CreateAppTokenAction
 import actions.GithubTagAction
 import config.DEFAULT_RELEASE_BRANCHES
-import dsl.builder.AdapterWorkflowBuilder
-import dsl.builder.SetupAwareJobBuilder
 import dsl.capability.SetupCapability
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
@@ -26,10 +24,6 @@ object CreateTagWorkflow : ProjectWorkflow(
     val releaseBranches = input("release-branches", "Comma-separated branch patterns for releases", default = DEFAULT_RELEASE_BRANCHES)
     val appId = secret("app-id", "GitHub App ID for generating commit token")
     val appPrivateKey = secret("app-private-key", "GitHub App private key for generating commit token")
-
-    context(builder: AdapterWorkflowBuilder)
-    fun job(id: String, block: SetupAwareJobBuilder<CreateTagWorkflow>.() -> Unit = {}) =
-        job(id, { SetupAwareJobBuilder(this@CreateTagWorkflow) }, block)
 
     override fun WorkflowBuilder.implementation() {
         job(id = "create_tag", name = "Create Tag", runsOn = UbuntuLatest) {

@@ -1,5 +1,8 @@
 package dsl.capability
 
+import dsl.builder.AdapterWorkflowBuilder
+import dsl.builder.SetupAwareJobBuilder
+import dsl.core.ReusableWorkflow
 import dsl.core.WorkflowInput
 
 interface SetupCapability {
@@ -22,3 +25,10 @@ interface SetupCapableJobBuilder {
         setupParams = params
     }
 }
+
+context(builder: AdapterWorkflowBuilder)
+inline fun <reified W> W.setupJob(
+    id: String,
+    noinline block: SetupAwareJobBuilder<W>.() -> Unit = {},
+) where W : ReusableWorkflow, W : SetupCapability =
+    job(id, { SetupAwareJobBuilder(this@setupJob) }, block)

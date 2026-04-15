@@ -1,8 +1,6 @@
 package workflows.base
 
 import config.DEFAULT_CHANGELOG_CONFIG
-import dsl.builder.AdapterWorkflowBuilder
-import dsl.builder.ReusableWorkflowJobBuilder
 import io.github.typesafegithub.workflows.actions.actions.Checkout
 import io.github.typesafegithub.workflows.actions.mikepenz.ReleaseChangelogBuilderAction_Untyped
 import io.github.typesafegithub.workflows.actions.softprops.ActionGhRelease
@@ -19,10 +17,6 @@ object ReleaseWorkflow : ProjectWorkflow(
 ) {
     val changelogConfig = input("changelog-config", "Path to changelog configuration file", default = DEFAULT_CHANGELOG_CONFIG)
     val draft = input("draft", "Create release as draft", default = false)
-
-    context(builder: AdapterWorkflowBuilder)
-    fun job(id: String, block: ReusableWorkflowJobBuilder.() -> Unit = {}) =
-        job(id, { ReusableWorkflowJobBuilder(this@ReleaseWorkflow) }, block)
 
     override fun WorkflowBuilder.implementation() {
         job(id = "release", name = "GitHub Release", runsOn = UbuntuLatest) {

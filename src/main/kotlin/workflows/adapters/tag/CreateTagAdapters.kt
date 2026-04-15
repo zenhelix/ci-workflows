@@ -7,6 +7,7 @@ import config.GRADLE
 import dsl.builder.AdapterWorkflow
 import dsl.builder.adapterWorkflow
 import dsl.core.expr
+import dsl.capability.setupJob
 import workflows.base.CreateTagWorkflow
 import workflows.support.setup
 
@@ -23,7 +24,7 @@ fun ecosystemCreateTag(fileName: String, name: String, eco: EcosystemConfig): Ad
         val tagPrefix = input("tag-prefix", description = "Prefix for the tag", default = eco.defaultTagPrefix)
         val releaseBranches = input("release-branches", description = "Comma-separated branch patterns for releases", default = DEFAULT_RELEASE_BRANCHES)
 
-        CreateTagWorkflow.job("create-tag") {
+        CreateTagWorkflow.setupJob("create-tag") {
             setup(eco.tool, version.expr)
             CreateTagWorkflow.checkCommand from checkCommand
             CreateTagWorkflow.defaultBump from defaultBump

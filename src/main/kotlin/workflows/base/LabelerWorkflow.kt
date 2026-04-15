@@ -1,7 +1,5 @@
 package workflows.base
 
-import dsl.builder.AdapterWorkflowBuilder
-import dsl.builder.ReusableWorkflowJobBuilder
 import dsl.core.expr
 import io.github.typesafegithub.workflows.actions.actions.Labeler
 import io.github.typesafegithub.workflows.domain.Mode
@@ -15,10 +13,6 @@ object LabelerWorkflow : ProjectWorkflow(
     permissions = mapOf(Permission.Contents to Mode.Write, Permission.PullRequests to Mode.Write),
 ) {
     val configPath = input("config-path", "Path to labeler configuration file", default = ".github/labeler.yml")
-
-    context(builder: AdapterWorkflowBuilder)
-    fun job(id: String, block: ReusableWorkflowJobBuilder.() -> Unit = {}) =
-        job(id, { ReusableWorkflowJobBuilder(this@LabelerWorkflow) }, block)
 
     override fun WorkflowBuilder.implementation() {
         job(id = "label", name = "Label PR", runsOn = UbuntuLatest) {

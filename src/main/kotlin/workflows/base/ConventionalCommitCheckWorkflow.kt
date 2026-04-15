@@ -1,7 +1,5 @@
 package workflows.base
 
-import dsl.builder.AdapterWorkflowBuilder
-import dsl.builder.ReusableWorkflowJobBuilder
 import dsl.core.expr
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
@@ -9,10 +7,6 @@ import workflows.ProjectWorkflow
 
 object ConventionalCommitCheckWorkflow : ProjectWorkflow("conventional-commit-check.yml", "Conventional Commit Check", permissions = null) {
     val allowedTypes = input("allowed-types", "Comma-separated list of allowed commit types", default = "feat,fix,refactor,docs,test,chore,perf,ci")
-
-    context(builder: AdapterWorkflowBuilder)
-    fun job(id: String, block: ReusableWorkflowJobBuilder.() -> Unit = {}) =
-        job(id, { ReusableWorkflowJobBuilder(this@ConventionalCommitCheckWorkflow) }, block)
 
     override fun WorkflowBuilder.implementation() {
         job(id = "check-title", name = "Check PR Title", runsOn = UbuntuLatest) {
