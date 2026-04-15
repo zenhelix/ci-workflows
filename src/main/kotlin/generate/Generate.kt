@@ -10,8 +10,7 @@ import workflows.base.PublishWorkflow
 import workflows.base.LabelerWorkflow
 import workflows.base.AppDeployWorkflow
 import workflows.adapters.check.GradleCheck
-import workflows.adapters.tag.CreateTagAdapters
-import workflows.adapters.tag.ManualCreateTagAdapters
+import workflows.adapters.tag.TagAdapters
 import workflows.adapters.release.ReleaseAdapters
 import java.io.File
 
@@ -36,10 +35,10 @@ fun main() {
         GradleCheck.kotlinLibraryCheck,
 
         // Adapters — tag
-        CreateTagAdapters.gradle,
-        CreateTagAdapters.go,
-        ManualCreateTagAdapters.gradle,
-        ManualCreateTagAdapters.go,
+        TagAdapters.gradleCreateTag,
+        TagAdapters.goCreateTag,
+        TagAdapters.gradleManualTag,
+        TagAdapters.goManualTag,
 
         // Adapters — release
         ReleaseAdapters.app,

@@ -9,11 +9,15 @@ import dsl.builder.adapterWorkflow
 import dsl.core.expr
 import dsl.capability.setupJob
 import workflows.base.CreateTagWorkflow
+import workflows.base.ManualCreateTagWorkflow
 import workflows.support.setup
 
-object CreateTagAdapters {
-    val gradle = ecosystemCreateTag("gradle-create-tag.yml", "Gradle Create Tag", GRADLE)
-    val go = ecosystemCreateTag("go-create-tag.yml", "Go Create Tag", GO)
+object TagAdapters {
+    val gradleCreateTag = ecosystemCreateTag("gradle-create-tag.yml", "Gradle Create Tag", GRADLE)
+    val goCreateTag = ecosystemCreateTag("go-create-tag.yml", "Go Create Tag", GO)
+
+    val gradleManualTag = ecosystemManualTag("gradle-manual-create-tag.yml", "Gradle Manual Create Tag", GRADLE)
+    val goManualTag = ecosystemManualTag("go-manual-create-tag.yml", "Go Manual Create Tag", GO)
 
     private fun ecosystemCreateTag(fileName: String, name: String, eco: EcosystemConfig): AdapterWorkflow =
         adapterWorkflow(fileName, name) {
@@ -29,6 +33,22 @@ object CreateTagAdapters {
                 CreateTagWorkflow.defaultBump from defaultBump
                 CreateTagWorkflow.tagPrefix from tagPrefix
                 CreateTagWorkflow.releaseBranches from releaseBranches
+                passthroughAllSecrets()
+            }
+        }
+
+    private fun ecosystemManualTag(fileName: String, name: String, eco: EcosystemConfig): AdapterWorkflow =
+        adapterWorkflow(fileName, name) {
+            val tagVersion = input("tag-version", description = "Version to tag (e.g. 1.2.3)", required = true)
+            val version = input(eco.tool.versionKey, description = eco.tool.versionDescription, default = eco.tool.defaultVersion)
+            val checkCommand = input(eco.checkCommandName, description = eco.checkCommandDescription, default = eco.defaultCheckCommand)
+            val tagPrefix = input("tag-prefix", description = "Prefix for the tag", default = eco.defaultTagPrefix)
+
+            ManualCreateTagWorkflow.setupJob("manual-tag") {
+                ManualCreateTagWorkflow.tagVersion from tagVersion
+                ManualCreateTagWorkflow.tagPrefix from tagPrefix
+                setup(eco.tool, version.expr)
+                ManualCreateTagWorkflow.checkCommand from checkCommand
                 passthroughAllSecrets()
             }
         }
