@@ -28,14 +28,7 @@ object ReleaseAdapters {
         "kotlin-library-release.yml", "Kotlin Library Release",
         "Gradle publish command for Maven Central",
     ) {
-        passthroughSecrets(
-            PublishWorkflow.mavenSonatypeUsername,
-            PublishWorkflow.mavenSonatypeToken,
-            PublishWorkflow.mavenSonatypeSigningKeyId,
-            PublishWorkflow.mavenSonatypeSigningPubKeyAsciiArmored,
-            PublishWorkflow.mavenSonatypeSigningKeyAsciiArmored,
-            PublishWorkflow.mavenSonatypeSigningPassword,
-        )
+        passthroughSecrets(PublishWorkflow.mavenSecrets)
     }
 
     private fun gradleRelease(

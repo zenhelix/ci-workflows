@@ -42,6 +42,12 @@ abstract class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow
         }
     }
 
+    fun passthroughSecrets(secrets: List<WorkflowSecret>) {
+        secrets.forEach { secret ->
+            secretsMap[secret.name] = secret.ref.expression
+        }
+    }
+
     fun passthroughAllSecrets() {
         workflow.secretObjects.forEach { secret ->
             secretsMap[secret.name] = secret.ref.expression

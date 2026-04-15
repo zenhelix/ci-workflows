@@ -22,6 +22,13 @@ object PublishWorkflow : ProjectWorkflow("publish.yml", "Publish"), SetupCapabil
     val gradlePublishKey = secret("GRADLE_PUBLISH_KEY", "Gradle Plugin Portal publish key", required = false)
     val gradlePublishSecret = secret("GRADLE_PUBLISH_SECRET", "Gradle Plugin Portal publish secret", required = false)
 
+    val mavenSecrets = listOf(
+        mavenSonatypeUsername, mavenSonatypeToken,
+        mavenSonatypeSigningKeyId, mavenSonatypeSigningPubKeyAsciiArmored,
+        mavenSonatypeSigningKeyAsciiArmored, mavenSonatypeSigningPassword,
+    )
+    val gradlePortalSecrets = listOf(gradlePublishKey, gradlePublishSecret)
+
     class JobBuilder : SetupAwareJobBuilder(PublishWorkflow) {
         var publishCommand by refInput(PublishWorkflow.publishCommand)
     }
