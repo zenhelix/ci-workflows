@@ -8,7 +8,7 @@ sealed class SetupTool(
     val defaultVersion: String,
     val versionDescription: String,
 ) {
-    val id: String get() = actionName.removePrefix("setup-")
+    val id: String = actionName.removePrefix("setup-")
 
     fun toParamsJson(versionExpr: String): String =
         """{"$versionKey": "$versionExpr"}"""

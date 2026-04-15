@@ -18,6 +18,12 @@ private val QUOTED_MAP_KEY = Regex("""^(\s*)'([^']*?)'\s*:""", RegexOption.MULTI
 private fun unquoteYamlMapKeys(yaml: String): String =
     yaml.replace(QUOTED_MAP_KEY, "$1$2:")
 
+private val YAML_HEADER = buildString {
+    appendLine("# This file was generated using Kotlin DSL (src/main/kotlin/).")
+    appendLine("# If you want to modify the workflow, please change the Kotlin source and regenerate this YAML file.")
+    append("# Generated with https://github.com/typesafegithub/github-workflows-kt")
+}
+
 class AdapterWorkflow(
     override val fileName: String,
     val workflowName: String,
@@ -38,25 +44,20 @@ class AdapterWorkflow(
             jobs = jobs.associate { job -> job.id to job.toJobYaml() },
         )
 
-        val header = buildString {
-            appendLine("# This file was generated using Kotlin DSL (src/main/kotlin/).")
-            appendLine("# If you want to modify the workflow, please change the Kotlin source and regenerate this YAML file.")
-            append("# Generated with https://github.com/typesafegithub/github-workflows-kt")
-        }
-
         val rawBody = adapterWorkflowYaml.encodeToString(AdapterWorkflowYaml.serializer(), dto)
         val body = unquoteYamlMapKeys(rawBody)
 
-        File(outputDir, fileName).writeText("$header\n\n$body\n")
+        File(outputDir, fileName).writeText("$YAML_HEADER\n\n$body\n")
     }
 
     private fun collectSecretsFromJobs(jobDefs: List<ReusableWorkflowJobDef>): Map<String, SecretYaml>? =
         buildMap {
             for (job in jobDefs) {
+                val workflowSecrets = job.uses.secrets
                 for (name in job.secrets.keys) {
                     putIfAbsent(name, SecretYaml(
-                        description = job.uses.secrets[name]?.description ?: name,
-                        required = true,
+                        description = workflowSecrets[name]?.description ?: name,
+                        required = workflowSecrets[name]?.required ?: true,
                     ))
                 }
             }

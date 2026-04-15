@@ -1,7 +1,6 @@
 package workflows.adapters.release
 
 import config.DEFAULT_CHANGELOG_CONFIG
-import config.DEFAULT_JAVA_VERSION
 import config.SetupTool
 import dsl.builder.AdapterWorkflow
 import dsl.builder.adapterWorkflow
@@ -45,7 +44,7 @@ object ReleaseAdapters {
         publishDescription: String,
         publishSecrets: PublishWorkflow.JobBuilder.() -> Unit = { passthroughAllSecrets() },
     ): AdapterWorkflow = adapterWorkflow(fileName, name) {
-        val javaVersion = input("java-version", description = "JDK version to use", default = DEFAULT_JAVA_VERSION)
+        val javaVersion = input(SetupTool.Gradle.versionKey, description = SetupTool.Gradle.versionDescription, default = SetupTool.Gradle.defaultVersion)
         val publishCommand = input("publish-command", description = publishDescription, required = true)
         val changelogConfig = input("changelog-config", description = "Path to changelog configuration file", default = DEFAULT_CHANGELOG_CONFIG)
 
