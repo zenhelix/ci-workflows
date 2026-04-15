@@ -15,9 +15,7 @@ object ConventionalCommitCheckWorkflow : ProjectWorkflow("conventional-commit-ch
     }
 
     context(builder: AdapterWorkflowBuilder)
-    fun job(id: String, block: JobBuilder.() -> Unit = {}) {
-        builder.registerJob(buildJob(id, ::JobBuilder, block))
-    }
+    fun job(id: String, block: JobBuilder.() -> Unit = {}) = job(id, ::JobBuilder, block)
 
     override fun WorkflowBuilder.implementation() {
         job(id = "check-title", name = "Check PR Title", runsOn = UbuntuLatest) {

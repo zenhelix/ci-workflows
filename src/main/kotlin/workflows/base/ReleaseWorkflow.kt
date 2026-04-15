@@ -26,9 +26,7 @@ object ReleaseWorkflow : ProjectWorkflow(
     }
 
     context(builder: AdapterWorkflowBuilder)
-    fun job(id: String, block: JobBuilder.() -> Unit = {}) {
-        builder.registerJob(buildJob(id, ::JobBuilder, block))
-    }
+    fun job(id: String, block: JobBuilder.() -> Unit = {}) = job(id, ::JobBuilder, block)
 
     override fun WorkflowBuilder.implementation() {
         job(id = "release", name = "GitHub Release", runsOn = UbuntuLatest) {
