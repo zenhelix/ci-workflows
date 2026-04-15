@@ -69,17 +69,12 @@ data class StrategyYaml(
     val matrix: Map<String, String>,
 )
 
+@JvmInline
 @Serializable(with = NeedsYamlSerializer::class)
-sealed interface NeedsYaml {
-    data class Single(val value: String) : NeedsYaml
-    data class Multiple(val values: List<String>) : NeedsYaml
-
+value class NeedsYaml(val values: List<String>) {
     companion object {
-        fun of(list: List<String>): NeedsYaml? = when (list.size) {
-            0 -> null
-            1 -> Single(list.first())
-            else -> Multiple(list)
-        }
+        fun of(list: List<String>): NeedsYaml? =
+            if (list.isEmpty()) null else NeedsYaml(list)
     }
 }
 
@@ -90,14 +85,12 @@ object NeedsYamlSerializer : KSerializer<NeedsYaml> {
         PrimitiveSerialDescriptor("NeedsYaml", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: NeedsYaml) {
-        when (value) {
-            is NeedsYaml.Single   -> encoder.encodeString(value.value)
-            is NeedsYaml.Multiple -> listSerializer.serialize(encoder, value.values)
-        }
+        if (value.values.size == 1) encoder.encodeString(value.values.first())
+        else listSerializer.serialize(encoder, value.values)
     }
 
     override fun deserialize(decoder: Decoder): NeedsYaml =
-        NeedsYaml.Single(decoder.decodeString())
+        NeedsYaml(listOf(decoder.decodeString()))
 }
 
 @Serializable(with = YamlDefaultSerializer::class)
