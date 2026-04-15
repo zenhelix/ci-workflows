@@ -1,11 +1,9 @@
 package workflows.base
 
 import dsl.builder.AdapterWorkflowBuilder
-import dsl.builder.ReusableWorkflowJobBuilder
+import dsl.builder.SetupAwareJobBuilder
 import dsl.builder.refInput
-import dsl.builder.stringInput
 import dsl.capability.SetupCapability
-import dsl.capability.SetupCapableJobBuilder
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
 import workflows.ProjectWorkflow
@@ -24,16 +22,12 @@ object PublishWorkflow : ProjectWorkflow("publish.yml", "Publish"), SetupCapabil
     val gradlePublishKey = secret("GRADLE_PUBLISH_KEY", "Gradle Plugin Portal publish key", required = false)
     val gradlePublishSecret = secret("GRADLE_PUBLISH_SECRET", "Gradle Plugin Portal publish secret", required = false)
 
-    class JobBuilder : ReusableWorkflowJobBuilder(PublishWorkflow), SetupCapableJobBuilder {
-        override var setupAction by stringInput(PublishWorkflow.setupAction)
-        override var setupParams by stringInput(PublishWorkflow.setupParams)
+    class JobBuilder : SetupAwareJobBuilder(PublishWorkflow) {
         var publishCommand by refInput(PublishWorkflow.publishCommand)
     }
 
     context(builder: AdapterWorkflowBuilder)
-    fun job(id: String, block: JobBuilder.() -> Unit = {}) {
-        builder.registerJob(buildJob(id, ::JobBuilder, block))
-    }
+    fun job(id: String, block: JobBuilder.() -> Unit = {}) = job(id, ::JobBuilder, block)
 
     override fun WorkflowBuilder.implementation() {
         job(id = "publish", name = "Publish", runsOn = UbuntuLatest) {

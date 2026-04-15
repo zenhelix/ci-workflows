@@ -4,11 +4,9 @@ import actions.CreateAppTokenAction
 import actions.GithubTagAction
 import config.DEFAULT_RELEASE_BRANCHES
 import dsl.builder.AdapterWorkflowBuilder
-import dsl.builder.ReusableWorkflowJobBuilder
+import dsl.builder.SetupAwareJobBuilder
 import dsl.builder.refInput
-import dsl.builder.stringInput
 import dsl.capability.SetupCapability
-import dsl.capability.SetupCapableJobBuilder
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
@@ -29,9 +27,7 @@ object CreateTagWorkflow : ProjectWorkflow(
     val appId = secret("app-id", "GitHub App ID for generating commit token")
     val appPrivateKey = secret("app-private-key", "GitHub App private key for generating commit token")
 
-    class JobBuilder : ReusableWorkflowJobBuilder(CreateTagWorkflow), SetupCapableJobBuilder {
-        override var setupAction by stringInput(CreateTagWorkflow.setupAction)
-        override var setupParams by stringInput(CreateTagWorkflow.setupParams)
+    class JobBuilder : SetupAwareJobBuilder(CreateTagWorkflow) {
         var checkCommand by refInput(CreateTagWorkflow.checkCommand)
         var defaultBump by refInput(CreateTagWorkflow.defaultBump)
         var tagPrefix by refInput(CreateTagWorkflow.tagPrefix)
@@ -39,9 +35,7 @@ object CreateTagWorkflow : ProjectWorkflow(
     }
 
     context(builder: AdapterWorkflowBuilder)
-    fun job(id: String, block: JobBuilder.() -> Unit = {}) {
-        builder.registerJob(buildJob(id, ::JobBuilder, block))
-    }
+    fun job(id: String, block: JobBuilder.() -> Unit = {}) = job(id, ::JobBuilder, block)
 
     override fun WorkflowBuilder.implementation() {
         job(id = "create_tag", name = "Create Tag", runsOn = UbuntuLatest) {

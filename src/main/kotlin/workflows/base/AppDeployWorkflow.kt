@@ -1,11 +1,9 @@
 package workflows.base
 
 import dsl.builder.AdapterWorkflowBuilder
-import dsl.builder.ReusableWorkflowJobBuilder
+import dsl.builder.SetupAwareJobBuilder
 import dsl.builder.refInput
-import dsl.builder.stringInput
 import dsl.capability.SetupCapability
-import dsl.capability.SetupCapableJobBuilder
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
 import workflows.ProjectWorkflow
@@ -17,17 +15,13 @@ object AppDeployWorkflow : ProjectWorkflow("app-deploy.yml", "Application Deploy
     val deployCommand = input("deploy-command", "Command to run for deployment", required = true)
     val tag = input("tag", "Tag/version to deploy (checked out at this ref)", required = true)
 
-    class JobBuilder : ReusableWorkflowJobBuilder(AppDeployWorkflow), SetupCapableJobBuilder {
-        override var setupAction by stringInput(AppDeployWorkflow.setupAction)
-        override var setupParams by stringInput(AppDeployWorkflow.setupParams)
+    class JobBuilder : SetupAwareJobBuilder(AppDeployWorkflow) {
         var deployCommand by refInput(AppDeployWorkflow.deployCommand)
         var tag by refInput(AppDeployWorkflow.tag)
     }
 
     context(builder: AdapterWorkflowBuilder)
-    fun job(id: String, block: JobBuilder.() -> Unit = {}) {
-        builder.registerJob(buildJob(id, ::JobBuilder, block))
-    }
+    fun job(id: String, block: JobBuilder.() -> Unit = {}) = job(id, ::JobBuilder, block)
 
     override fun WorkflowBuilder.implementation() {
         job(id = "deploy", name = "Deploy", runsOn = UbuntuLatest) {
