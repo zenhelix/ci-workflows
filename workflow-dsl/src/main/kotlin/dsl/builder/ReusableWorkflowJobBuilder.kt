@@ -1,5 +1,7 @@
 package dsl.builder
 
+import dsl.capability.SetupCapability
+import dsl.capability.SetupCapableJobBuilder
 import dsl.core.InputRef
 import dsl.core.MatrixDef
 import dsl.core.ReusableWorkflow
@@ -83,4 +85,10 @@ data class ReusableWorkflowJobDef(
         with = with.takeIf { it.isNotEmpty() },
         secrets = secrets.takeIf { it.isNotEmpty() },
     )
+}
+
+abstract class SetupAwareJobBuilder(workflow: ReusableWorkflow) :
+    ReusableWorkflowJobBuilder(workflow), SetupCapableJobBuilder {
+    override var setupAction by stringInput((workflow as SetupCapability).setupAction)
+    override var setupParams by stringInput((workflow as SetupCapability).setupParams)
 }
