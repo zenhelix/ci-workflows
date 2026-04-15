@@ -4,13 +4,11 @@ import dsl.builder.AdapterWorkflowBuilder
 import dsl.builder.ReusableWorkflowJobBuilder
 import dsl.builder.ReusableWorkflowJobDef
 import dsl.yaml.InputYaml
-import dsl.yaml.SecretYaml
 import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 
 abstract class ReusableWorkflow(val fileName: String) {
     private val inputRegistry = InputRegistry()
-    private val _secrets = mutableMapOf<String, WorkflowCall.Secret>()
-    private val _secretObjects = mutableListOf<WorkflowSecret>()
+    private val _secrets = linkedMapOf<String, Pair<WorkflowCall.Secret, WorkflowSecret>>()
 
     protected fun input(
         name: String,
@@ -37,15 +35,14 @@ abstract class ReusableWorkflow(val fileName: String) {
         description: String,
         required: Boolean = true,
     ): WorkflowSecret {
-        _secrets[name] = WorkflowCall.Secret(description, required)
         val obj = WorkflowSecret(name)
-        _secretObjects += obj
+        _secrets[name] = WorkflowCall.Secret(description, required) to obj
         return obj
     }
 
     val inputDefs: Map<String, WorkflowInputDef> get() = inputRegistry.inputs
-    val secrets: Map<String, WorkflowCall.Secret> get() = _secrets
-    val secretObjects: List<WorkflowSecret> get() = _secretObjects
+    val secrets: Map<String, WorkflowCall.Secret> get() = _secrets.mapValues { it.value.first }
+    val secretObjects: List<WorkflowSecret> get() = _secrets.values.map { it.second }
     val requiredInputNames: Set<String> by lazy {
         inputRegistry.inputs.filter { (_, def) -> def.required }.keys
     }
@@ -54,11 +51,6 @@ abstract class ReusableWorkflow(val fileName: String) {
 
     fun toInputsYaml(): Map<String, InputYaml>? =
         dsl.yaml.toInputsYaml(inputRegistry.inputs)
-
-    fun toSecretsYaml(): Map<String, SecretYaml>? =
-        _secrets.takeIf { it.isNotEmpty() }?.mapValues { (_, secret) ->
-            SecretYaml(description = secret.description, required = secret.required)
-        }
 
     fun toWorkflowCallTrigger(): WorkflowCall {
         val custom = buildMap<String, Any> {
@@ -91,7 +83,8 @@ abstract class ReusableWorkflow(val fileName: String) {
     }
 
     private fun secretsAsRawMap(): Map<String, Map<String, Any?>> =
-        _secrets.mapValues { (_, secret) ->
+        _secrets.mapValues { (_, pair) ->
+            val (secret, _) = pair
             buildMap {
                 put("description", secret.description)
                 put("required", secret.required)
@@ -104,11 +97,7 @@ abstract class ReusableWorkflow(val fileName: String) {
                 put("description", def.description)
                 put("type", def.type.yamlName())
                 put("required", def.required)
-                when (val d = def.default) {
-                    is InputDefault.StringDefault  -> put("default", d.value)
-                    is InputDefault.BooleanDefault -> put("default", d.value)
-                    null                           -> {}
-                }
+                def.default?.let { put("default", it.rawValue) }
             }
         }
 }

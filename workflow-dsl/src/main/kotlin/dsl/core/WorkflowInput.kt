@@ -15,8 +15,14 @@ class WorkflowSecret(val name: String) {
 }
 
 sealed interface InputDefault {
-    data class StringDefault(val value: String) : InputDefault
-    data class BooleanDefault(val value: Boolean) : InputDefault
+    val rawValue: Any
+
+    data class StringDefault(val value: String) : InputDefault {
+        override val rawValue get() = value
+    }
+    data class BooleanDefault(val value: Boolean) : InputDefault {
+        override val rawValue get() = value
+    }
 }
 
 enum class InputType {

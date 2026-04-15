@@ -37,9 +37,7 @@ abstract class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow
     }
 
     fun passthroughSecrets(vararg secrets: WorkflowSecret) {
-        secrets.forEach { secret ->
-            secretsMap[secret.name] = secret.ref.expression
-        }
+        passthroughSecrets(secrets.toList())
     }
 
     fun passthroughSecrets(secrets: List<WorkflowSecret>) {
@@ -96,10 +94,9 @@ data class ReusableWorkflowJobDef(
 abstract class SetupAwareJobBuilder(workflow: ReusableWorkflow) :
     ReusableWorkflowJobBuilder(workflow), SetupCapableJobBuilder {
 
-    init {
-        require(workflow is SetupCapability) { "${workflow.fileName} must implement SetupCapability" }
-    }
+    private val capability = (workflow as? SetupCapability)
+        ?: error("${workflow.fileName} must implement SetupCapability")
 
-    override var setupAction by stringInput((workflow as SetupCapability).setupAction)
-    override var setupParams by stringInput((workflow as SetupCapability).setupParams)
+    override var setupAction by stringInput(capability.setupAction)
+    override var setupParams by stringInput(capability.setupParams)
 }
