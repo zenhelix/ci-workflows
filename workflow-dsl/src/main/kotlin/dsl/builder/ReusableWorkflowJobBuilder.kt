@@ -11,7 +11,7 @@ import dsl.yaml.JobYaml
 import dsl.yaml.NeedsYaml
 import dsl.yaml.StrategyYaml
 
-abstract class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
+open class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
     private val withMap = mutableMapOf<String, String>()
     private val secretsMap = mutableMapOf<String, String>()
     private var needsList = emptyList<String>()
@@ -91,12 +91,10 @@ data class ReusableWorkflowJobDef(
     )
 }
 
-abstract class SetupAwareJobBuilder(workflow: ReusableWorkflow) :
-    ReusableWorkflowJobBuilder(workflow), SetupCapableJobBuilder {
+class SetupAwareJobBuilder<W>(workflow: W) :
+    ReusableWorkflowJobBuilder(workflow), SetupCapableJobBuilder
+    where W : ReusableWorkflow, W : SetupCapability {
 
-    private val capability = (workflow as? SetupCapability)
-        ?: error("${workflow.fileName} must implement SetupCapability")
-
-    override var setupAction by stringInput(capability.setupAction)
-    override var setupParams by stringInput(capability.setupParams)
+    override var setupAction by stringInput(workflow.setupAction)
+    override var setupParams by stringInput(workflow.setupParams)
 }
