@@ -7,6 +7,7 @@ import dsl.core.MatrixDef
 import dsl.core.ReusableWorkflow
 import dsl.core.WorkflowInput
 import dsl.core.WorkflowSecret
+import dsl.core.expr
 import dsl.yaml.JobYaml
 import dsl.yaml.NeedsYaml
 import dsl.yaml.StrategyYaml
@@ -42,13 +43,13 @@ open class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
 
     fun passthroughSecrets(secrets: List<WorkflowSecret>) {
         secrets.forEach { secret ->
-            secretsMap[secret.name] = secret.ref.expression
+            secretsMap[secret.name] = secret.expr
         }
     }
 
     fun passthroughAllSecrets() {
         workflow.secretObjects.forEach { secret ->
-            secretsMap[secret.name] = secret.ref.expression
+            secretsMap[secret.name] = secret.expr
         }
     }
 

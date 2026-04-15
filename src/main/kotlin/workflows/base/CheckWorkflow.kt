@@ -6,6 +6,7 @@ import dsl.capability.SetupCapability
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
 import workflows.ProjectWorkflow
+import dsl.core.expr
 import workflows.support.conditionalSetupSteps
 
 object CheckWorkflow : ProjectWorkflow("check.yml", "Check"), SetupCapability {
@@ -20,7 +21,7 @@ object CheckWorkflow : ProjectWorkflow("check.yml", "Check"), SetupCapability {
     override fun WorkflowBuilder.implementation() {
         job(id = "build", name = "Build", runsOn = UbuntuLatest) {
             conditionalSetupSteps()
-            run(name = "Run check", command = checkCommand.ref.expression)
+            run(name = "Run check", command = checkCommand.expr)
         }
     }
 }

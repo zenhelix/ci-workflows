@@ -46,3 +46,6 @@ data class WorkflowInputDef(
     val required: Boolean = false,
     val default: InputDefault? = null,
 )
+
+val WorkflowInput.expr: String get() = ref.expression
+val WorkflowSecret.expr: String get() = ref.expression

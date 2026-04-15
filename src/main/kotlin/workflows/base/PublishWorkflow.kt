@@ -6,6 +6,7 @@ import dsl.capability.SetupCapability
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
 import workflows.ProjectWorkflow
+import dsl.core.expr
 import workflows.support.conditionalSetupSteps
 
 object PublishWorkflow : ProjectWorkflow("publish.yml", "Publish"), SetupCapability {
@@ -37,16 +38,16 @@ object PublishWorkflow : ProjectWorkflow("publish.yml", "Publish"), SetupCapabil
             conditionalSetupSteps()
             run(
                 name = "Publish",
-                command = publishCommand.ref.expression,
+                command = publishCommand.expr,
                 env = linkedMapOf(
-                    "GRADLE_PUBLISH_KEY" to gradlePublishKey.ref.expression,
-                    "GRADLE_PUBLISH_SECRET" to gradlePublishSecret.ref.expression,
-                    "ORG_GRADLE_PROJECT_signingKeyId" to mavenSonatypeSigningKeyId.ref.expression,
-                    "ORG_GRADLE_PROJECT_signingPublicKey" to mavenSonatypeSigningPubKeyAsciiArmored.ref.expression,
-                    "ORG_GRADLE_PROJECT_signingKey" to mavenSonatypeSigningKeyAsciiArmored.ref.expression,
-                    "ORG_GRADLE_PROJECT_signingPassword" to mavenSonatypeSigningPassword.ref.expression,
-                    "MAVEN_SONATYPE_USERNAME" to mavenSonatypeUsername.ref.expression,
-                    "MAVEN_SONATYPE_TOKEN" to mavenSonatypeToken.ref.expression,
+                    "GRADLE_PUBLISH_KEY" to gradlePublishKey.expr,
+                    "GRADLE_PUBLISH_SECRET" to gradlePublishSecret.expr,
+                    "ORG_GRADLE_PROJECT_signingKeyId" to mavenSonatypeSigningKeyId.expr,
+                    "ORG_GRADLE_PROJECT_signingPublicKey" to mavenSonatypeSigningPubKeyAsciiArmored.expr,
+                    "ORG_GRADLE_PROJECT_signingKey" to mavenSonatypeSigningKeyAsciiArmored.expr,
+                    "ORG_GRADLE_PROJECT_signingPassword" to mavenSonatypeSigningPassword.expr,
+                    "MAVEN_SONATYPE_USERNAME" to mavenSonatypeUsername.expr,
+                    "MAVEN_SONATYPE_TOKEN" to mavenSonatypeToken.expr,
                 ),
             )
         }

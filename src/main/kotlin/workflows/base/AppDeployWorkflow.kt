@@ -6,6 +6,7 @@ import dsl.capability.SetupCapability
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
 import workflows.ProjectWorkflow
+import dsl.core.expr
 import workflows.support.conditionalSetupSteps
 
 object AppDeployWorkflow : ProjectWorkflow("app-deploy.yml", "Application Deploy"), SetupCapability {
@@ -21,8 +22,8 @@ object AppDeployWorkflow : ProjectWorkflow("app-deploy.yml", "Application Deploy
     override fun WorkflowBuilder.implementation() {
         job(id = "deploy", name = "Deploy", runsOn = UbuntuLatest) {
             conditionalSetupSteps(fetchDepth = "0")
-            run(name = "Checkout tag", command = "git checkout \"${tag.ref.expression}\"")
-            run(name = "Deploy", command = deployCommand.ref.expression)
+            run(name = "Checkout tag", command = "git checkout \"${tag.expr}\"")
+            run(name = "Deploy", command = deployCommand.expr)
         }
     }
 }

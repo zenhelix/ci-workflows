@@ -11,6 +11,7 @@ import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
 import workflows.ProjectWorkflow
+import dsl.core.expr
 import workflows.support.conditionalSetupSteps
 
 object CreateTagWorkflow : ProjectWorkflow(
@@ -33,19 +34,19 @@ object CreateTagWorkflow : ProjectWorkflow(
     override fun WorkflowBuilder.implementation() {
         job(id = "create_tag", name = "Create Tag", runsOn = UbuntuLatest) {
             conditionalSetupSteps(fetchDepth = "0")
-            run(name = "Run validation", command = checkCommand.ref.expression)
+            run(name = "Run validation", command = checkCommand.expr)
             uses(
                 name = "Generate App Token",
-                action = CreateAppTokenAction(appId = appId.ref.expression, appPrivateKey = appPrivateKey.ref.expression),
+                action = CreateAppTokenAction(appId = appId.expr, appPrivateKey = appPrivateKey.expr),
                 id = "app-token",
             )
             uses(
                 name = "Bump version and push tag",
                 action = GithubTagAction(
                     githubToken = "\${{ steps.app-token.outputs.token }}",
-                    defaultBump = defaultBump.ref.expression,
-                    tagPrefix = tagPrefix.ref.expression,
-                    releaseBranches = releaseBranches.ref.expression,
+                    defaultBump = defaultBump.expr,
+                    tagPrefix = tagPrefix.expr,
+                    releaseBranches = releaseBranches.expr,
                 ),
             )
         }

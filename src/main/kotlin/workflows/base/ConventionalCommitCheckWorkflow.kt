@@ -2,6 +2,7 @@ package workflows.base
 
 import dsl.builder.AdapterWorkflowBuilder
 import dsl.builder.ReusableWorkflowJobBuilder
+import dsl.core.expr
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
 import workflows.ProjectWorkflow
@@ -30,7 +31,7 @@ object ConventionalCommitCheckWorkflow : ProjectWorkflow("conventional-commit-ch
                 """.trimIndent(),
                 env = linkedMapOf(
                     "PR_TITLE" to "\${{ github.event.pull_request.title }}",
-                    "ALLOWED_TYPES" to allowedTypes.ref.expression,
+                    "ALLOWED_TYPES" to allowedTypes.expr,
                 ),
             )
         }

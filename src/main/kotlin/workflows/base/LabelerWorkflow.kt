@@ -2,6 +2,7 @@ package workflows.base
 
 import dsl.builder.AdapterWorkflowBuilder
 import dsl.builder.ReusableWorkflowJobBuilder
+import dsl.core.expr
 import io.github.typesafegithub.workflows.actions.actions.Labeler
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
@@ -25,7 +26,7 @@ object LabelerWorkflow : ProjectWorkflow(
                 name = "Label PR based on file paths",
                 action = Labeler(
                     repoToken_Untyped = "\${{ secrets.GITHUB_TOKEN }}",
-                    configurationPath_Untyped = configPath.ref.expression,
+                    configurationPath_Untyped = configPath.expr,
                     syncLabels = true,
                 ),
             )

@@ -10,6 +10,7 @@ import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
+import dsl.core.expr
 import workflows.ProjectWorkflow
 
 object ReleaseWorkflow : ProjectWorkflow(
@@ -29,7 +30,7 @@ object ReleaseWorkflow : ProjectWorkflow(
             uses(
                 name = "Build Changelog",
                 action = ReleaseChangelogBuilderAction_Untyped(
-                    configuration_Untyped = changelogConfig.ref.expression,
+                    configuration_Untyped = changelogConfig.expr,
                     toTag_Untyped = "\${{ github.ref_name }}",
                 ),
                 id = "changelog",
@@ -41,7 +42,7 @@ object ReleaseWorkflow : ProjectWorkflow(
                     body = "\${{ steps.changelog.outputs.changelog }}",
                     name = "\${{ github.ref_name }}",
                     tagName = "\${{ github.ref_name }}",
-                    draft_Untyped = draft.ref.expression,
+                    draft_Untyped = draft.expr,
                 ),
                 env = linkedMapOf("GITHUB_TOKEN" to "\${{ secrets.GITHUB_TOKEN }}"),
             )

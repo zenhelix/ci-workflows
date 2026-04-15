@@ -5,6 +5,7 @@ import config.GO
 import config.GRADLE
 import dsl.builder.AdapterWorkflow
 import dsl.builder.adapterWorkflow
+import dsl.core.expr
 import workflows.base.ManualCreateTagWorkflow
 import workflows.support.setup
 
@@ -23,7 +24,7 @@ fun ecosystemManualCreateTag(fileName: String, name: String, eco: EcosystemConfi
         ManualCreateTagWorkflow.job("manual-tag") {
             ManualCreateTagWorkflow.tagVersion from tagVersion
             ManualCreateTagWorkflow.tagPrefix from tagPrefix
-            setup(eco.tool, version.ref.expression)
+            setup(eco.tool, version.expr)
             ManualCreateTagWorkflow.checkCommand from checkCommand
             passthroughAllSecrets()
         }
