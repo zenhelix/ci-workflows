@@ -1,5 +1,6 @@
 package dsl.core
 
+import dsl.builder.AdapterWorkflowBuilder
 import dsl.builder.ReusableWorkflowJobBuilder
 import dsl.builder.ReusableWorkflowJobDef
 import dsl.yaml.InputYaml
@@ -78,6 +79,15 @@ abstract class ReusableWorkflow(val fileName: String) {
         val builder = builderFactory()
         builder.block()
         return builder.build(id)
+    }
+
+    context(builder: AdapterWorkflowBuilder)
+    fun <B : ReusableWorkflowJobBuilder> job(
+        id: String,
+        factory: () -> B,
+        block: B.() -> Unit = {},
+    ) {
+        builder.registerJob(buildJob(id, factory, block))
     }
 
     private fun secretsAsRawMap(): Map<String, Map<String, Any?>> =
