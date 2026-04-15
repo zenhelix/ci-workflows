@@ -10,6 +10,23 @@ import workflows.ProjectWorkflow
 import dsl.core.expr
 import workflows.support.conditionalSetupSteps
 
+private val VALIDATE_VERSION_SCRIPT = """
+    VERSION="${'$'}{{ inputs.tag-version }}"
+    if [[ ! "${'$'}VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?${'$'} ]]; then
+      echo "::error::Version must be in semver format (e.g. 1.2.3 or 1.2.3-rc.1)"
+      exit 1
+    fi
+""".trimIndent()
+
+private val CREATE_AND_PUSH_TAG_SCRIPT = """
+    TAG="${'$'}{{ inputs.tag-prefix }}${'$'}{{ inputs.tag-version }}"
+    git config user.name "github-actions[bot]"
+    git config user.email "github-actions[bot]@users.noreply.github.com"
+    git tag -a "${'$'}TAG" -m "Release ${'$'}TAG"
+    git push origin "${'$'}TAG"
+    echo "::notice::Created tag ${'$'}TAG"
+""".trimIndent()
+
 object ManualCreateTagWorkflow : ProjectWorkflow(
     "manual-create-tag.yml", "Manual Create Tag",
     permissions = mapOf(Permission.Contents to Mode.Write),
@@ -24,16 +41,7 @@ object ManualCreateTagWorkflow : ProjectWorkflow(
 
     override fun WorkflowBuilder.implementation() {
         job(id = "manual_tag", name = "Manual Tag", runsOn = UbuntuLatest) {
-            run(
-                name = "Validate version format",
-                command = """
-                    VERSION="${'$'}{{ inputs.tag-version }}"
-                    if [[ ! "${'$'}VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?${'$'} ]]; then
-                      echo "::error::Version must be in semver format (e.g. 1.2.3 or 1.2.3-rc.1)"
-                      exit 1
-                    fi
-                """.trimIndent(),
-            )
+            run(name = "Validate version format", command = VALIDATE_VERSION_SCRIPT)
             conditionalSetupSteps(fetchDepth = "0")
             run(name = "Run validation", command = checkCommand.expr)
             uses(
@@ -43,14 +51,7 @@ object ManualCreateTagWorkflow : ProjectWorkflow(
             )
             run(
                 name = "Create and push tag",
-                command = """
-                    TAG="${'$'}{{ inputs.tag-prefix }}${'$'}{{ inputs.tag-version }}"
-                    git config user.name "github-actions[bot]"
-                    git config user.email "github-actions[bot]@users.noreply.github.com"
-                    git tag -a "${'$'}TAG" -m "Release ${'$'}TAG"
-                    git push origin "${'$'}TAG"
-                    echo "::notice::Created tag ${'$'}TAG"
-                """.trimIndent(),
+                command = CREATE_AND_PUSH_TAG_SCRIPT,
                 env = linkedMapOf("GITHUB_TOKEN" to "\${{ steps.app-token.outputs.token }}"),
             )
         }
