@@ -1,33 +1,53 @@
 package dsl.core
 
-import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
-
 class InputRegistry {
-    private val _inputs = linkedMapOf<String, WorkflowCall.Input>()
-    private val _booleanDefaults = mutableMapOf<String, Boolean>()
+    private val _inputs = linkedMapOf<String, WorkflowInputDef>()
 
-    val inputs: Map<String, WorkflowCall.Input> get() = _inputs
-    val booleanDefaults: Map<String, Boolean> get() = _booleanDefaults
+    val inputs: Map<String, WorkflowInputDef> get() = _inputs
 
     fun input(
         name: String,
         description: String,
         required: Boolean = false,
-        type: WorkflowCall.Type = WorkflowCall.Type.String,
-        default: String? = null,
     ): WorkflowInput {
-        _inputs[name] = WorkflowCall.Input(description, required, type, default)
+        _inputs[name] = WorkflowInputDef(
+            name = name,
+            description = description,
+            type = InputType.String,
+            required = required,
+        )
         return WorkflowInput(name)
     }
 
-    fun booleanInput(
+    fun input(
         name: String,
         description: String,
         required: Boolean = false,
-        default: Boolean? = null,
+        default: String,
     ): WorkflowInput {
-        _inputs[name] = WorkflowCall.Input(description, required, WorkflowCall.Type.Boolean, null)
-        default?.let { _booleanDefaults[name] = it }
+        _inputs[name] = WorkflowInputDef(
+            name = name,
+            description = description,
+            type = InputType.String,
+            required = required,
+            default = InputDefault.StringDefault(default),
+        )
+        return WorkflowInput(name)
+    }
+
+    fun input(
+        name: String,
+        description: String,
+        required: Boolean = false,
+        default: Boolean,
+    ): WorkflowInput {
+        _inputs[name] = WorkflowInputDef(
+            name = name,
+            description = description,
+            type = InputType.Boolean,
+            required = required,
+            default = InputDefault.BooleanDefault(default),
+        )
         return WorkflowInput(name)
     }
 }

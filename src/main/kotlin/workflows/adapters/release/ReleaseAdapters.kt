@@ -11,7 +11,7 @@ import workflows.support.setup
 object ReleaseAdapters {
     val app: AdapterWorkflow = adapterWorkflow("app-release.yml", "Application Release") {
         val changelogConfig = input("changelog-config", description = "Path to changelog configuration file", default = DEFAULT_CHANGELOG_CONFIG)
-        val draft = booleanInput("draft", description = "Create release as draft (default true for apps)", default = true)
+        val draft = input("draft", description = "Create release as draft (default true for apps)", default = true)
 
         ReleaseWorkflow.job("release") {
             ReleaseWorkflow.changelogConfig from changelogConfig

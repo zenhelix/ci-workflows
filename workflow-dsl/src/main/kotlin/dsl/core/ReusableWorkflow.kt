@@ -9,21 +9,27 @@ import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
 abstract class ReusableWorkflow(val fileName: String) {
     private val inputRegistry = InputRegistry()
     private val _secrets = mutableMapOf<String, WorkflowCall.Secret>()
+    private val _secretObjects = mutableListOf<WorkflowSecret>()
 
     protected fun input(
         name: String,
         description: String,
         required: Boolean = false,
-        type: WorkflowCall.Type = WorkflowCall.Type.String,
-        default: String? = null,
-    ): WorkflowInput = inputRegistry.input(name, description, required, type, default)
+    ): WorkflowInput = inputRegistry.input(name, description, required)
 
-    protected fun booleanInput(
+    protected fun input(
         name: String,
         description: String,
         required: Boolean = false,
-        default: Boolean? = null,
-    ): WorkflowInput = inputRegistry.booleanInput(name, description, required, default)
+        default: String,
+    ): WorkflowInput = inputRegistry.input(name, description, required, default)
+
+    protected fun input(
+        name: String,
+        description: String,
+        required: Boolean = false,
+        default: Boolean,
+    ): WorkflowInput = inputRegistry.input(name, description, required, default)
 
     protected fun secret(
         name: String,
@@ -31,19 +37,22 @@ abstract class ReusableWorkflow(val fileName: String) {
         required: Boolean = true,
     ): WorkflowSecret {
         _secrets[name] = WorkflowCall.Secret(description, required)
-        return WorkflowSecret(name)
+        val obj = WorkflowSecret(name)
+        _secretObjects += obj
+        return obj
     }
 
-    val inputs: Map<String, WorkflowCall.Input> get() = inputRegistry.inputs
+    val inputDefs: Map<String, WorkflowInputDef> get() = inputRegistry.inputs
     val secrets: Map<String, WorkflowCall.Secret> get() = _secrets
+    val secretObjects: List<WorkflowSecret> get() = _secretObjects
     val requiredInputNames: Set<String> by lazy {
-        inputRegistry.inputs.filter { (_, input) -> input.required }.keys
+        inputRegistry.inputs.filter { (_, def) -> def.required }.keys
     }
 
     abstract val usesString: String
 
     fun toInputsYaml(): Map<String, InputYaml>? =
-        dsl.yaml.toInputsYaml(inputRegistry.inputs, inputRegistry.booleanDefaults)
+        dsl.yaml.toInputsYaml(inputRegistry.inputs)
 
     fun toSecretsYaml(): Map<String, SecretYaml>? =
         _secrets.takeIf { it.isNotEmpty() }?.mapValues { (_, secret) ->
@@ -51,15 +60,14 @@ abstract class ReusableWorkflow(val fileName: String) {
         }
 
     fun toWorkflowCallTrigger(): WorkflowCall {
-        val secretsMap = _secrets.takeIf { it.isNotEmpty() }?.toMap()
-        return if (inputRegistry.booleanDefaults.isEmpty()) {
-            WorkflowCall(inputs = inputRegistry.inputs.toMap(), secrets = secretsMap)
-        } else {
-            WorkflowCall(
-                secrets = secretsMap,
-                _customArguments = mapOf("inputs" to inputsAsRawMap()),
-            )
+        val custom = buildMap<String, Any> {
+            put("inputs", inputsAsRawMap())
+            val secretsRaw = secretsAsRawMap()
+            if (secretsRaw.isNotEmpty()) put("secrets", secretsRaw)
         }
+        return WorkflowCall(
+            _customArguments = custom,
+        )
     }
 
     protected inline fun <B : ReusableWorkflowJobBuilder> buildJob(
@@ -72,14 +80,25 @@ abstract class ReusableWorkflow(val fileName: String) {
         return builder.build(id)
     }
 
-    private fun inputsAsRawMap(): Map<String, Map<String, Any?>> =
-        inputRegistry.inputs.mapValues { (name, input) ->
+    private fun secretsAsRawMap(): Map<String, Map<String, Any?>> =
+        _secrets.mapValues { (_, secret) ->
             buildMap {
-                put("description", input.description)
-                put("type", input.type.name.lowercase())
-                put("required", input.required)
-                inputRegistry.booleanDefaults[name]?.let { put("default", it) }
-                    ?: input.default?.let { put("default", it) }
+                put("description", secret.description)
+                put("required", secret.required)
+            }
+        }
+
+    private fun inputsAsRawMap(): Map<String, Map<String, Any?>> =
+        inputRegistry.inputs.mapValues { (_, def) ->
+            buildMap {
+                put("description", def.description)
+                put("type", def.type.yamlName())
+                put("required", def.required)
+                when (val d = def.default) {
+                    is InputDefault.StringDefault  -> put("default", d.value)
+                    is InputDefault.BooleanDefault -> put("default", d.value)
+                    null                           -> {}
+                }
             }
         }
 }

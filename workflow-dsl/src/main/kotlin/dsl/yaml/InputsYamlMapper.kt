@@ -1,21 +1,21 @@
 package dsl.yaml
 
-import io.github.typesafegithub.workflows.domain.triggers.WorkflowCall
+import dsl.core.InputDefault
+import dsl.core.WorkflowInputDef
 
 fun toInputsYaml(
-    inputs: Map<String, WorkflowCall.Input>,
-    booleanDefaults: Map<String, Boolean>,
+    inputs: Map<String, WorkflowInputDef>,
 ): Map<String, InputYaml>? =
-    inputs.takeIf { it.isNotEmpty() }?.mapValues { (name, input) ->
-        val default = when {
-            name in booleanDefaults -> YamlDefault.BooleanValue(booleanDefaults.getValue(name))
-            input.default != null   -> YamlDefault.StringValue(input.default!!)
-            else                    -> null
+    inputs.takeIf { it.isNotEmpty() }?.mapValues { (_, def) ->
+        val default = when (val d = def.default) {
+            is InputDefault.StringDefault  -> YamlDefault.StringValue(d.value)
+            is InputDefault.BooleanDefault -> YamlDefault.BooleanValue(d.value)
+            null                           -> null
         }
         InputYaml(
-            description = input.description,
-            type = input.type.name.lowercase(),
-            required = input.required,
+            description = def.description,
+            type = def.type.yamlName(),
+            required = def.required,
             default = default,
         )
     }

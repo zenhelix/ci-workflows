@@ -18,7 +18,7 @@ object ReleaseWorkflow : ProjectWorkflow(
     permissions = mapOf(Permission.Contents to Mode.Write),
 ) {
     val changelogConfig = input("changelog-config", "Path to changelog configuration file", default = DEFAULT_CHANGELOG_CONFIG)
-    val draft = booleanInput("draft", "Create release as draft", default = false)
+    val draft = input("draft", "Create release as draft", default = false)
 
     class JobBuilder : ReusableWorkflowJobBuilder(ReleaseWorkflow) {
         var changelogConfig by refInput(ReleaseWorkflow.changelogConfig)

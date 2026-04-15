@@ -14,15 +14,21 @@ class AdapterWorkflowBuilder(private val fileName: String, private val name: Str
         name: String,
         description: String,
         required: Boolean = false,
-        default: String? = null,
-    ): WorkflowInput = inputRegistry.input(name, description, required = required, default = default)
+    ): WorkflowInput = inputRegistry.input(name, description, required = required)
 
-    fun booleanInput(
+    fun input(
         name: String,
         description: String,
         required: Boolean = false,
-        default: Boolean? = null,
-    ): WorkflowInput = inputRegistry.booleanInput(name, description, required, default)
+        default: String,
+    ): WorkflowInput = inputRegistry.input(name, description, required = required, default = default)
+
+    fun input(
+        name: String,
+        description: String,
+        required: Boolean = false,
+        default: Boolean,
+    ): WorkflowInput = inputRegistry.input(name, description, required = required, default = default)
 
     fun matrixRef(key: String) = MatrixRef(key)
 
@@ -35,7 +41,7 @@ class AdapterWorkflowBuilder(private val fileName: String, private val name: Str
     fun build(): AdapterWorkflow = AdapterWorkflow(
         fileName = fileName,
         workflowName = name,
-        inputsYaml = toInputsYaml(inputRegistry.inputs, inputRegistry.booleanDefaults),
+        inputsYaml = toInputsYaml(inputRegistry.inputs),
         jobs = jobs.toList(),
     )
 }
