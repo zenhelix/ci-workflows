@@ -54,9 +54,10 @@ class AdapterWorkflow(
         jobDefs.flatMap { job ->
             val workflowSecrets = job.uses.secrets
             job.secrets.keys.map { name ->
+                val secret = workflowSecrets[name]
                 name to SecretYaml(
-                    description = workflowSecrets[name]?.description ?: name,
-                    required = workflowSecrets[name]?.required ?: true,
+                    description = secret?.description ?: name,
+                    required = secret?.required ?: true,
                 )
             }
         }.toMap()
