@@ -21,14 +21,14 @@ abstract class ReusableWorkflow(val fileName: String) {
         description: String,
         required: Boolean = false,
         default: String,
-    ): WorkflowInput = inputRegistry.input(name, description, required, default)
+    ): WorkflowInput = inputRegistry.input(name, description, required, InputDefault(default))
 
     protected fun input(
         name: String,
         description: String,
         required: Boolean = false,
         default: Boolean,
-    ): WorkflowInput = inputRegistry.input(name, description, required, default)
+    ): WorkflowInput = inputRegistry.input(name, description, required, InputDefault(default))
 
     protected fun secret(
         name: String,

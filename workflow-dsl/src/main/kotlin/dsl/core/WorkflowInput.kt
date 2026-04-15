@@ -23,6 +23,11 @@ sealed interface InputDefault {
     data class BooleanDefault(val value: Boolean) : InputDefault {
         override val rawValue get() = value
     }
+
+    companion object {
+        operator fun invoke(value: String): InputDefault = StringDefault(value)
+        operator fun invoke(value: Boolean): InputDefault = BooleanDefault(value)
+    }
 }
 
 enum class InputType {

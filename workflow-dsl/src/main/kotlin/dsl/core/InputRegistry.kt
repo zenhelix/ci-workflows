@@ -9,44 +9,14 @@ class InputRegistry {
         name: String,
         description: String,
         required: Boolean = false,
+        default: InputDefault? = null,
     ): WorkflowInput {
         _inputs[name] = WorkflowInputDef(
             name = name,
             description = description,
-            type = InputType.Text,
+            type = if (default is InputDefault.BooleanDefault) InputType.Boolean else InputType.Text,
             required = required,
-        )
-        return WorkflowInput(name)
-    }
-
-    fun input(
-        name: String,
-        description: String,
-        required: Boolean = false,
-        default: String,
-    ): WorkflowInput {
-        _inputs[name] = WorkflowInputDef(
-            name = name,
-            description = description,
-            type = InputType.Text,
-            required = required,
-            default = InputDefault.StringDefault(default),
-        )
-        return WorkflowInput(name)
-    }
-
-    fun input(
-        name: String,
-        description: String,
-        required: Boolean = false,
-        default: Boolean,
-    ): WorkflowInput {
-        _inputs[name] = WorkflowInputDef(
-            name = name,
-            description = description,
-            type = InputType.Boolean,
-            required = required,
-            default = InputDefault.BooleanDefault(default),
+            default = default,
         )
         return WorkflowInput(name)
     }
