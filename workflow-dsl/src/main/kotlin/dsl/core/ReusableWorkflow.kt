@@ -84,11 +84,7 @@ abstract class ReusableWorkflow(val fileName: String) {
 
     private fun secretsAsRawMap(): Map<String, Map<String, Any?>> =
         _secrets.mapValues { (_, pair) ->
-            val (secret, _) = pair
-            buildMap {
-                put("description", secret.description)
-                put("required", secret.required)
-            }
+            mapOf("description" to pair.first.description, "required" to pair.first.required)
         }
 
     private fun inputsAsRawMap(): Map<String, Map<String, Any?>> =

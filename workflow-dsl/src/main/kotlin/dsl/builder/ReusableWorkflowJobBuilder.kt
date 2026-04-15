@@ -32,17 +32,13 @@ open class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
         matrixDef = matrix
     }
 
-    fun passthroughSecrets(vararg secrets: WorkflowSecret) {
-        secrets.forEach { secret ->
-            secretsMap[secret.name] = secret.expr
-        }
+    private fun addSecrets(secrets: Iterable<WorkflowSecret>) {
+        secrets.forEach { secretsMap[it.name] = it.expr }
     }
 
-    fun passthroughAllSecrets() {
-        workflow.secretObjects.forEach { secret ->
-            secretsMap[secret.name] = secret.expr
-        }
-    }
+    fun passthroughSecrets(vararg secrets: WorkflowSecret) = addSecrets(secrets.asIterable())
+
+    fun passthroughAllSecrets() = addSecrets(workflow.secretObjects)
 
     infix fun WorkflowInput.from(source: WorkflowInput) {
         setInput(this, source.expr)
