@@ -26,15 +26,18 @@ sealed interface InputDefault {
 }
 
 enum class InputType {
-    String, Boolean, Number, Choice;
+    Text, Boolean, Number, Choice;
 
-    fun yamlName(): kotlin.String = name.lowercase()
+    fun yamlName(): String = when (this) {
+        Text -> "string"
+        else -> name.lowercase()
+    }
 }
 
 data class WorkflowInputDef(
-    val name: kotlin.String,
-    val description: kotlin.String,
-    val type: InputType = InputType.String,
-    val required: kotlin.Boolean = false,
+    val name: String,
+    val description: String,
+    val type: InputType = InputType.Text,
+    val required: Boolean = false,
     val default: InputDefault? = null,
 )

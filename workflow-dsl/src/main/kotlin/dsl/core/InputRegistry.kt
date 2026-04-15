@@ -13,7 +13,7 @@ class InputRegistry {
         _inputs[name] = WorkflowInputDef(
             name = name,
             description = description,
-            type = InputType.String,
+            type = InputType.Text,
             required = required,
         )
         return WorkflowInput(name)
@@ -28,7 +28,7 @@ class InputRegistry {
         _inputs[name] = WorkflowInputDef(
             name = name,
             description = description,
-            type = InputType.String,
+            type = InputType.Text,
             required = required,
             default = InputDefault.StringDefault(default),
         )
