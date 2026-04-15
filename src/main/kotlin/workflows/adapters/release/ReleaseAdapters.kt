@@ -35,6 +35,8 @@ object ReleaseAdapters {
         passthroughSecrets(*PublishWorkflow.mavenSecrets.toTypedArray())
     }
 
+    val all: List<AdapterWorkflow> = listOf(app, gradlePlugin, kotlinLibrary)
+
     private fun gradleRelease(
         fileName: String,
         name: String,

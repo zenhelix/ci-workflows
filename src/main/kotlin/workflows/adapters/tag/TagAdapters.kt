@@ -19,6 +19,8 @@ object TagAdapters {
     val gradleManualTag = ecosystemManualTag("gradle-manual-create-tag.yml", "Gradle Manual Create Tag", GRADLE)
     val goManualTag = ecosystemManualTag("go-manual-create-tag.yml", "Go Manual Create Tag", GO)
 
+    val all: List<AdapterWorkflow> = listOf(gradleCreateTag, goCreateTag, gradleManualTag, goManualTag)
+
     private fun ecosystemCreateTag(fileName: String, name: String, eco: EcosystemConfig): AdapterWorkflow =
         adapterWorkflow(fileName, name) {
             val version = input(eco.tool.versionKey, description = eco.tool.versionDescription, default = eco.tool.defaultVersion)

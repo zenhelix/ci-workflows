@@ -17,8 +17,7 @@ import java.io.File
 fun main() {
     val outputDir = File(".github/workflows").apply { mkdirs() }
 
-    listOf<GeneratableWorkflow>(
-        // Base workflows
+    val baseWorkflows = listOf<GeneratableWorkflow>(
         CheckWorkflow,
         ConventionalCommitCheckWorkflow,
         CreateTagWorkflow,
@@ -27,22 +26,9 @@ fun main() {
         PublishWorkflow,
         LabelerWorkflow,
         AppDeployWorkflow,
+    )
 
-        // Adapters — check
-        GradleCheck.appCheck,
-        GradleCheck.gradleCheck,
-        GradleCheck.gradlePluginCheck,
-        GradleCheck.kotlinLibraryCheck,
+    val adapterWorkflows = GradleCheck.all + TagAdapters.all + ReleaseAdapters.all
 
-        // Adapters — tag
-        TagAdapters.gradleCreateTag,
-        TagAdapters.goCreateTag,
-        TagAdapters.gradleManualTag,
-        TagAdapters.goManualTag,
-
-        // Adapters — release
-        ReleaseAdapters.app,
-        ReleaseAdapters.gradlePlugin,
-        ReleaseAdapters.kotlinLibrary,
-    ).forEach { it.generate(outputDir) }
+    (baseWorkflows + adapterWorkflows).forEach { it.generate(outputDir) }
 }

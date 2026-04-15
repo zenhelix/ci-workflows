@@ -17,6 +17,8 @@ object GradleCheck {
     val gradlePluginCheck = gradleCheck("gradle-plugin-check.yml", "Gradle Plugin Check")
     val kotlinLibraryCheck = gradleCheck("kotlin-library-check.yml", "Kotlin Library Check")
 
+    val all: List<AdapterWorkflow> = listOf(appCheck, gradleCheck, gradlePluginCheck, kotlinLibraryCheck)
+
     private fun gradleCheck(fileName: String, name: String): AdapterWorkflow = adapterWorkflow(fileName, name) {
         val javaVersion = input(SetupTool.Gradle.versionKey, description = SetupTool.Gradle.versionDescription, default = SetupTool.Gradle.defaultVersion)
         val javaVersions = input("java-versions", description = "JSON array of JDK versions for matrix build (overrides java-version)", default = "")
