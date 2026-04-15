@@ -23,7 +23,7 @@ fun ecosystemCreateTag(fileName: String, name: String, eco: EcosystemConfig): Ad
         val releaseBranches = input("release-branches", description = "Comma-separated branch patterns for releases", default = DEFAULT_RELEASE_BRANCHES)
 
         CreateTagWorkflow.job("create-tag") {
-            setup(eco.tool, version)
+            setup(eco.tool, version.ref.expression)
             CreateTagWorkflow.checkCommand from checkCommand
             CreateTagWorkflow.defaultBump from defaultBump
             CreateTagWorkflow.tagPrefix from tagPrefix

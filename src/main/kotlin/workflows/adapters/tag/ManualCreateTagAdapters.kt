@@ -23,7 +23,7 @@ fun ecosystemManualCreateTag(fileName: String, name: String, eco: EcosystemConfi
         ManualCreateTagWorkflow.job("manual-tag") {
             ManualCreateTagWorkflow.tagVersion from tagVersion
             ManualCreateTagWorkflow.tagPrefix from tagPrefix
-            setup(eco.tool, version)
+            setup(eco.tool, version.ref.expression)
             ManualCreateTagWorkflow.checkCommand from checkCommand
             passthroughAllSecrets()
         }

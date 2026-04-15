@@ -3,8 +3,6 @@ package workflows.support
 import actions.SetupAction
 import config.SetupTool
 import dsl.capability.SetupCapableJobBuilder
-import dsl.core.MatrixRefExpr
-import dsl.core.WorkflowInput
 import io.github.typesafegithub.workflows.dsl.JobBuilder
 
 fun JobBuilder<*>.conditionalSetupSteps(
@@ -24,14 +22,6 @@ fun JobBuilder<*>.conditionalSetupSteps(
     }
 }
 
-fun SetupCapableJobBuilder.setup(tool: SetupTool, versionExpr: MatrixRefExpr) {
-    applySetup(tool.id, tool.toParamsJson(versionExpr.expression))
-}
-
-fun SetupCapableJobBuilder.setup(tool: SetupTool, versionRef: String) {
-    applySetup(tool.id, tool.toParamsJson(versionRef))
-}
-
-fun SetupCapableJobBuilder.setup(tool: SetupTool, versionInput: WorkflowInput) {
-    applySetup(tool.id, tool.toParamsJson(versionInput.ref.expression))
+fun SetupCapableJobBuilder.setup(tool: SetupTool, versionExpr: String) {
+    applySetup(tool.id, tool.toParamsJson(versionExpr))
 }

@@ -48,7 +48,7 @@ object ReleaseAdapters {
 
         PublishWorkflow.job("publish") {
             needs("release")
-            setup(SetupTool.Gradle, javaVersion)
+            setup(SetupTool.Gradle, javaVersion.ref.expression)
             PublishWorkflow.publishCommand from publishCommand
             publishSecrets()
         }

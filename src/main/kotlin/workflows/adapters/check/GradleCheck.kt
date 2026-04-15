@@ -25,7 +25,7 @@ object GradleCheck {
 
         CheckWorkflow.job("check") {
             strategy(matrix(javaVersionMatrix.key to JAVA_VERSION_MATRIX_EXPR))
-            setup(SetupTool.Gradle, javaVersionMatrix.ref)
+            setup(SetupTool.Gradle, javaVersionMatrix.ref.expression)
             CheckWorkflow.checkCommand from gradleCommand
         }
     }
