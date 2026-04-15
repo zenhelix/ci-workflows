@@ -2,7 +2,6 @@ package dsl.builder
 
 import dsl.capability.SetupCapability
 import dsl.capability.SetupCapableJobBuilder
-import dsl.core.InputRef
 import dsl.core.MatrixDef
 import dsl.core.ReusableWorkflow
 import dsl.core.WorkflowInput
@@ -25,10 +24,6 @@ open class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
         withMap[input.name] = value
     }
 
-    fun setInput(input: WorkflowInput, value: InputRef) {
-        withMap[input.name] = value.expression
-    }
-
     fun needs(vararg jobIds: String) {
         needsList = jobIds.toList()
     }
@@ -38,10 +33,6 @@ open class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
     }
 
     fun passthroughSecrets(vararg secrets: WorkflowSecret) {
-        passthroughSecrets(secrets.toList())
-    }
-
-    fun passthroughSecrets(secrets: List<WorkflowSecret>) {
         secrets.forEach { secret ->
             secretsMap[secret.name] = secret.expr
         }
@@ -54,7 +45,7 @@ open class ReusableWorkflowJobBuilder(private val workflow: ReusableWorkflow) {
     }
 
     infix fun WorkflowInput.from(source: WorkflowInput) {
-        setInput(this, source.ref)
+        setInput(this, source.expr)
     }
 
     @PublishedApi

@@ -32,7 +32,7 @@ object ReleaseAdapters {
         "kotlin-library-release.yml", "Kotlin Library Release",
         "Gradle publish command for Maven Central",
     ) {
-        passthroughSecrets(PublishWorkflow.mavenSecrets)
+        passthroughSecrets(*PublishWorkflow.mavenSecrets.toTypedArray())
     }
 
     private fun gradleRelease(
