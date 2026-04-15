@@ -1,7 +1,7 @@
 package dsl.builder
 
-import dsl.core.InputDefault
 import dsl.core.InputRegistry
+import dsl.core.input
 import dsl.core.MatrixDef
 import dsl.core.MatrixRef
 import dsl.core.WorkflowInput
@@ -22,14 +22,14 @@ class AdapterWorkflowBuilder(private val fileName: String, private val name: Str
         description: String,
         required: Boolean = false,
         default: String,
-    ): WorkflowInput = inputRegistry.input(name, description, required = required, default = InputDefault(default))
+    ): WorkflowInput = inputRegistry.input(name, description, required = required, default = default)
 
     fun input(
         name: String,
         description: String,
         required: Boolean = false,
         default: Boolean,
-    ): WorkflowInput = inputRegistry.input(name, description, required = required, default = InputDefault(default))
+    ): WorkflowInput = inputRegistry.input(name, description, required = required, default = default)
 
     fun matrixRef(key: String) = MatrixRef(key)
 
