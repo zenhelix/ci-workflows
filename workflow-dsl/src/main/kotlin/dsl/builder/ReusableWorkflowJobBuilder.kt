@@ -95,6 +95,11 @@ data class ReusableWorkflowJobDef(
 
 abstract class SetupAwareJobBuilder(workflow: ReusableWorkflow) :
     ReusableWorkflowJobBuilder(workflow), SetupCapableJobBuilder {
+
+    init {
+        require(workflow is SetupCapability) { "${workflow.fileName} must implement SetupCapability" }
+    }
+
     override var setupAction by stringInput((workflow as SetupCapability).setupAction)
     override var setupParams by stringInput((workflow as SetupCapability).setupParams)
 }
