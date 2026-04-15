@@ -3,7 +3,6 @@ package workflows.base
 import actions.CreateAppTokenAction
 import dsl.builder.AdapterWorkflowBuilder
 import dsl.builder.SetupAwareJobBuilder
-import dsl.builder.refInput
 import dsl.capability.SetupCapability
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
@@ -24,14 +23,9 @@ object ManualCreateTagWorkflow : ProjectWorkflow(
     val appId = secret("app-id", "GitHub App ID for generating commit token")
     val appPrivateKey = secret("app-private-key", "GitHub App private key for generating commit token")
 
-    class JobBuilder : SetupAwareJobBuilder(ManualCreateTagWorkflow) {
-        var tagVersion by refInput(ManualCreateTagWorkflow.tagVersion)
-        var tagPrefix by refInput(ManualCreateTagWorkflow.tagPrefix)
-        var checkCommand by refInput(ManualCreateTagWorkflow.checkCommand)
-    }
-
     context(builder: AdapterWorkflowBuilder)
-    fun job(id: String, block: JobBuilder.() -> Unit = {}) = job(id, ::JobBuilder, block)
+    fun job(id: String, block: SetupAwareJobBuilder<ManualCreateTagWorkflow>.() -> Unit = {}) =
+        job(id, { SetupAwareJobBuilder(this@ManualCreateTagWorkflow) }, block)
 
     override fun WorkflowBuilder.implementation() {
         job(id = "manual_tag", name = "Manual Tag", runsOn = UbuntuLatest) {

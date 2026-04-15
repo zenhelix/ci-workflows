@@ -2,7 +2,6 @@ package workflows.base
 
 import dsl.builder.AdapterWorkflowBuilder
 import dsl.builder.SetupAwareJobBuilder
-import dsl.builder.refInput
 import dsl.capability.SetupCapability
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
@@ -29,12 +28,9 @@ object PublishWorkflow : ProjectWorkflow("publish.yml", "Publish"), SetupCapabil
     )
     val gradlePortalSecrets = listOf(gradlePublishKey, gradlePublishSecret)
 
-    class JobBuilder : SetupAwareJobBuilder(PublishWorkflow) {
-        var publishCommand by refInput(PublishWorkflow.publishCommand)
-    }
-
     context(builder: AdapterWorkflowBuilder)
-    fun job(id: String, block: JobBuilder.() -> Unit = {}) = job(id, ::JobBuilder, block)
+    fun job(id: String, block: SetupAwareJobBuilder<PublishWorkflow>.() -> Unit = {}) =
+        job(id, { SetupAwareJobBuilder(this@PublishWorkflow) }, block)
 
     override fun WorkflowBuilder.implementation() {
         job(id = "publish", name = "Publish", runsOn = UbuntuLatest) {

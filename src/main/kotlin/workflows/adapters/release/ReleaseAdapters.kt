@@ -3,6 +3,7 @@ package workflows.adapters.release
 import config.DEFAULT_CHANGELOG_CONFIG
 import config.SetupTool
 import dsl.builder.AdapterWorkflow
+import dsl.builder.SetupAwareJobBuilder
 import dsl.builder.adapterWorkflow
 import workflows.base.PublishWorkflow
 import workflows.base.ReleaseWorkflow
@@ -35,7 +36,7 @@ object ReleaseAdapters {
         fileName: String,
         name: String,
         publishDescription: String,
-        publishSecrets: PublishWorkflow.JobBuilder.() -> Unit = { passthroughAllSecrets() },
+        publishSecrets: SetupAwareJobBuilder<PublishWorkflow>.() -> Unit = { passthroughAllSecrets() },
     ): AdapterWorkflow = adapterWorkflow(fileName, name) {
         val javaVersion = input(SetupTool.Gradle.versionKey, description = SetupTool.Gradle.versionDescription, default = SetupTool.Gradle.defaultVersion)
         val publishCommand = input("publish-command", description = publishDescription, required = true)
