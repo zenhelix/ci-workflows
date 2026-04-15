@@ -1,6 +1,5 @@
 package dsl.builder
 
-import dsl.core.InputRef
 import dsl.core.WorkflowInput
 import kotlin.reflect.KProperty
 
@@ -18,4 +17,3 @@ class InputProperty<T>(
 }
 
 fun stringInput(input: WorkflowInput) = InputProperty<String>(input, { it }, { it })
-fun refInput(input: WorkflowInput) = InputProperty<InputRef>(input, ::InputRef, InputRef::expression)
