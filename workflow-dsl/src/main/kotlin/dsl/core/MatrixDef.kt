@@ -8,3 +8,5 @@ class MatrixRef(val key: String) {
 }
 
 data class MatrixDef(val entries: Map<String, String>)
+
+val MatrixRef.expr: String get() = ref.expression

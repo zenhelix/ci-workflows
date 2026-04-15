@@ -5,6 +5,7 @@ import config.SetupTool
 import dsl.builder.AdapterWorkflow
 import dsl.builder.adapterWorkflow
 import dsl.capability.setupJob
+import dsl.core.expr
 import dsl.core.simpleJob
 import workflows.base.CheckWorkflow
 import workflows.base.ConventionalCommitCheckWorkflow
@@ -27,7 +28,7 @@ object GradleCheck {
 
         CheckWorkflow.setupJob("check") {
             strategy(matrix(javaVersionMatrix.key to JAVA_VERSION_MATRIX_EXPR))
-            setup(SetupTool.Gradle, javaVersionMatrix.ref.expression)
+            setup(SetupTool.Gradle, javaVersionMatrix.expr)
             CheckWorkflow.checkCommand from gradleCommand
         }
     }

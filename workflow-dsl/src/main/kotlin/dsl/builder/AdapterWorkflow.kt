@@ -60,5 +60,5 @@ class AdapterWorkflow(
                 )
             }
         }.toMap()
-         .takeIf { it.isNotEmpty() }
+            .takeIf { it.isNotEmpty() }
 }
