@@ -1,5 +1,8 @@
-name: 'Application Check'
+# This file was generated using Kotlin DSL (src/main/kotlin/).
+# If you want to modify the workflow, please change the Kotlin source and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
 
+name: 'Application Check'
 on:
   workflow_call:
     inputs:
@@ -18,15 +21,13 @@ on:
         type: 'string'
         required: false
         default: './gradlew check'
-
 jobs:
   conventional-commit:
     uses: 'zenhelix/ci-workflows/.github/workflows/conventional-commit-check.yml@v2'
-
   check:
     strategy:
       matrix:
-        java-version: ${{ fromJson(inputs.java-versions || format('["{0}"]', inputs.java-version)) }}
+        java-version: '${{ fromJson(inputs.java-versions || format(''["{0}"]'', inputs.java-version)) }}'
     uses: 'zenhelix/ci-workflows/.github/workflows/check.yml@v2'
     with:
       setup-action: 'gradle'

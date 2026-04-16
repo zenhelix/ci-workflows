@@ -1,10 +1,13 @@
-name: 'Check'
+# This file was generated using Kotlin DSL (src/main/kotlin/workflows/base/CheckWorkflow.kt).
+# If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
 
+name: 'Check'
 on:
   workflow_call:
     inputs:
       setup-action:
-        description: 'Setup action to use: gradle, go'
+        description: 'Setup action to use: gradle, go, python'
         type: 'string'
         required: true
       setup-params:
@@ -16,32 +19,31 @@ on:
         description: 'Command to run for checking'
         type: 'string'
         required: true
-
 permissions:
   contents: 'read'
-
 jobs:
   build:
     name: 'Build'
     runs-on: 'ubuntu-latest'
     steps:
-      - name: 'Setup Gradle'
-        if: inputs.setup-action == 'gradle'
-        uses: 'zenhelix/ci-workflows/.github/actions/setup-gradle@v2'
-        with:
-          java-version: '${{ fromJson(inputs.setup-params).java-version || ''17'' }}'
-
-      - name: 'Setup Go'
-        if: inputs.setup-action == 'go'
-        uses: 'zenhelix/ci-workflows/.github/actions/setup-go@v2'
-        with:
-          go-version: '${{ fromJson(inputs.setup-params).go-version || ''1.22'' }}'
-
-      - name: 'Setup Python'
-        if: inputs.setup-action == 'python'
-        uses: 'zenhelix/ci-workflows/.github/actions/setup-python@v2'
-        with:
-          python-version: '${{ fromJson(inputs.setup-params).python-version || ''3.12'' }}'
-
-      - name: 'Run check'
-        run: '${{ inputs.check-command }}'
+    - id: 'step-0'
+      name: 'Setup Gradle'
+      uses: 'zenhelix/ci-workflows/.github/actions/setup-gradle@v2'
+      with:
+        java-version: '${{ fromJson(inputs.setup-params).java-version || ''17'' }}'
+      if: 'inputs.setup-action == ''gradle'''
+    - id: 'step-1'
+      name: 'Setup Go'
+      uses: 'zenhelix/ci-workflows/.github/actions/setup-go@v2'
+      with:
+        go-version: '${{ fromJson(inputs.setup-params).go-version || ''1.22'' }}'
+      if: 'inputs.setup-action == ''go'''
+    - id: 'step-2'
+      name: 'Setup Python'
+      uses: 'zenhelix/ci-workflows/.github/actions/setup-python@v2'
+      with:
+        python-version: '${{ fromJson(inputs.setup-params).python-version || ''3.12'' }}'
+      if: 'inputs.setup-action == ''python'''
+    - id: 'step-3'
+      name: 'Run check'
+      run: '${{ inputs.check-command }}'

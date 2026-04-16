@@ -1,0 +1,51 @@
+package dsl.core
+
+@JvmInline
+value class InputRef(val expression: String)
+
+@JvmInline
+value class SecretRef(val expression: String)
+
+class WorkflowInput(val name: String) {
+    val ref: InputRef = InputRef($$"${{ inputs.$$name }}")
+}
+
+class WorkflowSecret(val name: String) {
+    val ref: SecretRef = SecretRef($$"${{ secrets.$$name }}")
+}
+
+sealed interface InputDefault {
+    val rawValue: Any
+
+    data class StringDefault(val value: String) : InputDefault {
+        override val rawValue get() = value
+    }
+    data class BooleanDefault(val value: Boolean) : InputDefault {
+        override val rawValue get() = value
+    }
+
+    companion object {
+        operator fun invoke(value: String): InputDefault = StringDefault(value)
+        operator fun invoke(value: Boolean): InputDefault = BooleanDefault(value)
+    }
+}
+
+enum class InputType {
+    Text, Boolean, Number, Choice;
+
+    fun yamlName(): String = when (this) {
+        Text -> "string"
+        else -> name.lowercase()
+    }
+}
+
+data class WorkflowInputDef(
+    val name: String,
+    val description: String,
+    val type: InputType = InputType.Text,
+    val required: Boolean = false,
+    val default: InputDefault? = null,
+)
+
+val WorkflowInput.expr: String get() = ref.expression
+val WorkflowSecret.expr: String get() = ref.expression

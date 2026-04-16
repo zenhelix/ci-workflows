@@ -1,5 +1,8 @@
-name: 'Release'
+# This file was generated using Kotlin DSL (src/main/kotlin/workflows/base/ReleaseWorkflow.kt).
+# If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
 
+name: 'Release'
 on:
   workflow_call:
     inputs:
@@ -13,35 +16,33 @@ on:
         type: 'boolean'
         required: false
         default: false
-
 permissions:
   contents: 'write'
-
 jobs:
   release:
     name: 'GitHub Release'
     runs-on: 'ubuntu-latest'
     steps:
-      - name: 'Check out'
-        uses: 'actions/checkout@v6'
-        with:
-          fetch-depth: '0'
-
-      - name: 'Build Changelog'
-        id: 'changelog'
-        uses: 'mikepenz/release-changelog-builder-action@v6'
-        with:
-          configuration: '${{ inputs.changelog-config }}'
-          toTag: '${{ github.ref_name }}'
-        env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-
-      - name: 'Create Release'
-        uses: 'softprops/action-gh-release@v2'
-        with:
-          body: '${{ steps.changelog.outputs.changelog }}'
-          name: '${{ github.ref_name }}'
-          tag_name: '${{ github.ref_name }}'
-          draft: '${{ inputs.draft }}'
-        env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+    - id: 'step-0'
+      name: 'Check out'
+      uses: 'actions/checkout@v6'
+      with:
+        fetch-depth: '0'
+    - id: 'changelog'
+      name: 'Build Changelog'
+      uses: 'mikepenz/release-changelog-builder-action@v6'
+      with:
+        configuration: '${{ inputs.changelog-config }}'
+        toTag: '${{ github.ref_name }}'
+      env:
+        GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+    - id: 'step-2'
+      name: 'Create Release'
+      uses: 'softprops/action-gh-release@v2'
+      with:
+        body: '${{ steps.changelog.outputs.changelog }}'
+        name: '${{ github.ref_name }}'
+        tag_name: '${{ github.ref_name }}'
+        draft: '${{ inputs.draft }}'
+      env:
+        GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'

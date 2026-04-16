@@ -1,0 +1,45 @@
+name: 'Verify Workflows'
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'build.gradle.kts'
+      - '.github/workflows/**'
+  push:
+    branches: ['main']
+    paths:
+      - 'src/**'
+      - 'build.gradle.kts'
+      - '.github/workflows/**'
+
+permissions:
+  contents: 'read'
+
+jobs:
+  verify:
+    name: 'Verify generated workflows are up-to-date'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: 'Check out'
+        uses: 'actions/checkout@v6'
+
+      - name: 'Set up JDK'
+        uses: 'actions/setup-java@v5'
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 'Setup Gradle'
+        uses: 'gradle/actions/setup-gradle@v5'
+
+      - name: 'Generate workflows'
+        run: ./gradlew run
+
+      - name: 'Check for differences'
+        run: |
+          if ! git diff --exit-code .github/workflows/; then
+            echo "::error::Generated workflow YAML files are out of date. Run ./gradlew run and commit."
+            exit 1
+          fi
+          echo "All generated workflows are up-to-date."

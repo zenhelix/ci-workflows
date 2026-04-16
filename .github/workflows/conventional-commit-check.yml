@@ -1,5 +1,8 @@
-name: 'Conventional Commit Check'
+# This file was generated using Kotlin DSL (src/main/kotlin/workflows/base/ConventionalCommitCheckWorkflow.kt).
+# If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
 
+name: 'Conventional Commit Check'
 on:
   workflow_call:
     inputs:
@@ -8,23 +11,23 @@ on:
         type: 'string'
         required: false
         default: 'feat,fix,refactor,docs,test,chore,perf,ci'
-
 jobs:
   check-title:
     name: 'Check PR Title'
     runs-on: 'ubuntu-latest'
     steps:
-      - name: 'Validate PR title format'
-        env:
-          PR_TITLE: '${{ github.event.pull_request.title }}'
-          ALLOWED_TYPES: '${{ inputs.allowed-types }}'
-        run: |
-          TYPES_PATTERN=$(echo "$ALLOWED_TYPES" | tr ',' '|')
-          PATTERN="^($TYPES_PATTERN)(\(.+\))?(!)?: .+"
-          if [[ ! "$PR_TITLE" =~ $PATTERN ]]; then
-            echo "::warning::PR title does not match conventional commits format: <type>(<scope>): <description>"
-            echo "::warning::Allowed types: $ALLOWED_TYPES"
-            echo "::warning::Got: $PR_TITLE"
-          else
-            echo "PR title is valid: $PR_TITLE"
-          fi
+    - id: 'step-0'
+      name: 'Validate PR title format'
+      env:
+        PR_TITLE: '${{ github.event.pull_request.title }}'
+        ALLOWED_TYPES: '${{ inputs.allowed-types }}'
+      run: |-
+        TYPES_PATTERN=$(echo "$ALLOWED_TYPES" | tr ',' '|')
+        PATTERN="^($TYPES_PATTERN)(\(.+\))?(!)?: .+"
+        if [[ ! "$PR_TITLE" =~ $PATTERN ]]; then
+          echo "::warning::PR title does not match conventional commits format: <type>(<scope>): <description>"
+          echo "::warning::Allowed types: $ALLOWED_TYPES"
+          echo "::warning::Got: $PR_TITLE"
+        else
+          echo "PR title is valid: $PR_TITLE"
+        fi

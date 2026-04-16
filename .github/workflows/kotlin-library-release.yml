@@ -1,5 +1,8 @@
-name: 'Kotlin Library Release'
+# This file was generated using Kotlin DSL (src/main/kotlin/).
+# If you want to modify the workflow, please change the Kotlin source and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
 
+name: 'Kotlin Library Release'
 on:
   workflow_call:
     inputs:
@@ -19,26 +22,30 @@ on:
         default: '.github/changelog-config.json'
     secrets:
       MAVEN_SONATYPE_USERNAME:
-        required: true
+        description: 'Maven Central (Sonatype) username'
+        required: false
       MAVEN_SONATYPE_TOKEN:
-        required: true
+        description: 'Maven Central (Sonatype) token'
+        required: false
       MAVEN_SONATYPE_SIGNING_KEY_ID:
-        required: true
+        description: 'GPG signing key ID'
+        required: false
       MAVEN_SONATYPE_SIGNING_PUB_KEY_ASCII_ARMORED:
-        required: true
+        description: 'GPG signing public key (ASCII armored)'
+        required: false
       MAVEN_SONATYPE_SIGNING_KEY_ASCII_ARMORED:
-        required: true
+        description: 'GPG signing private key (ASCII armored)'
+        required: false
       MAVEN_SONATYPE_SIGNING_PASSWORD:
-        required: true
-
+        description: 'GPG signing key passphrase'
+        required: false
 jobs:
   release:
     uses: 'zenhelix/ci-workflows/.github/workflows/release.yml@v2'
     with:
       changelog-config: '${{ inputs.changelog-config }}'
-
   publish:
-    needs: release
+    needs: 'release'
     uses: 'zenhelix/ci-workflows/.github/workflows/publish.yml@v2'
     with:
       setup-action: 'gradle'

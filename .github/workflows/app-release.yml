@@ -1,5 +1,8 @@
-name: 'Application Release'
+# This file was generated using Kotlin DSL (src/main/kotlin/).
+# If you want to modify the workflow, please change the Kotlin source and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
 
+name: 'Application Release'
 on:
   workflow_call:
     inputs:
@@ -13,7 +16,6 @@ on:
         type: 'boolean'
         required: false
         default: true
-
 jobs:
   release:
     uses: 'zenhelix/ci-workflows/.github/workflows/release.yml@v2'

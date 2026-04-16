@@ -1,5 +1,8 @@
-name: 'Manual Create Tag'
+# This file was generated using Kotlin DSL (src/main/kotlin/workflows/base/ManualCreateTagWorkflow.kt).
+# If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
 
+name: 'Manual Create Tag'
 on:
   workflow_call:
     inputs:
@@ -17,7 +20,7 @@ on:
         type: 'string'
         required: true
       setup-params:
-        description: 'JSON object with setup parameters'
+        description: 'JSON object with setup parameters (e.g. {"java-version": "21"})'
         type: 'string'
         required: false
         default: '{}'
@@ -32,61 +35,59 @@ on:
       app-private-key:
         description: 'GitHub App private key for generating commit token'
         required: true
-
 permissions:
   contents: 'write'
-
 jobs:
   manual_tag:
     name: 'Manual Tag'
     runs-on: 'ubuntu-latest'
     steps:
-      - name: 'Validate version format'
-        run: |
-          VERSION="${{ inputs.tag-version }}"
-          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
-            echo "::error::Version must be in semver format (e.g. 1.2.3 or 1.2.3-rc.1)"
-            exit 1
-          fi
-
-      - name: 'Setup Gradle'
-        if: inputs.setup-action == 'gradle'
-        uses: 'zenhelix/ci-workflows/.github/actions/setup-gradle@v2'
-        with:
-          java-version: '${{ fromJson(inputs.setup-params).java-version || ''17'' }}'
-          fetch-depth: '0'
-
-      - name: 'Setup Go'
-        if: inputs.setup-action == 'go'
-        uses: 'zenhelix/ci-workflows/.github/actions/setup-go@v2'
-        with:
-          go-version: '${{ fromJson(inputs.setup-params).go-version || ''1.22'' }}'
-          fetch-depth: '0'
-
-      - name: 'Setup Python'
-        if: inputs.setup-action == 'python'
-        uses: 'zenhelix/ci-workflows/.github/actions/setup-python@v2'
-        with:
-          python-version: '${{ fromJson(inputs.setup-params).python-version || ''3.12'' }}'
-          fetch-depth: '0'
-
-      - name: 'Run validation'
-        run: '${{ inputs.check-command }}'
-
-      - name: 'Generate App Token'
-        id: 'app-token'
-        uses: 'zenhelix/ci-workflows/.github/actions/create-app-token@v2'
-        with:
-          app-id: '${{ secrets.app-id }}'
-          app-private-key: '${{ secrets.app-private-key }}'
-
-      - name: 'Create and push tag'
-        env:
-          GITHUB_TOKEN: '${{ steps.app-token.outputs.token }}'
-        run: |
-          TAG="${{ inputs.tag-prefix }}${{ inputs.tag-version }}"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "$TAG" -m "Release $TAG"
-          git push origin "$TAG"
-          echo "::notice::Created tag $TAG"
+    - id: 'step-0'
+      name: 'Validate version format'
+      run: |-
+        VERSION="${{ inputs.tag-version }}"
+        if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
+          echo "::error::Version must be in semver format (e.g. 1.2.3 or 1.2.3-rc.1)"
+          exit 1
+        fi
+    - id: 'step-1'
+      name: 'Setup Gradle'
+      uses: 'zenhelix/ci-workflows/.github/actions/setup-gradle@v2'
+      with:
+        java-version: '${{ fromJson(inputs.setup-params).java-version || ''17'' }}'
+        fetch-depth: '0'
+      if: 'inputs.setup-action == ''gradle'''
+    - id: 'step-2'
+      name: 'Setup Go'
+      uses: 'zenhelix/ci-workflows/.github/actions/setup-go@v2'
+      with:
+        go-version: '${{ fromJson(inputs.setup-params).go-version || ''1.22'' }}'
+        fetch-depth: '0'
+      if: 'inputs.setup-action == ''go'''
+    - id: 'step-3'
+      name: 'Setup Python'
+      uses: 'zenhelix/ci-workflows/.github/actions/setup-python@v2'
+      with:
+        python-version: '${{ fromJson(inputs.setup-params).python-version || ''3.12'' }}'
+        fetch-depth: '0'
+      if: 'inputs.setup-action == ''python'''
+    - id: 'step-4'
+      name: 'Run validation'
+      run: '${{ inputs.check-command }}'
+    - id: 'app-token'
+      name: 'Generate App Token'
+      uses: 'zenhelix/ci-workflows/.github/actions/create-app-token@v2'
+      with:
+        app-id: '${{ secrets.app-id }}'
+        app-private-key: '${{ secrets.app-private-key }}'
+    - id: 'step-6'
+      name: 'Create and push tag'
+      env:
+        GITHUB_TOKEN: '${{ steps.app-token.outputs.token }}'
+      run: |-
+        TAG="${{ inputs.tag-prefix }}${{ inputs.tag-version }}"
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git tag -a "$TAG" -m "Release $TAG"
+        git push origin "$TAG"
+        echo "::notice::Created tag $TAG"
