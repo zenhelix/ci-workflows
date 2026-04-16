@@ -4,6 +4,7 @@ import actions.CreateAppTokenAction
 import actions.GithubTagAction
 import config.DEFAULT_RELEASE_BRANCHES
 import dsl.capability.SetupCapability
+import io.github.typesafegithub.workflows.domain.Concurrency
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
@@ -15,6 +16,10 @@ import workflows.support.conditionalSetupSteps
 object CreateTagWorkflow : ProjectWorkflow(
     "create-tag.yml", "Create Tag",
     permissions = mapOf(Permission.Contents to Mode.Write),
+    concurrency = Concurrency(
+        group = "release-\${{ github.repository }}",
+        cancelInProgress = false,
+    ),
 ), SetupCapability {
     override val setupAction = input("setup-action", SetupCapability.SETUP_ACTION_DESCRIPTION, required = true)
     override val setupParams = input("setup-params", SetupCapability.SETUP_PARAMS_DESCRIPTION, default = SetupCapability.SETUP_PARAMS_DEFAULT)
@@ -26,7 +31,7 @@ object CreateTagWorkflow : ProjectWorkflow(
     val appPrivateKey = secret("app-private-key", "GitHub App private key for generating commit token")
 
     override fun WorkflowBuilder.implementation() {
-        job(id = "create_tag", name = "Create Tag", runsOn = UbuntuLatest) {
+        job(id = "create_tag", name = "Create Tag", runsOn = UbuntuLatest, timeoutMinutes = 10) {
             conditionalSetupSteps(fetchDepth = "0")
             run(name = "Run validation", command = checkCommand.expr)
             uses(

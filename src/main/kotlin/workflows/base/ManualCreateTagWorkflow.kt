@@ -2,6 +2,7 @@ package workflows.base
 
 import actions.CreateAppTokenAction
 import dsl.capability.SetupCapability
+import io.github.typesafegithub.workflows.domain.Concurrency
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
@@ -30,6 +31,10 @@ private val CREATE_AND_PUSH_TAG_SCRIPT = $$"""
 object ManualCreateTagWorkflow : ProjectWorkflow(
     "manual-create-tag.yml", "Manual Create Tag",
     permissions = mapOf(Permission.Contents to Mode.Write),
+    concurrency = Concurrency(
+        group = "release-\${{ github.repository }}",
+        cancelInProgress = false,
+    ),
 ), SetupCapability {
     val tagVersion = input("tag-version", "Version to tag (e.g. 1.2.3)", required = true)
     val tagPrefix = input("tag-prefix", "Prefix for the tag (e.g. v)", default = "")
@@ -40,7 +45,7 @@ object ManualCreateTagWorkflow : ProjectWorkflow(
     val appPrivateKey = secret("app-private-key", "GitHub App private key for generating commit token")
 
     override fun WorkflowBuilder.implementation() {
-        job(id = "manual_tag", name = "Manual Tag", runsOn = UbuntuLatest) {
+        job(id = "manual_tag", name = "Manual Tag", runsOn = UbuntuLatest, timeoutMinutes = 10) {
             run(name = "Validate version format", command = VALIDATE_VERSION_SCRIPT)
             conditionalSetupSteps(fetchDepth = "0")
             run(name = "Run validation", command = checkCommand.expr)

@@ -4,6 +4,7 @@ import config.DEFAULT_CHANGELOG_CONFIG
 import io.github.typesafegithub.workflows.actions.actions.Checkout
 import io.github.typesafegithub.workflows.actions.mikepenz.ReleaseChangelogBuilderAction_Untyped
 import io.github.typesafegithub.workflows.actions.softprops.ActionGhRelease
+import io.github.typesafegithub.workflows.domain.Concurrency
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
@@ -14,12 +15,16 @@ import workflows.ProjectWorkflow
 object ReleaseWorkflow : ProjectWorkflow(
     "release.yml", "Release",
     permissions = mapOf(Permission.Contents to Mode.Write),
+    concurrency = Concurrency(
+        group = "release-\${{ github.repository }}",
+        cancelInProgress = false,
+    ),
 ) {
     val changelogConfig = input("changelog-config", "Path to changelog configuration file", default = DEFAULT_CHANGELOG_CONFIG)
     val draft = input("draft", "Create release as draft", default = false)
 
     override fun WorkflowBuilder.implementation() {
-        job(id = "release", name = "GitHub Release", runsOn = UbuntuLatest) {
+        job(id = "release", name = "GitHub Release", runsOn = UbuntuLatest, timeoutMinutes = 15) {
             uses(name = "Check out", action = Checkout(fetchDepth = Checkout.FetchDepth.Value(0)))
             uses(
                 name = "Build Changelog",

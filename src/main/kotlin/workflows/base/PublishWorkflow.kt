@@ -1,13 +1,20 @@
 package workflows.base
 
 import dsl.capability.SetupCapability
+import io.github.typesafegithub.workflows.domain.Concurrency
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
 import workflows.ProjectWorkflow
 import dsl.core.expr
 import workflows.support.conditionalSetupSteps
 
-object PublishWorkflow : ProjectWorkflow("publish.yml", "Publish"), SetupCapability {
+object PublishWorkflow : ProjectWorkflow(
+    "publish.yml", "Publish",
+    concurrency = Concurrency(
+        group = "release-\${{ github.repository }}",
+        cancelInProgress = false,
+    ),
+), SetupCapability {
     override val setupAction = input("setup-action", SetupCapability.SETUP_ACTION_DESCRIPTION, required = true)
     override val setupParams = input("setup-params", SetupCapability.SETUP_PARAMS_DESCRIPTION, default = SetupCapability.SETUP_PARAMS_DEFAULT)
     val publishCommand = input("publish-command", "Command to run for publishing", required = true)
@@ -28,7 +35,7 @@ object PublishWorkflow : ProjectWorkflow("publish.yml", "Publish"), SetupCapabil
     val gradlePortalSecrets = listOf(gradlePublishKey, gradlePublishSecret)
 
     override fun WorkflowBuilder.implementation() {
-        job(id = "publish", name = "Publish", runsOn = UbuntuLatest) {
+        job(id = "publish", name = "Publish", runsOn = UbuntuLatest, timeoutMinutes = 30) {
             conditionalSetupSteps()
             run(
                 name = "Publish",
