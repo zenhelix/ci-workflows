@@ -8,5 +8,4 @@ const val DEFAULT_CHANGELOG_CONFIG = ".github/changelog-config.json"
 
 private const val MATRIX_FALLBACK_TEMPLATE = """["{0}"]"""
 
-const val JAVA_VERSION_MATRIX_EXPR =
-    "\${{ fromJson(inputs.java-versions || format('$MATRIX_FALLBACK_TEMPLATE', inputs.java-version)) }}"
+const val JAVA_VERSION_MATRIX_EXPR = $$"${{ fromJson(inputs.java-versions || format('$$MATRIX_FALLBACK_TEMPLATE', inputs.java-version)) }}"

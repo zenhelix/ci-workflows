@@ -37,7 +37,7 @@ object CreateTagWorkflow : ProjectWorkflow(
             uses(
                 name = "Bump version and push tag",
                 action = GithubTagAction(
-                    githubToken = "\${{ steps.app-token.outputs.token }}",
+                    githubToken = $$"${{ steps.app-token.outputs.token }}",
                     defaultBump = defaultBump.expr,
                     tagPrefix = tagPrefix.expr,
                     releaseBranches = releaseBranches.expr,

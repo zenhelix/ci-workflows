@@ -60,6 +60,6 @@ class AdapterWorkflow(
                     required = secret?.required ?: true,
                 )
             }
-        }.toMap()
-            .takeIf { it.isNotEmpty() }
+        }.toMap().takeIf { it.isNotEmpty() }
+
 }

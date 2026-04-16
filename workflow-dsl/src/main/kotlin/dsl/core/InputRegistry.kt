@@ -22,8 +22,10 @@ class InputRegistry {
     }
 }
 
-fun InputRegistry.input(name: String, description: String, required: Boolean = false, default: String): WorkflowInput =
-    input(name, description, required, InputDefault(default))
+fun InputRegistry.input(
+    name: String, description: String, required: Boolean = false, default: String
+): WorkflowInput = input(name, description, required, InputDefault(default))
 
-fun InputRegistry.input(name: String, description: String, required: Boolean = false, default: Boolean): WorkflowInput =
-    input(name, description, required, InputDefault(default))
+fun InputRegistry.input(
+    name: String, description: String, required: Boolean = false, default: Boolean
+): WorkflowInput = input(name, description, required, InputDefault(default))

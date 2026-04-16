@@ -10,21 +10,21 @@ import workflows.ProjectWorkflow
 import dsl.core.expr
 import workflows.support.conditionalSetupSteps
 
-private val VALIDATE_VERSION_SCRIPT = """
-    VERSION="${'$'}{{ inputs.tag-version }}"
-    if [[ ! "${'$'}VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?${'$'} ]]; then
+private val VALIDATE_VERSION_SCRIPT = $$"""
+    VERSION="${{ inputs.tag-version }}"
+    if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
       echo "::error::Version must be in semver format (e.g. 1.2.3 or 1.2.3-rc.1)"
       exit 1
     fi
 """.trimIndent()
 
-private val CREATE_AND_PUSH_TAG_SCRIPT = """
-    TAG="${'$'}{{ inputs.tag-prefix }}${'$'}{{ inputs.tag-version }}"
+private val CREATE_AND_PUSH_TAG_SCRIPT = $$"""
+    TAG="${{ inputs.tag-prefix }}${{ inputs.tag-version }}"
     git config user.name "github-actions[bot]"
     git config user.email "github-actions[bot]@users.noreply.github.com"
-    git tag -a "${'$'}TAG" -m "Release ${'$'}TAG"
-    git push origin "${'$'}TAG"
-    echo "::notice::Created tag ${'$'}TAG"
+    git tag -a "$TAG" -m "Release $TAG"
+    git push origin "$TAG"
+    echo "::notice::Created tag $TAG"
 """.trimIndent()
 
 object ManualCreateTagWorkflow : ProjectWorkflow(

@@ -19,7 +19,7 @@ object LabelerWorkflow : ProjectWorkflow(
             uses(
                 name = "Label PR based on file paths",
                 action = Labeler(
-                    repoToken_Untyped = "\${{ secrets.GITHUB_TOKEN }}",
+                    repoToken_Untyped = $$"${{ secrets.GITHUB_TOKEN }}",
                     configurationPath_Untyped = configPath.expr,
                     syncLabels = true,
                 ),

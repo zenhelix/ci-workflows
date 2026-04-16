@@ -49,8 +49,7 @@ abstract class ReusableWorkflow(val fileName: String) {
 
     abstract val usesString: String
 
-    fun toInputsYaml(): Map<String, InputYaml>? =
-        dsl.yaml.toInputsYaml(inputRegistry.inputs)
+    fun toInputsYaml(): Map<String, InputYaml>? = dsl.yaml.toInputsYaml(inputRegistry.inputs)
 
     fun toWorkflowCallTrigger(): WorkflowCall {
         val custom = buildMap<String, Any> {

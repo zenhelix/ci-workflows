@@ -5,15 +5,15 @@ import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
 import workflows.ProjectWorkflow
 
-private val VALIDATE_PR_TITLE_SCRIPT = """
-    TYPES_PATTERN=${'$'}(echo "${'$'}ALLOWED_TYPES" | tr ',' '|')
-    PATTERN="^(${'$'}TYPES_PATTERN)(\(.+\))?(!)?: .+"
-    if [[ ! "${'$'}PR_TITLE" =~ ${'$'}PATTERN ]]; then
+private val VALIDATE_PR_TITLE_SCRIPT = $$"""
+    TYPES_PATTERN=$(echo "$ALLOWED_TYPES" | tr ',' '|')
+    PATTERN="^($TYPES_PATTERN)(\(.+\))?(!)?: .+"
+    if [[ ! "$PR_TITLE" =~ $PATTERN ]]; then
       echo "::warning::PR title does not match conventional commits format: <type>(<scope>): <description>"
-      echo "::warning::Allowed types: ${'$'}ALLOWED_TYPES"
-      echo "::warning::Got: ${'$'}PR_TITLE"
+      echo "::warning::Allowed types: $ALLOWED_TYPES"
+      echo "::warning::Got: $PR_TITLE"
     else
-      echo "PR title is valid: ${'$'}PR_TITLE"
+      echo "PR title is valid: $PR_TITLE"
     fi
 """.trimIndent()
 

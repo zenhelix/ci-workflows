@@ -37,4 +37,5 @@ abstract class ProjectWorkflow(
         val className = this::class.simpleName ?: error("Anonymous workflow")
         return File("src/main/kotlin/workflows/base/$className.kt")
     }
+
 }

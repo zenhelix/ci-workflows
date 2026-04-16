@@ -25,20 +25,20 @@ object ReleaseWorkflow : ProjectWorkflow(
                 name = "Build Changelog",
                 action = ReleaseChangelogBuilderAction_Untyped(
                     configuration_Untyped = changelogConfig.expr,
-                    toTag_Untyped = "\${{ github.ref_name }}",
+                    toTag_Untyped = $$"${{ github.ref_name }}",
                 ),
                 id = "changelog",
-                env = linkedMapOf("GITHUB_TOKEN" to "\${{ secrets.GITHUB_TOKEN }}"),
+                env = linkedMapOf("GITHUB_TOKEN" to $$"${{ secrets.GITHUB_TOKEN }}"),
             )
             uses(
                 name = "Create Release",
                 action = ActionGhRelease(
-                    body = "\${{ steps.changelog.outputs.changelog }}",
-                    name = "\${{ github.ref_name }}",
-                    tagName = "\${{ github.ref_name }}",
+                    body = $$"${{ steps.changelog.outputs.changelog }}",
+                    name = $$"${{ github.ref_name }}",
+                    tagName = $$"${{ github.ref_name }}",
                     draft_Untyped = draft.expr,
                 ),
-                env = linkedMapOf("GITHUB_TOKEN" to "\${{ secrets.GITHUB_TOKEN }}"),
+                env = linkedMapOf("GITHUB_TOKEN" to $$"${{ secrets.GITHUB_TOKEN }}"),
             )
         }
     }

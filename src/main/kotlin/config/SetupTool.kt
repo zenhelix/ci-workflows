@@ -8,8 +8,7 @@ sealed class SetupTool(
 ) {
     val id: String = actionName.removePrefix("setup-")
 
-    fun toParamsJson(versionExpr: String): String =
-        """{"$versionKey": "$versionExpr"}"""
+    fun toParamsJson(versionExpr: String): String = """{"$versionKey": "$versionExpr"}"""
 
     data object Gradle : SetupTool("setup-gradle", "java-version", DEFAULT_JAVA_VERSION, "JDK version to use")
     data object Go : SetupTool("setup-go", "go-version", DEFAULT_GO_VERSION, "Go version to use")
