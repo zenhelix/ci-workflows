@@ -18,10 +18,14 @@ on:
         default: false
 permissions:
   contents: 'write'
+concurrency:
+  group: 'release-${{ github.repository }}'
+  cancel-in-progress: false
 jobs:
   release:
     name: 'GitHub Release'
     runs-on: 'ubuntu-latest'
+    timeout-minutes: 15
     steps:
     - id: 'step-0'
       name: 'Check out'
