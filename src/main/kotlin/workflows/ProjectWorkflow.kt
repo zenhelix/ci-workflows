@@ -3,6 +3,7 @@ package workflows
 import config.reusableWorkflow
 import dsl.builder.GeneratableWorkflow
 import dsl.core.ReusableWorkflow
+import io.github.typesafegithub.workflows.domain.Concurrency
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
@@ -14,6 +15,7 @@ abstract class ProjectWorkflow(
     fileName: String,
     private val workflowName: String,
     private val permissions: Map<Permission, Mode>? = mapOf(Permission.Contents to Mode.Read),
+    private val concurrency: Concurrency? = null,
 ) : ReusableWorkflow(fileName), GeneratableWorkflow {
 
     override val usesString: String = reusableWorkflow(fileName)
@@ -28,6 +30,7 @@ abstract class ProjectWorkflow(
             targetFileName = fileName,
             consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
             permissions = permissions,
+            concurrency = concurrency,
         ) {
             implementation()
         }
