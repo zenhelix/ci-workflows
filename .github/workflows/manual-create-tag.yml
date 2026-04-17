@@ -37,10 +37,14 @@ on:
         required: true
 permissions:
   contents: 'write'
+concurrency:
+  group: 'release-${{ github.repository }}'
+  cancel-in-progress: false
 jobs:
   manual_tag:
     name: 'Manual Tag'
     runs-on: 'ubuntu-latest'
+    timeout-minutes: 10
     steps:
     - id: 'step-0'
       name: 'Validate version format'

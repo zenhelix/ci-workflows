@@ -11,10 +11,14 @@ on:
         type: 'string'
         required: false
         default: 'feat,fix,refactor,docs,test,chore,perf,ci'
+concurrency:
+  group: '${{ github.workflow }}-${{ github.ref }}'
+  cancel-in-progress: true
 jobs:
   check-title:
     name: 'Check PR Title'
     runs-on: 'ubuntu-latest'
+    timeout-minutes: 5
     steps:
     - id: 'step-0'
       name: 'Validate PR title format'

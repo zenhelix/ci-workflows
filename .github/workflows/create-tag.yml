@@ -43,10 +43,14 @@ on:
         required: true
 permissions:
   contents: 'write'
+concurrency:
+  group: 'release-${{ github.repository }}'
+  cancel-in-progress: false
 jobs:
   create_tag:
     name: 'Create Tag'
     runs-on: 'ubuntu-latest'
+    timeout-minutes: 10
     steps:
     - id: 'step-0'
       name: 'Setup Gradle'

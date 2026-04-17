@@ -1,6 +1,7 @@
 package workflows.base
 
 import dsl.core.expr
+import io.github.typesafegithub.workflows.domain.Concurrency
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
 import workflows.ProjectWorkflow
@@ -17,11 +18,18 @@ private val VALIDATE_PR_TITLE_SCRIPT = $$"""
     fi
 """.trimIndent()
 
-object ConventionalCommitCheckWorkflow : ProjectWorkflow("conventional-commit-check.yml", "Conventional Commit Check", permissions = null) {
+object ConventionalCommitCheckWorkflow : ProjectWorkflow(
+    "conventional-commit-check.yml", "Conventional Commit Check",
+    permissions = null,
+    concurrency = Concurrency(
+        group = "\${{ github.workflow }}-\${{ github.ref }}",
+        cancelInProgress = true,
+    ),
+) {
     val allowedTypes = input("allowed-types", "Comma-separated list of allowed commit types", default = "feat,fix,refactor,docs,test,chore,perf,ci")
 
     override fun WorkflowBuilder.implementation() {
-        job(id = "check-title", name = "Check PR Title", runsOn = UbuntuLatest) {
+        job(id = "check-title", name = "Check PR Title", runsOn = UbuntuLatest, timeoutMinutes = 5) {
             run(
                 name = "Validate PR title format",
                 command = VALIDATE_PR_TITLE_SCRIPT,
