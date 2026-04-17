@@ -1,0 +1,63 @@
+name: 'CodeQL Analysis'
+
+on:
+  workflow_call:
+    inputs:
+      language:
+        description: 'CodeQL language to analyze'
+        type: 'string'
+        required: false
+        default: 'java-kotlin'
+      java-version:
+        description: 'JDK version to use for build'
+        type: 'string'
+        required: false
+        default: '17'
+      build-command:
+        description: 'Build command to compile sources for CodeQL'
+        type: 'string'
+        required: false
+        default: './gradlew classes testClasses'
+
+permissions:
+  security-events: write
+  contents: read
+  actions: read
+
+jobs:
+  analyze:
+    name: 'Analyze'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language:
+          - '${{ inputs.language }}'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '${{ inputs.java-version }}'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        run: '${{ inputs.build-command }}'
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:${{ matrix.language }}'
