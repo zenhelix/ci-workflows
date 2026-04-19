@@ -26,10 +26,10 @@ on:
         required: false
         default: 'v'
     secrets:
-      app-id:
+      ZENHELIX_COMMITER_APP_ID:
         description: 'GitHub App ID for generating commit token'
         required: true
-      app-private-key:
+      ZENHELIX_COMMITER_APP_PRIVATE_KEY:
         description: 'GitHub App private key for generating commit token'
         required: true
 jobs:
@@ -42,5 +42,5 @@ jobs:
       setup-params: '{"go-version": "${{ inputs.go-version }}"}'
       check-command: '${{ inputs.check-command }}'
     secrets:
-      app-id: '${{ secrets.app-id }}'
-      app-private-key: '${{ secrets.app-private-key }}'
+      ZENHELIX_COMMITER_APP_ID: '${{ secrets.ZENHELIX_COMMITER_APP_ID }}'
+      ZENHELIX_COMMITER_APP_PRIVATE_KEY: '${{ secrets.ZENHELIX_COMMITER_APP_PRIVATE_KEY }}'
