@@ -41,8 +41,8 @@ object ManualCreateTagWorkflow : ProjectWorkflow(
     override val setupAction = input("setup-action", SetupCapability.SETUP_ACTION_DESCRIPTION, required = true)
     override val setupParams = input("setup-params", SetupCapability.SETUP_PARAMS_DESCRIPTION, default = SetupCapability.SETUP_PARAMS_DEFAULT)
     val checkCommand = input("check-command", "Validation command to run before tagging", required = true)
-    val appId = secret("app-id", "GitHub App ID for generating commit token")
-    val appPrivateKey = secret("app-private-key", "GitHub App private key for generating commit token")
+    val appId = secret("ZENHELIX_COMMITER_APP_ID", "GitHub App ID for generating commit token")
+    val appPrivateKey = secret("ZENHELIX_COMMITER_APP_PRIVATE_KEY", "GitHub App private key for generating commit token")
 
     override fun WorkflowBuilder.implementation() {
         job(id = "manual_tag", name = "Manual Tag", runsOn = UbuntuLatest, timeoutMinutes = 10) {

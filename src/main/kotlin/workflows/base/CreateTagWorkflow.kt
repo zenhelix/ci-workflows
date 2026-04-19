@@ -27,8 +27,8 @@ object CreateTagWorkflow : ProjectWorkflow(
     val defaultBump = input("default-bump", "Default version bump type (major, minor, patch)", default = "patch")
     val tagPrefix = input("tag-prefix", "Prefix for the tag (e.g. v)", default = "")
     val releaseBranches = input("release-branches", "Comma-separated branch patterns for releases", default = DEFAULT_RELEASE_BRANCHES)
-    val appId = secret("app-id", "GitHub App ID for generating commit token")
-    val appPrivateKey = secret("app-private-key", "GitHub App private key for generating commit token")
+    val appId = secret("ZENHELIX_COMMITER_APP_ID", "GitHub App ID for generating commit token")
+    val appPrivateKey = secret("ZENHELIX_COMMITER_APP_PRIVATE_KEY", "GitHub App private key for generating commit token")
 
     override fun WorkflowBuilder.implementation() {
         job(id = "create_tag", name = "Create Tag", runsOn = UbuntuLatest, timeoutMinutes = 10) {
