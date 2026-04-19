@@ -29,10 +29,10 @@ on:
         type: 'string'
         required: true
     secrets:
-      app-id:
+      ZENHELIX_COMMITER_APP_ID:
         description: 'GitHub App ID for generating commit token'
         required: true
-      app-private-key:
+      ZENHELIX_COMMITER_APP_PRIVATE_KEY:
         description: 'GitHub App private key for generating commit token'
         required: true
 permissions:
@@ -82,8 +82,8 @@ jobs:
       name: 'Generate App Token'
       uses: 'zenhelix/ci-workflows/.github/actions/create-app-token@v2'
       with:
-        app-id: '${{ secrets.app-id }}'
-        app-private-key: '${{ secrets.app-private-key }}'
+        app-id: '${{ secrets.ZENHELIX_COMMITER_APP_ID }}'
+        app-private-key: '${{ secrets.ZENHELIX_COMMITER_APP_PRIVATE_KEY }}'
     - id: 'step-6'
       name: 'Create and push tag'
       env:
