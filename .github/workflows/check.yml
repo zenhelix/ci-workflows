@@ -32,19 +32,19 @@ jobs:
     steps:
     - id: 'step-0'
       name: 'Setup Gradle'
-      uses: 'zenhelix/ci-workflows/.github/actions/setup-gradle@v2'
+      uses: './.github/actions/setup-gradle'
       with:
         java-version: '${{ fromJson(inputs.setup-params).java-version || ''17'' }}'
       if: 'inputs.setup-action == ''gradle'''
     - id: 'step-1'
       name: 'Setup Go'
-      uses: 'zenhelix/ci-workflows/.github/actions/setup-go@v2'
+      uses: './.github/actions/setup-go'
       with:
         go-version: '${{ fromJson(inputs.setup-params).go-version || ''1.22'' }}'
       if: 'inputs.setup-action == ''go'''
     - id: 'step-2'
       name: 'Setup Python'
-      uses: 'zenhelix/ci-workflows/.github/actions/setup-python@v2'
+      uses: './.github/actions/setup-python'
       with:
         python-version: '${{ fromJson(inputs.setup-params).python-version || ''3.12'' }}'
       if: 'inputs.setup-action == ''python'''
