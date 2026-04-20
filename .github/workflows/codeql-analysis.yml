@@ -1,5 +1,8 @@
-name: 'CodeQL Analysis'
+# This file was generated using Kotlin DSL (src/main/kotlin/workflows/base/CodeqlAnalysisWorkflow.kt).
+# If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
 
+name: 'CodeQL Analysis'
 on:
   workflow_call:
     inputs:
@@ -18,46 +21,43 @@ on:
         type: 'string'
         required: false
         default: './gradlew classes testClasses'
-
 permissions:
-  security-events: write
-  contents: read
-  actions: read
-
+  security-events: 'write'
+  contents: 'read'
+  actions: 'read'
 jobs:
   analyze:
     name: 'Analyze'
-    runs-on: ubuntu-latest
+    runs-on: 'ubuntu-latest'
     timeout-minutes: 30
-
     strategy:
       fail-fast: false
       matrix:
         language:
-          - '${{ inputs.language }}'
-
+        - '${{ inputs.language }}'
     steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@ce64ddcb0d8d890d2df4a9d1c04ff297367dea2a # v3
-        with:
-          languages: ${{ matrix.language }}
-
-      - name: Setup Java
-        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
-        with:
-          distribution: 'temurin'
-          java-version: '${{ inputs.java-version }}'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4
-
-      - name: Build
-        run: '${{ inputs.build-command }}'
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@ce64ddcb0d8d890d2df4a9d1c04ff297367dea2a # v3
-        with:
-          category: '/language:${{ matrix.language }}'
+    - id: 'step-0'
+      name: 'Checkout'
+      uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd'
+    - id: 'step-1'
+      name: 'Initialize CodeQL'
+      uses: 'github/codeql-action/init@ce64ddcb0d8d890d2df4a9d1c04ff297367dea2a'
+      with:
+        languages: '${{ matrix.language }}'
+    - id: 'step-2'
+      name: 'Setup Java'
+      uses: 'actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654'
+      with:
+        java-version: '${{ inputs.java-version }}'
+        distribution: 'temurin'
+    - id: 'step-3'
+      name: 'Setup Gradle'
+      uses: 'gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c'
+    - id: 'step-4'
+      name: 'Build'
+      run: '${{ inputs.build-command }}'
+    - id: 'step-5'
+      name: 'Perform CodeQL Analysis'
+      uses: 'github/codeql-action/analyze@ce64ddcb0d8d890d2df4a9d1c04ff297367dea2a'
+      with:
+        category: '/language:${{ matrix.language }}'

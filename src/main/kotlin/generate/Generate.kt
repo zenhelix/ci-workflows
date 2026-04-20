@@ -10,6 +10,7 @@ import workflows.base.PublishWorkflow
 import workflows.base.LabelerWorkflow
 import workflows.base.AppDeployWorkflow
 import workflows.base.ShaPinningGuardWorkflow
+import workflows.base.CodeqlAnalysisWorkflow
 import workflows.adapters.check.GradleCheck
 import workflows.adapters.tag.TagAdapters
 import workflows.adapters.release.ReleaseAdapters
@@ -28,6 +29,7 @@ fun main() {
         LabelerWorkflow,
         AppDeployWorkflow,
         ShaPinningGuardWorkflow,
+        CodeqlAnalysisWorkflow,
     )
 
     val adapterWorkflows = GradleCheck.all + TagAdapters.all + ReleaseAdapters.all
