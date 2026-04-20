@@ -30,10 +30,8 @@ dependencies {
     // the repo root (which has no action). Sub-actions are published under
     // `<owner>:<repo>__<subpath>:<sha>` — one Maven artifact per sub-action.
     implementation("gradle:actions__setup-gradle:0723195856401067f7a2779048b490ace7a47d7c") // v5
-    implementation("gradle:actions__wrapper-validation:0723195856401067f7a2779048b490ace7a47d7c") // v5
     implementation("github:codeql-action__init:ce64ddcb0d8d890d2df4a9d1c04ff297367dea2a") // v3
     implementation("github:codeql-action__analyze:ce64ddcb0d8d890d2df4a9d1c04ff297367dea2a") // v3
-    implementation("github:codeql-action__upload-sarif:ce64ddcb0d8d890d2df4a9d1c04ff297367dea2a") // v3
 }
 
 kotlin {
