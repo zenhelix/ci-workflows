@@ -1,0 +1,38 @@
+version: 2
+updates:
+  # Root workflows + the DSL layer's Gradle coordinates (build.gradle.kts bindings)
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    groups:
+      actions:
+        patterns: ['*']
+    labels:
+      - 'dependencies'
+      - 'github-actions'
+
+  # Composite actions each live in their own directory; Dependabot tracks them separately
+  - package-ecosystem: 'github-actions'
+    directories:
+      - '/.github/actions/setup-gradle'
+      - '/.github/actions/setup-go'
+      - '/.github/actions/setup-python'
+      - '/.github/actions/create-app-token'
+    schedule:
+      interval: 'weekly'
+    groups:
+      actions:
+        patterns: ['*']
+    labels:
+      - 'dependencies'
+      - 'github-actions'
+
+  # Gradle dependencies (github-workflows-kt, kaml, kotlinx-serialization)
+  - package-ecosystem: 'gradle'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    labels:
+      - 'dependencies'
+      - 'gradle'
