@@ -56,21 +56,21 @@ jobs:
         fi
     - id: 'step-1'
       name: 'Setup Gradle'
-      uses: 'zenhelix/ci-workflows/.github/actions/setup-gradle@v2'
+      uses: './.github/actions/setup-gradle'
       with:
         java-version: '${{ fromJson(inputs.setup-params).java-version || ''17'' }}'
         fetch-depth: '0'
       if: 'inputs.setup-action == ''gradle'''
     - id: 'step-2'
       name: 'Setup Go'
-      uses: 'zenhelix/ci-workflows/.github/actions/setup-go@v2'
+      uses: './.github/actions/setup-go'
       with:
         go-version: '${{ fromJson(inputs.setup-params).go-version || ''1.22'' }}'
         fetch-depth: '0'
       if: 'inputs.setup-action == ''go'''
     - id: 'step-3'
       name: 'Setup Python'
-      uses: 'zenhelix/ci-workflows/.github/actions/setup-python@v2'
+      uses: './.github/actions/setup-python'
       with:
         python-version: '${{ fromJson(inputs.setup-params).python-version || ''3.12'' }}'
         fetch-depth: '0'
@@ -80,7 +80,7 @@ jobs:
       run: '${{ inputs.check-command }}'
     - id: 'app-token'
       name: 'Generate App Token'
-      uses: 'zenhelix/ci-workflows/.github/actions/create-app-token@v2'
+      uses: './.github/actions/create-app-token'
       with:
         app-id: '${{ secrets.ZENHELIX_COMMITER_APP_ID }}'
         app-private-key: '${{ secrets.ZENHELIX_COMMITER_APP_PRIVATE_KEY }}'

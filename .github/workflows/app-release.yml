@@ -18,7 +18,7 @@ on:
         default: true
 jobs:
   release:
-    uses: 'zenhelix/ci-workflows/.github/workflows/release.yml@v2'
+    uses: 'zenhelix/ci-workflows/.github/workflows/release.yml@v4'
     with:
       changelog-config: '${{ inputs.changelog-config }}'
       draft: '${{ inputs.draft }}'

@@ -1,7 +1,7 @@
 package workflows.base
 
 import dsl.core.expr
-import io.github.typesafegithub.workflows.actions.actions.Labeler
+import io.github.typesafegithub.workflows.actions.actions.Labeler_Untyped
 import io.github.typesafegithub.workflows.domain.Concurrency
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
@@ -23,10 +23,10 @@ object LabelerWorkflow : ProjectWorkflow(
         job(id = "label", name = "Label PR", runsOn = UbuntuLatest, timeoutMinutes = 5) {
             uses(
                 name = "Label PR based on file paths",
-                action = Labeler(
+                action = Labeler_Untyped(
                     repoToken_Untyped = $$"${{ secrets.GITHUB_TOKEN }}",
                     configurationPath_Untyped = configPath.expr,
-                    syncLabels = true,
+                    syncLabels_Untyped = "true",
                 ),
             )
         }

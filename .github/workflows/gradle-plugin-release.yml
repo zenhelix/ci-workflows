@@ -47,12 +47,12 @@ on:
         required: false
 jobs:
   release:
-    uses: 'zenhelix/ci-workflows/.github/workflows/release.yml@v2'
+    uses: 'zenhelix/ci-workflows/.github/workflows/release.yml@v4'
     with:
       changelog-config: '${{ inputs.changelog-config }}'
   publish:
     needs: 'release'
-    uses: 'zenhelix/ci-workflows/.github/workflows/publish.yml@v2'
+    uses: 'zenhelix/ci-workflows/.github/workflows/publish.yml@v4'
     with:
       setup-action: 'gradle'
       setup-params: '{"java-version": "${{ inputs.java-version }}"}'

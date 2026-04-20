@@ -34,7 +34,7 @@ on:
         required: true
 jobs:
   manual-tag:
-    uses: 'zenhelix/ci-workflows/.github/workflows/manual-create-tag.yml@v2'
+    uses: 'zenhelix/ci-workflows/.github/workflows/manual-create-tag.yml@v4'
     with:
       tag-version: '${{ inputs.tag-version }}'
       tag-prefix: '${{ inputs.tag-prefix }}'
