@@ -1,9 +1,9 @@
 package workflows.base
 
 import config.DEFAULT_CHANGELOG_CONFIG
-import io.github.typesafegithub.workflows.actions.actions.Checkout
+import io.github.typesafegithub.workflows.actions.actions.Checkout_Untyped
 import io.github.typesafegithub.workflows.actions.mikepenz.ReleaseChangelogBuilderAction_Untyped
-import io.github.typesafegithub.workflows.actions.softprops.ActionGhRelease
+import io.github.typesafegithub.workflows.actions.softprops.ActionGhRelease_Untyped
 import io.github.typesafegithub.workflows.domain.Concurrency
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
@@ -25,7 +25,7 @@ object ReleaseWorkflow : ProjectWorkflow(
 
     override fun WorkflowBuilder.implementation() {
         job(id = "release", name = "GitHub Release", runsOn = UbuntuLatest, timeoutMinutes = 15) {
-            uses(name = "Check out", action = Checkout(fetchDepth = Checkout.FetchDepth.Value(0)))
+            uses(name = "Check out", action = Checkout_Untyped(fetchDepth_Untyped = "0"))
             uses(
                 name = "Build Changelog",
                 action = ReleaseChangelogBuilderAction_Untyped(
@@ -37,10 +37,10 @@ object ReleaseWorkflow : ProjectWorkflow(
             )
             uses(
                 name = "Create Release",
-                action = ActionGhRelease(
-                    body = $$"${{ steps.changelog.outputs.changelog }}",
-                    name = $$"${{ github.ref_name }}",
-                    tagName = $$"${{ github.ref_name }}",
+                action = ActionGhRelease_Untyped(
+                    body_Untyped = $$"${{ steps.changelog.outputs.changelog }}",
+                    name_Untyped = $$"${{ github.ref_name }}",
+                    tagName_Untyped = $$"${{ github.ref_name }}",
                     draft_Untyped = draft.expr,
                 ),
                 env = linkedMapOf("GITHUB_TOKEN" to $$"${{ secrets.GITHUB_TOKEN }}"),
