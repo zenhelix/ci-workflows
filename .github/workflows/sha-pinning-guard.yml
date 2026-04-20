@@ -1,0 +1,27 @@
+name: 'SHA Pinning Guard'
+
+on:
+  workflow_call: {}
+
+permissions:
+  contents: read
+
+jobs:
+  sha-pinning-guard:
+    name: 'SHA Pinning Guard'
+    runs-on: 'ubuntu-latest'
+    timeout-minutes: 5
+    steps:
+      - name: 'Checkout caller repo'
+        uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' # v6
+
+      - name: 'Checkout ci-workflows script (sparse)'
+        uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' # v6
+        with:
+          repository: 'zenhelix/ci-workflows'
+          ref: '${{ github.job_workflow_sha }}'
+          path: '.ci-workflows-src'
+          sparse-checkout: '.github/scripts'
+
+      - name: 'Run SHA pinning guardrail'
+        run: 'python3 .ci-workflows-src/.github/scripts/check-sha-pinning.py'
