@@ -1,18 +1,11 @@
 version: 2
 updates:
-  # Root workflows + the DSL layer's Gradle coordinates (build.gradle.kts bindings)
-  - package-ecosystem: 'github-actions'
-    directory: '/'
-    schedule:
-      interval: 'weekly'
-    groups:
-      actions:
-        patterns: ['*']
-    labels:
-      - 'dependencies'
-      - 'github-actions'
-
-  # Composite actions each live in their own directory; Dependabot tracks them separately
+  # Composite actions each live in their own directory; Dependabot tracks them separately.
+  # Root workflows under .github/workflows/ are 100% generated from Kotlin DSL
+  # (src/main/kotlin/) and consume SHAs from build.gradle.kts bindings — so the
+  # gradle ecosystem entry below is the source-of-truth update path for action
+  # SHAs in those workflows. Do not add a `github-actions @ /` entry: it would
+  # edit generated YAMLs directly, conflicting with gradle ecosystem PRs.
   - package-ecosystem: 'github-actions'
     directories:
       - '/.github/actions/setup-gradle'

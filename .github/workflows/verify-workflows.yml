@@ -1,56 +1,50 @@
-name: 'Verify Workflows'
+# This file was generated using Kotlin DSL (src/main/kotlin/workflows/base/VerifyWorkflowsWorkflow.kt).
+# If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
+# Generated with https://github.com/typesafegithub/github-workflows-kt
 
+name: 'Verify Workflows'
 on:
   pull_request:
     paths:
-      - 'src/**'
-      - 'build.gradle.kts'
-      - '.github/workflows/**'
+    - 'src/**'
+    - 'workflow-dsl/**'
+    - 'build.gradle.kts'
+    - '.github/workflows/**'
   push:
-    branches: ['main']
+    branches:
+    - 'main'
     paths:
-      - 'src/**'
-      - 'build.gradle.kts'
-      - '.github/workflows/**'
-
+    - 'src/**'
+    - 'workflow-dsl/**'
+    - 'build.gradle.kts'
+    - '.github/workflows/**'
 permissions:
   contents: 'read'
-
 jobs:
   verify:
     name: 'Verify generated workflows are up-to-date'
     runs-on: 'ubuntu-latest'
     steps:
-      - name: 'Check out'
-        uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' # v6
-
-      - name: 'Set up JDK'
-        uses: 'actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654' # v5
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: 'Setup Gradle'
-        uses: 'gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c' # v5
-
-      - name: 'Generate workflows'
-        run: ./gradlew run
-
-      - name: 'Check for differences'
-        run: |
-          if ! git diff --exit-code .github/workflows/; then
-            echo "::error::Generated workflow YAML files are out of date. Run ./gradlew run and commit."
-            exit 1
-          fi
-          echo "All generated workflows are up-to-date."
-
-  sha-pinning-guard:
-    name: 'SHA Pinning Guard'
-    runs-on: 'ubuntu-latest'
-    timeout-minutes: 5
-    steps:
-      - name: 'Check out'
-        uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' # v6
-
-      - name: 'Check for non-SHA third-party action refs'
-        run: 'python3 .github/scripts/check-sha-pinning.py'
+    - id: 'step-0'
+      name: 'Check out'
+      uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd'
+    - id: 'step-1'
+      name: 'Set up JDK'
+      uses: 'actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654'
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    - id: 'step-2'
+      name: 'Setup Gradle'
+      uses: 'gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c'
+    - id: 'step-3'
+      name: 'Generate workflows'
+      run: './gradlew run'
+    - id: 'step-4'
+      name: 'Check for differences'
+      run: |-
+        if ! git diff --exit-code .github/workflows/; then
+          echo "::error::Generated workflow YAML files are out of date. Run ./gradlew run and commit."
+          exit 1
+        fi
+        echo "All generated workflows are up-to-date."
