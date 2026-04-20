@@ -20,7 +20,7 @@ on:
         description: 'Build command to compile sources for CodeQL'
         type: 'string'
         required: false
-        default: './gradlew classes testClasses'
+        default: './gradlew compileKotlin compileTestKotlin --continue'
 permissions:
   security-events: 'write'
   contents: 'read'

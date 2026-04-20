@@ -26,7 +26,12 @@ object CodeqlAnalysisWorkflow : ProjectWorkflow(
     val buildCommand = input(
         "build-command",
         "Build command to compile sources for CodeQL",
-        default = "./gradlew classes testClasses",
+        // compileKotlin / compileTestKotlin resolve across subprojects via Gradle's
+        // task-name matcher, so this works for both root-plugin-applied projects
+        // (gradle-extensions) and multi-module projects that only apply Kotlin
+        // plugins to subprojects (kt-utils and others). --continue lets CodeQL
+        // still analyze whatever compiled even if one subproject fails.
+        default = "./gradlew compileKotlin compileTestKotlin --continue",
     )
 
     override fun WorkflowBuilder.implementation() {
