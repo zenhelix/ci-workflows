@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [":dependencyDashboard"],
+  "enabledManagers": ["custom.regex"],
+  "schedule": ["before 9am on Monday"],
+  "labels": ["dependencies", "gradle-bindings"],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "separateMajorMinor": true,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^build\\.gradle\\.kts$/"],
+      "matchStrings": [
+        "implementation\\(\"(?<owner>[^:]+):(?<repo>(?:[^:_]|_[^:_])+):(?<currentDigest>[a-f0-9]{40})\"\\)\\s*//\\s*(?<currentValue>v\\d+)"
+      ],
+      "depNameTemplate": "{{owner}}/{{repo}}",
+      "datasourceTemplate": "github-tags",
+      "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^build\\.gradle\\.kts$/"],
+      "matchStrings": [
+        "implementation\\(\"(?<owner>[^:]+):(?<repo>[^:]+)__(?<subpath>[^:]+):(?<currentDigest>[a-f0-9]{40})\"\\)\\s*//\\s*(?<currentValue>v\\d+)"
+      ],
+      "depNameTemplate": "{{owner}}/{{repo}}",
+      "datasourceTemplate": "github-tags",
+      "versioningTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Bindings bumps: stay on the current floating vN major; only refresh the digest when the tag moves.",
+      "matchManagers": ["custom.regex"],
+      "pinDigests": true,
+      "rangeStrategy": "pin"
+    }
+  ]
+}
