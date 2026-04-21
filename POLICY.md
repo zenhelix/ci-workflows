@@ -23,7 +23,7 @@ This document is the single source of truth for how the zenhelix organization en
 ### Layer 3 — ruleset (infra)
 
 - Per-repo branch rulesets include the guard's full status-check string in `required_checks`.
-- The string is reported by GitHub as `<parent-job> / <called-reusable-workflow-job>`. Expected format: `check / sha-pin-check / SHA Pinning Guard`. The exact string is confirmed empirically via a pilot CI run (Spec 10 Phase B / Task B2) — once captured, the string is recorded here and declared in `infra/locals.tf`.
+- The string is reported by GitHub as `<parent-job> / <called-reusable-workflow-job>`. Confirmed empirically via Spec 10 Phase B pilot run (zenhelix-ktlint-rules#11, 2026-04-21): **`check / sha-pin-check / SHA Pinning Guard`**.
 - Declared in `infra/locals.tf` per repo. Applies to 9 repos whose `required_checks` list includes `"check"` (i.e., repos that use a `*-check` adapter).
 - Effect: PR merges are blocked when the guard fails — independent of whether the workflow itself ran (e.g., if Layer 1 rejected the run, the status check never reports, and the ruleset treats the absence as a failure per the `required_status_checks` contract).
 
