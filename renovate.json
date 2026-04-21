@@ -27,6 +27,16 @@
       "depNameTemplate": "{{owner}}/{{repo}}",
       "datasourceTemplate": "github-tags",
       "versioningTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^src/main/kotlin/config/Refs\\.kt$/"],
+      "matchStrings": [
+        "const val ACTIONS_SHA = \"(?<currentDigest>[a-f0-9]{40})\"\\s*//\\s*(?<currentValue>v\\d+)"
+      ],
+      "depNameTemplate": "zenhelix/ci-workflows",
+      "datasourceTemplate": "github-tags",
+      "versioningTemplate": "docker"
     }
   ],
   "packageRules": [

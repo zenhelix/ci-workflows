@@ -9,6 +9,7 @@ import dsl.core.expr
 import dsl.core.simpleJob
 import workflows.base.CheckWorkflow
 import workflows.base.ConventionalCommitCheckWorkflow
+import workflows.base.ShaPinningGuardWorkflow
 import workflows.support.setup
 
 object GradleCheck {
@@ -27,6 +28,8 @@ object GradleCheck {
         val javaVersionMatrix = matrixRef("java-version")
 
         ConventionalCommitCheckWorkflow.simpleJob("conventional-commit")
+
+        ShaPinningGuardWorkflow.simpleJob("sha-pin-check")
 
         CheckWorkflow.setupJob("check") {
             strategy(matrix(javaVersionMatrix.key to JAVA_VERSION_MATRIX_EXPR))
