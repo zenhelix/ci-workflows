@@ -24,6 +24,8 @@ on:
 jobs:
   conventional-commit:
     uses: 'zenhelix/ci-workflows/.github/workflows/conventional-commit-check.yml@v4'
+  sha-pin-check:
+    uses: 'zenhelix/ci-workflows/.github/workflows/sha-pinning-guard.yml@v4'
   check:
     strategy:
       matrix:
