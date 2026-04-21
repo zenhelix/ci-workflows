@@ -54,6 +54,15 @@ Level 1: Composite actions    — reusable setup steps (setup-gradle, setup-go, 
 
 Running `./gradlew run` writes YAML files to `.github/workflows/`. These generated files are committed to the repo and consumed by other Zenhelix repositories via `uses: zenhelix/ci-workflows/.github/workflows/<name>@v1`.
 
+## SHA pinning policy
+
+See `POLICY.md` at repo root for the full policy. Summary:
+
+- Externals are SHA-pinned (enforced by GitHub's `sha_pinning_required` at the control-plane layer).
+- Internal composite actions are SHA-pinned via `src/main/kotlin/config/Refs.kt::ACTIONS_SHA` (bumped by Renovate on `v4` tag moves).
+- Internal reusable workflows are tag-pinned (`@v4`); the `v4` tag is protected by a tag ruleset in `infra`.
+- Every `*-check` adapter contains a `sha-pin-check` job that calls `sha-pinning-guard.yml` — do not remove or rename.
+
 ## Why kaml Is Used Alongside github-workflows-kt
 
 github-workflows-kt has two limitations that forced a custom YAML serialization layer:
