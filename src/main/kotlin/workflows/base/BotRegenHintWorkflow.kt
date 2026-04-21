@@ -12,8 +12,8 @@ import io.github.typesafegithub.workflows.dsl.workflow
 import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 import java.io.File
 
-object DependabotRegenHintWorkflow : GeneratableWorkflow {
-    override val fileName: String = "dependabot-regen-hint.yml"
+object BotRegenHintWorkflow : GeneratableWorkflow {
+    override val fileName: String = "bot-regen-hint.yml"
 
     private val TRIGGER_PATHS = listOf("build.gradle.kts", "src/**", "workflow-dsl/**")
 
@@ -56,9 +56,9 @@ object DependabotRegenHintWorkflow : GeneratableWorkflow {
 
     override fun generate(outputDir: File) {
         workflow(
-            name = "Dependabot Regen Hint",
+            name = "Bot Regen Hint",
             on = listOf(PullRequest(paths = TRIGGER_PATHS)),
-            sourceFile = File("src/main/kotlin/workflows/base/DependabotRegenHintWorkflow.kt"),
+            sourceFile = File("src/main/kotlin/workflows/base/BotRegenHintWorkflow.kt"),
             targetFileName = fileName,
             consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
             permissions = mapOf(
@@ -70,7 +70,7 @@ object DependabotRegenHintWorkflow : GeneratableWorkflow {
                 id = "regen-hint",
                 name = "Post regen hint if generator output drifts",
                 runsOn = UbuntuLatest,
-                condition = $$"${{ github.actor == 'dependabot[bot]' }}",
+                condition = $$"${{ github.actor == 'dependabot[bot]' || github.actor == 'renovate[bot]' }}",
             ) {
                 uses(
                     name = "Check out PR head",

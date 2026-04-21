@@ -21,7 +21,12 @@ updates:
       - 'dependencies'
       - 'github-actions'
 
-  # Gradle dependencies (github-workflows-kt, kaml, kotlinx-serialization)
+  # Gradle dependencies (github-workflows-kt, kaml, kotlinx-serialization).
+  # JIT action bindings (actions:*, mikepenz:*, softprops:*, gradle:*, github:*)
+  # are managed by Renovate — see renovate.json and Spec 9. Dependabot's gradle
+  # ecosystem cannot distinguish SHA-shaped from tag-shaped versions and
+  # regresses SHA pins to tag coords when both are published by the bindings
+  # registry. Wildcards below suppress those PRs.
   - package-ecosystem: 'gradle'
     directory: '/'
     schedule:
@@ -29,3 +34,9 @@ updates:
     labels:
       - 'dependencies'
       - 'gradle'
+    ignore:
+      - dependency-name: 'actions:*'
+      - dependency-name: 'mikepenz:*'
+      - dependency-name: 'softprops:*'
+      - dependency-name: 'gradle:*'
+      - dependency-name: 'github:*'

@@ -1,8 +1,8 @@
-# This file was generated using Kotlin DSL (src/main/kotlin/workflows/base/DependabotRegenHintWorkflow.kt).
+# This file was generated using Kotlin DSL (src/main/kotlin/workflows/base/BotRegenHintWorkflow.kt).
 # If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
 # Generated with https://github.com/typesafegithub/github-workflows-kt
 
-name: 'Dependabot Regen Hint'
+name: 'Bot Regen Hint'
 on:
   pull_request:
     paths:
@@ -16,7 +16,7 @@ jobs:
   regen-hint:
     name: 'Post regen hint if generator output drifts'
     runs-on: 'ubuntu-latest'
-    if: '${{ github.actor == ''dependabot[bot]'' }}'
+    if: '${{ github.actor == ''dependabot[bot]'' || github.actor == ''renovate[bot]'' }}'
     steps:
     - id: 'step-0'
       name: 'Check out PR head'
