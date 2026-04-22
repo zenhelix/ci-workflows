@@ -79,3 +79,4 @@ No destructive operations; no state surgery; all rollbacks are single-commit rev
 - Spec 7 (2026-04-20) — flipped `sha_pinning_required = true` on org + 14 repos; smoke test confirmed Free-plan enforcement via `startup_failure`.
 - Spec 9 (2026-04-21) — replaced Dependabot with Renovate customManager for JIT bindings in `build.gradle.kts`.
 - Spec 10 (2026-04-21) — this document; armed guard in adapters, ruleset required check, Renovate for `ACTIONS_SHA`.
+- Spec 11 (2026-04-22) — brought `zenhelix/infra` to Layer 1 compliance (SHA-pinned workflow refs), armed Renovate for infra workflows, added standalone `sha-pin-check.yml`, closed the `gradle-bindings` label drift loop; archived the Spec 6 §6.3.2 step 4 audit finding (consumer-repo standalone guard was never implemented and is rendered unnecessary by Spec 10 adapter-level guard).
