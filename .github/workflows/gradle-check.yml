@@ -23,14 +23,14 @@ on:
         default: './gradlew check'
 jobs:
   conventional-commit:
-    uses: 'zenhelix/ci-workflows/.github/workflows/conventional-commit-check.yml@v4'
+    uses: 'zenhelix/ci-workflows/.github/workflows/conventional-commit-check.yml@v5'
   sha-pin-check:
-    uses: 'zenhelix/ci-workflows/.github/workflows/sha-pinning-guard.yml@v4'
+    uses: 'zenhelix/ci-workflows/.github/workflows/sha-pinning-guard.yml@v5'
   check:
     strategy:
       matrix:
         java-version: '${{ fromJson(inputs.java-versions || format(''["{0}"]'', inputs.java-version)) }}'
-    uses: 'zenhelix/ci-workflows/.github/workflows/check.yml@v4'
+    uses: 'zenhelix/ci-workflows/.github/workflows/check.yml@v5'
     with:
       setup-action: 'gradle'
       setup-params: '{"java-version": "${{ matrix.java-version }}"}'
