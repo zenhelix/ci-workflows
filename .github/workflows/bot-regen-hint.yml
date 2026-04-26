@@ -10,19 +10,23 @@ on:
     - 'src/**'
     - 'workflow-dsl/**'
 permissions:
-  contents: 'read'
+  contents: 'write'
   pull-requests: 'write'
+concurrency:
+  group: '${{ github.workflow }}-${{ github.event.pull_request.number }}'
+  cancel-in-progress: true
 jobs:
-  regen-hint:
-    name: 'Post regen hint if generator output drifts'
+  regen-and-commit:
+    name: 'Regenerate workflows and commit if drift'
     runs-on: 'ubuntu-latest'
-    if: '${{ github.actor == ''dependabot[bot]'' || github.actor == ''renovate[bot]'' }}'
+    if: '${{ github.actor == ''renovate[bot]'' || github.actor == ''dependabot[bot]'' }}'
     steps:
     - id: 'step-0'
       name: 'Check out PR head'
       uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd'
       with:
-        ref: '${{ github.event.pull_request.head.sha }}'
+        ref: '${{ github.event.pull_request.head.ref }}'
+        fetch-depth: '0'
     - id: 'step-1'
       name: 'Set up JDK'
       uses: 'actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654'
@@ -36,36 +40,38 @@ jobs:
       name: 'Regenerate workflows'
       run: './gradlew run'
     - id: 'step-4'
-      name: 'Post comment if regen required'
+      name: 'Auto-commit regen if drift'
       env:
         GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        PR_BRANCH: '${{ github.event.pull_request.head.ref }}'
+        PR_NUMBER: '${{ github.event.pull_request.number }}'
       run: |-
         set -euo pipefail
-        if git diff --exit-code .github/workflows/; then
+
+        if git diff --quiet; then
           echo "No regen required — generator output matches committed YAML."
           exit 0
         fi
-        DIFF=$(git diff .github/workflows/ | head -c 3000)
-        PR_BRANCH="${{ github.event.pull_request.head.ref }}"
-        PR_NUMBER="${{ github.event.pull_request.number }}"
-        BODY=$(cat <<COMMENT
-        **Regen required.** The generator output differs from the committed YAMLs.
 
-        Please run locally and push:
+        if ! git diff --quiet -- ':!.github/workflows/'; then
+          echo "::warning::Bot PR touches files outside .github/workflows/ — manual review required."
+          gh pr comment "$PR_NUMBER" \
+            --body "Bot PR touches files outside .github/workflows/. Auto-regen aborted; please review and run \`./gradlew run\` locally."
+          exit 1
+        fi
 
-        \`\`\`
-        git fetch && git checkout $PR_BRANCH
+        DIFF_FIRST=$(git diff)
         ./gradlew run
+        DIFF_SECOND=$(git diff)
+        if [ "$DIFF_FIRST" != "$DIFF_SECOND" ]; then
+          echo "::warning::Generator output non-deterministic across two runs — bailing to avoid commit loop."
+          gh pr comment "$PR_NUMBER" \
+            --body "Generator output is non-deterministic on this PR (second \`./gradlew run\` produced a different diff). Auto-regen aborted; please investigate locally."
+          exit 1
+        fi
+
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git add .github/workflows/
-        git commit --amend --no-edit
-        git push --force-with-lease
-        \`\`\`
-
-        Preview of the drift (truncated to 3000 chars):
-
-        \`\`\`diff
-        $DIFF
-        \`\`\`
-        COMMENT
-        )
-        gh pr comment "$PR_NUMBER" --body "$BODY"
+        git commit -m "chore: regenerate workflows after bot bump"
+        git push --force-with-lease origin "HEAD:$PR_BRANCH"

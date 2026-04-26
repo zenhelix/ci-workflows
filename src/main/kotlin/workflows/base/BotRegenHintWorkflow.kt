@@ -4,6 +4,7 @@ import dsl.builder.GeneratableWorkflow
 import io.github.typesafegithub.workflows.actions.actions.Checkout_Untyped
 import io.github.typesafegithub.workflows.actions.actions.SetupJava_Untyped
 import io.github.typesafegithub.workflows.actions.gradle.ActionsSetupGradle_Untyped
+import io.github.typesafegithub.workflows.domain.Concurrency
 import io.github.typesafegithub.workflows.domain.Mode
 import io.github.typesafegithub.workflows.domain.Permission
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
@@ -17,41 +18,41 @@ object BotRegenHintWorkflow : GeneratableWorkflow {
 
     private val TRIGGER_PATHS = listOf("build.gradle.kts", "src/**", "workflow-dsl/**")
 
-    // Shell script posted as PR comment if regen drift is detected.
-    // Uses gh CLI with GITHUB_TOKEN for the `pull-requests: write` scope.
-    // Truncates diff to ~3000 chars so the comment body stays readable.
-    // NOTE: `$$"..."` raw strings (Kotlin 2.x) treat `$` as literal; use `${'$'}` for
-    // interpolation. GitHub expressions `${{ ... }}` and shell vars `$VAR` render verbatim.
-    private val POST_COMMENT_SCRIPT = $$"""
+    // Auto-commit script. Runs after `./gradlew run` regeneration.
+    // - Fast-exits if no diff (generator output matches committed YAML).
+    // - Bails with a comment if diff touches files outside .github/workflows/.
+    // - Determinism guard: second `./gradlew run`; bail if it produces another diff.
+    // - Otherwise commits as github-actions[bot] and pushes with --force-with-lease.
+    private val AUTO_COMMIT_SCRIPT = $$"""
         set -euo pipefail
-        if git diff --exit-code .github/workflows/; then
+
+        if git diff --quiet; then
           echo "No regen required — generator output matches committed YAML."
           exit 0
         fi
-        DIFF=$(git diff .github/workflows/ | head -c 3000)
-        PR_BRANCH="${{ github.event.pull_request.head.ref }}"
-        PR_NUMBER="${{ github.event.pull_request.number }}"
-        BODY=$(cat <<COMMENT
-        **Regen required.** The generator output differs from the committed YAMLs.
 
-        Please run locally and push:
+        if ! git diff --quiet -- ':!.github/workflows/'; then
+          echo "::warning::Bot PR touches files outside .github/workflows/ — manual review required."
+          gh pr comment "$PR_NUMBER" \
+            --body "Bot PR touches files outside .github/workflows/. Auto-regen aborted; please review and run \`./gradlew run\` locally."
+          exit 1
+        fi
 
-        \`\`\`
-        git fetch && git checkout $PR_BRANCH
+        DIFF_FIRST=$(git diff)
         ./gradlew run
+        DIFF_SECOND=$(git diff)
+        if [ "$DIFF_FIRST" != "$DIFF_SECOND" ]; then
+          echo "::warning::Generator output non-deterministic across two runs — bailing to avoid commit loop."
+          gh pr comment "$PR_NUMBER" \
+            --body "Generator output is non-deterministic on this PR (second \`./gradlew run\` produced a different diff). Auto-regen aborted; please investigate locally."
+          exit 1
+        fi
+
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git add .github/workflows/
-        git commit --amend --no-edit
-        git push --force-with-lease
-        \`\`\`
-
-        Preview of the drift (truncated to 3000 chars):
-
-        \`\`\`diff
-        $DIFF
-        \`\`\`
-        COMMENT
-        )
-        gh pr comment "$PR_NUMBER" --body "$BODY"
+        git commit -m "chore: regenerate workflows after bot bump"
+        git push --force-with-lease origin "HEAD:$PR_BRANCH"
     """.trimIndent()
 
     override fun generate(outputDir: File) {
@@ -62,20 +63,25 @@ object BotRegenHintWorkflow : GeneratableWorkflow {
             targetFileName = fileName,
             consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
             permissions = mapOf(
-                Permission.Contents to Mode.Read,
+                Permission.Contents to Mode.Write,
                 Permission.PullRequests to Mode.Write,
+            ),
+            concurrency = Concurrency(
+                group = $$"${{ github.workflow }}-${{ github.event.pull_request.number }}",
+                cancelInProgress = true,
             ),
         ) {
             job(
-                id = "regen-hint",
-                name = "Post regen hint if generator output drifts",
+                id = "regen-and-commit",
+                name = "Regenerate workflows and commit if drift",
                 runsOn = UbuntuLatest,
-                condition = $$"${{ github.actor == 'dependabot[bot]' || github.actor == 'renovate[bot]' }}",
+                condition = $$"${{ github.actor == 'renovate[bot]' || github.actor == 'dependabot[bot]' }}",
             ) {
                 uses(
                     name = "Check out PR head",
                     action = Checkout_Untyped(
-                        ref_Untyped = $$"${{ github.event.pull_request.head.sha }}",
+                        ref_Untyped = $$"${{ github.event.pull_request.head.ref }}",
+                        fetchDepth_Untyped = "0",
                     ),
                 )
                 uses(
@@ -88,9 +94,13 @@ object BotRegenHintWorkflow : GeneratableWorkflow {
                 uses(name = "Setup Gradle", action = ActionsSetupGradle_Untyped())
                 run(name = "Regenerate workflows", command = "./gradlew run")
                 run(
-                    name = "Post comment if regen required",
-                    command = POST_COMMENT_SCRIPT,
-                    env = linkedMapOf("GH_TOKEN" to $$"${{ secrets.GITHUB_TOKEN }}"),
+                    name = "Auto-commit regen if drift",
+                    command = AUTO_COMMIT_SCRIPT,
+                    env = linkedMapOf(
+                        "GH_TOKEN" to $$"${{ secrets.GITHUB_TOKEN }}",
+                        "PR_BRANCH" to $$"${{ github.event.pull_request.head.ref }}",
+                        "PR_NUMBER" to $$"${{ github.event.pull_request.number }}",
+                    ),
                 )
             }
         }
