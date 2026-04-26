@@ -80,3 +80,10 @@ No destructive operations; no state surgery; all rollbacks are single-commit rev
 - Spec 9 (2026-04-21) — replaced Dependabot with Renovate customManager for JIT bindings in `build.gradle.kts`.
 - Spec 10 (2026-04-21) — this document; armed guard in adapters, ruleset required check, Renovate for `ACTIONS_SHA`.
 - Spec 11 (2026-04-22) — brought `zenhelix/infra` to Layer 1 compliance (SHA-pinned workflow refs), armed Renovate for infra workflows, added standalone `sha-pin-check.yml`, closed the `gradle-bindings` label drift loop; archived the Spec 6 §6.3.2 step 4 audit finding (consumer-repo standalone guard was never implemented and is rendered unnecessary by Spec 10 adapter-level guard).
+
+## v5 — Spec 13 Phase 1 (2026-04-26)
+
+- **Fix `check.yml`:** added missing `actions/checkout` step at the top of the `build` job. Prior to this, every consumer of `check.yml@v4` (and adapter wrappers like `app-check.yml@v4`, `gradle-check.yml@v4`, etc.) failed `Run check` with exit 127 because gradlew was not present in the runner working directory.
+- **Fix `conventional-commit-check.yml`:** gated the `check-title` job with `if: github.event_name == 'pull_request'`. On push events the job is now skipped instead of failing 0s due to null `pull_request.title`.
+- **Fix `codeql-analysis.yml`:** removed explicit `./gradlew compileKotlin compileTestKotlin --continue` build step and removed the `build-command` input. Set `build-mode: 'autobuild'` on the `Initialize CodeQL` step instead — the action now drives Gradle's `assemble` under tracing, producing a populated database for both single-module and multi-module Kotlin/Java projects. Setup Gradle step retained so gradle is on PATH for autobuild.
+- **Consumer impact:** all 9 Kotlin/Java consumer repos (dependanger, dependency-hub, gradle-extensions, gradle-magic-wands, kt-utils, maven-central-publish, spring-kt, zenhelix-app, zenhelix-ktlint-rules) must bump `@v4` → `@v5` to receive the fix. Bump is tracked separately as Tasks 1.10/1.11.

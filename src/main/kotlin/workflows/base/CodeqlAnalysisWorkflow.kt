@@ -23,16 +23,6 @@ object CodeqlAnalysisWorkflow : ProjectWorkflow(
 ) {
     val language = input("language", "CodeQL language to analyze", default = "java-kotlin")
     val javaVersion = input("java-version", "JDK version to use for build", default = "17")
-    val buildCommand = input(
-        "build-command",
-        "Build command to compile sources for CodeQL",
-        // compileKotlin / compileTestKotlin resolve across subprojects via Gradle's
-        // task-name matcher, so this works for both root-plugin-applied projects
-        // (gradle-extensions) and multi-module projects that only apply Kotlin
-        // plugins to subprojects (kt-utils and others). --continue lets CodeQL
-        // still analyze whatever compiled even if one subproject fails.
-        default = "./gradlew compileKotlin compileTestKotlin --continue",
-    )
 
     override fun WorkflowBuilder.implementation() {
         job(
@@ -55,8 +45,12 @@ object CodeqlAnalysisWorkflow : ProjectWorkflow(
             )
             uses(
                 name = "Initialize CodeQL",
+                // autobuild traces Gradle's `assemble` so the CodeQL DB gets populated;
+                // replaces an explicit `./gradlew compileKotlin compileTestKotlin --continue`
+                // that ran outside tracing and produced an empty DB on multi-module projects.
                 action = CodeqlActionInit_Untyped(
                     languages_Untyped = $$"${{ matrix.language }}",
+                    buildMode_Untyped = "autobuild",
                 ),
             )
             uses(
@@ -69,10 +63,6 @@ object CodeqlAnalysisWorkflow : ProjectWorkflow(
             uses(
                 name = "Setup Gradle",
                 action = ActionsSetupGradle_Untyped(),
-            )
-            run(
-                name = "Build",
-                command = buildCommand.expr,
             )
             uses(
                 name = "Perform CodeQL Analysis",

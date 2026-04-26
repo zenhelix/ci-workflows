@@ -16,11 +16,6 @@ on:
         type: 'string'
         required: false
         default: '17'
-      build-command:
-        description: 'Build command to compile sources for CodeQL'
-        type: 'string'
-        required: false
-        default: './gradlew compileKotlin compileTestKotlin --continue'
 permissions:
   security-events: 'write'
   contents: 'read'
@@ -44,6 +39,7 @@ jobs:
       uses: 'github/codeql-action/init@ce64ddcb0d8d890d2df4a9d1c04ff297367dea2a'
       with:
         languages: '${{ matrix.language }}'
+        build-mode: 'autobuild'
     - id: 'step-2'
       name: 'Setup Java'
       uses: 'actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654'
@@ -54,9 +50,6 @@ jobs:
       name: 'Setup Gradle'
       uses: 'gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c'
     - id: 'step-4'
-      name: 'Build'
-      run: '${{ inputs.build-command }}'
-    - id: 'step-5'
       name: 'Perform CodeQL Analysis'
       uses: 'github/codeql-action/analyze@ce64ddcb0d8d890d2df4a9d1c04ff297367dea2a'
       with:

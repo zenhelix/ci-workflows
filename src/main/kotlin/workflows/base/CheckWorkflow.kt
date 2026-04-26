@@ -1,6 +1,7 @@
 package workflows.base
 
 import dsl.capability.SetupCapability
+import io.github.typesafegithub.workflows.actions.actions.Checkout_Untyped
 import io.github.typesafegithub.workflows.domain.Concurrency
 import io.github.typesafegithub.workflows.domain.RunnerType.UbuntuLatest
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
@@ -21,6 +22,7 @@ object CheckWorkflow : ProjectWorkflow(
 
     override fun WorkflowBuilder.implementation() {
         job(id = "build", name = "Build", runsOn = UbuntuLatest, timeoutMinutes = 30) {
+            uses(name = "Checkout", action = Checkout_Untyped())
             conditionalSetupSteps()
             run(name = "Run check", command = checkCommand.expr)
         }
