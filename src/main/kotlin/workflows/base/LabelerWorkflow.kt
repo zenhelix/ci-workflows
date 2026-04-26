@@ -13,7 +13,7 @@ object LabelerWorkflow : ProjectWorkflow(
     "labeler.yml", "PR Labeler",
     permissions = mapOf(Permission.Contents to Mode.Write, Permission.PullRequests to Mode.Write),
     concurrency = Concurrency(
-        group = "\${{ github.workflow }}-\${{ github.ref }}",
+        group = "labeler-yml-\${{ github.ref }}",
         cancelInProgress = true,
     ),
 ) {

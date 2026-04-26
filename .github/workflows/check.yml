@@ -22,7 +22,7 @@ on:
 permissions:
   contents: 'read'
 concurrency:
-  group: '${{ github.workflow }}-${{ github.ref }}'
+  group: 'check-yml-${{ github.ref }}'
   cancel-in-progress: true
 jobs:
   build:

@@ -22,7 +22,7 @@ object ConventionalCommitCheckWorkflow : ProjectWorkflow(
     "conventional-commit-check.yml", "Conventional Commit Check",
     permissions = null,
     concurrency = Concurrency(
-        group = "\${{ github.workflow }}-\${{ github.ref }}",
+        group = "conventional-commit-check-yml-\${{ github.ref }}",
         cancelInProgress = true,
     ),
 ) {

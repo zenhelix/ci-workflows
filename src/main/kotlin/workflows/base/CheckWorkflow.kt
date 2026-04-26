@@ -12,7 +12,7 @@ import workflows.support.conditionalSetupSteps
 object CheckWorkflow : ProjectWorkflow(
     "check.yml", "Check",
     concurrency = Concurrency(
-        group = "\${{ github.workflow }}-\${{ github.ref }}",
+        group = "check-yml-\${{ github.ref }}",
         cancelInProgress = true,
     ),
 ), SetupCapability {

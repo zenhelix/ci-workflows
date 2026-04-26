@@ -87,3 +87,16 @@ No destructive operations; no state surgery; all rollbacks are single-commit rev
 - **Fix `conventional-commit-check.yml`:** gated the `check-title` job with `if: github.event_name == 'pull_request'`. On push events the job is now skipped instead of failing 0s due to null `pull_request.title`.
 - **Fix `codeql-analysis.yml`:** removed explicit `./gradlew compileKotlin compileTestKotlin --continue` build step and removed the `build-command` input. Set `build-mode: 'autobuild'` on the `Initialize CodeQL` step instead — the action now drives Gradle's `assemble` under tracing, producing a populated database for both single-module and multi-module Kotlin/Java projects. Setup Gradle step retained so gradle is on PATH for autobuild.
 - **Consumer impact:** all 9 Kotlin/Java consumer repos (dependanger, dependency-hub, gradle-extensions, gradle-magic-wands, kt-utils, maven-central-publish, spring-kt, zenhelix-app, zenhelix-ktlint-rules) must bump `@v4` → `@v5` to receive the fix. Bump is tracked separately as Tasks 1.10/1.11.
+
+## v5 hotfix — Spec 13 Phase 1.5 concurrency cascade (2026-04-26)
+
+Concurrency-group collision fix for three reusable workflows:
+- `check.yml` group changed: `${{ github.workflow }}-${{ github.ref }}` → `check-yml-${{ github.ref }}`
+- `conventional-commit-check.yml` group changed: `${{ github.workflow }}-${{ github.ref }}` → `conventional-commit-check-yml-${{ github.ref }}`
+- `labeler.yml` group changed: `${{ github.workflow }}-${{ github.ref }}` → `labeler-yml-${{ github.ref }}`
+
+**Why:** in workflow_call context, `${{ github.workflow }}` resolves to the *caller* workflow's name (not the called reusable's name). When a parent workflow like `Build & Tag` calls multiple reusables that all use `${{ github.workflow }}-${{ github.ref }}` as their concurrency group, all three reusables register the same group string (`Build & Tag-refs/heads/main`) and cancel each other under `cancel-in-progress: true`. Prior to this fix, `conventional-commit / Check PR Title` was chronically cancelled on every push to main, cascading via `needs:` to skip `create-tag` jobs in consumer repos.
+
+**Verified on `maven-central-publish` PR #37:** `check / check (17) / Build` passed cleanly; conventional-commit cancellation no longer cascades.
+
+**Tag move:** `v5` is force-moved to point at the hotfix commit. Consumers using `@v5` (floating ref) automatically pick up the fix on next CI run.
