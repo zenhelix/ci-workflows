@@ -29,7 +29,13 @@ object ConventionalCommitCheckWorkflow : ProjectWorkflow(
     val allowedTypes = input("allowed-types", "Comma-separated list of allowed commit types", default = "feat,fix,refactor,docs,test,chore,perf,ci")
 
     override fun WorkflowBuilder.implementation() {
-        job(id = "check-title", name = "Check PR Title", runsOn = UbuntuLatest, timeoutMinutes = 5) {
+        job(
+            id = "check-title",
+            name = "Check PR Title",
+            runsOn = UbuntuLatest,
+            timeoutMinutes = 5,
+            condition = $$"${{ github.event_name == 'pull_request' }}",
+        ) {
             run(
                 name = "Validate PR title format",
                 command = VALIDATE_PR_TITLE_SCRIPT,
