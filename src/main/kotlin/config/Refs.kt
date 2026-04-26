@@ -6,7 +6,7 @@ package config
  * mutable major-version tag is fine. Bumped from v2 → v4 for spec 6; breaking changes
  * will bump to v5.
  */
-const val WORKFLOW_REF = "v4"
+const val WORKFLOW_REF = "v5"
 const val WORKFLOW_BASE = "zenhelix/ci-workflows/.github/workflows"
 
 /**

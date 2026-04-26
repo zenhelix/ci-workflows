@@ -100,3 +100,11 @@ Concurrency-group collision fix for three reusable workflows:
 **Verified on `maven-central-publish` PR #37:** `check / check (17) / Build` passed cleanly; conventional-commit cancellation no longer cascades.
 
 **Tag move:** `v5` is force-moved to point at the hotfix commit. Consumers using `@v5` (floating ref) automatically pick up the fix on next CI run.
+
+## v5 hotfix #2 — bump WORKFLOW_REF (2026-04-26)
+
+`Refs.kt::WORKFLOW_REF` was still `"v4"`, so adapter workflows generated `uses: ...check.yml@v4` etc. internally even when consumers called the adapter at `@v5`. The earlier concurrency fix in v5 wasn't actually being executed — adapters at `@v5` were transitively running the OLD `@v4` reusables (which still had the colliding `${{ github.workflow }}-${{ github.ref }}` group).
+
+**Fix:** `Refs.kt::WORKFLOW_REF` "v4" → "v5". Regenerated 11 adapter YAMLs (`gradle-plugin-check`, `gradle-plugin-release`, `kotlin-library-check`, `kotlin-library-release`, `app-check`, `app-release`, `app-deploy`, `gradle-create-tag`, `gradle-publish`, `go-create-tag`, `go-release`).
+
+Tag move: `v5` force-moved again to point at this commit. Consumers using `@v5` (floating ref) automatically get adapters that internally reference `@v5` reusables (previously they were stuck on `@v4` reusables transitively).

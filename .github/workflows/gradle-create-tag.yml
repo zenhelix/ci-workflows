@@ -40,7 +40,7 @@ on:
         required: true
 jobs:
   create-tag:
-    uses: 'zenhelix/ci-workflows/.github/workflows/create-tag.yml@v4'
+    uses: 'zenhelix/ci-workflows/.github/workflows/create-tag.yml@v5'
     with:
       setup-action: 'gradle'
       setup-params: '{"java-version": "${{ inputs.java-version }}"}'
