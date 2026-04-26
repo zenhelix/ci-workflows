@@ -108,3 +108,17 @@ Concurrency-group collision fix for three reusable workflows:
 **Fix:** `Refs.kt::WORKFLOW_REF` "v4" → "v5". Regenerated 11 adapter YAMLs (`gradle-plugin-check`, `gradle-plugin-release`, `kotlin-library-check`, `kotlin-library-release`, `app-check`, `app-release`, `app-deploy`, `gradle-create-tag`, `gradle-publish`, `go-create-tag`, `go-release`).
 
 Tag move: `v5` force-moved again to point at this commit. Consumers using `@v5` (floating ref) automatically get adapters that internally reference `@v5` reusables (previously they were stuck on `@v4` reusables transitively).
+
+## Spec 13 Phase 2 — auto-regen on bot PRs (2026-04-26)
+
+`bot-regen-hint.yml` now runs `./gradlew run` and **auto-commits** the regenerated YAML to the bot's PR branch instead of posting an instructional comment. This eliminates the manual `./gradlew run && git push` step that was stalling every Renovate (and pre-Spec-9 Dependabot) PR.
+
+**Permissions extension:** the workflow now requests `contents: write`. Mitigations:
+
+- **Trigger narrow:** job runs only when `github.actor == 'renovate[bot]' || github.actor == 'dependabot[bot]'`. Human PRs are not affected.
+- **Diff guard:** the auto-commit step aborts if `git diff` shows changes outside `.github/workflows/`, falling back to a comment.
+- **Determinism guard:** generator is invoked twice; if the second run differs from the first, no commit is pushed (a comment explains).
+- **Conflict safety:** push uses `--force-with-lease` so a parallel bot push fails the workflow instead of overwriting.
+- **Concurrency cap:** `concurrency.group` includes PR number with `cancel-in-progress: true`, so a follow-up bot push cancels the in-flight regen.
+
+No new tag is cut: `bot-regen-hint.yml` is internal to `ci-workflows` (not consumed by external repos), so `v5` remains the latest consumer-facing tag.
