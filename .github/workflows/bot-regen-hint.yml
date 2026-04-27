@@ -26,6 +26,7 @@ jobs:
       uses: 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd'
       with:
         ref: '${{ github.event.pull_request.head.ref }}'
+        token: '${{ secrets.WORKFLOW_BOT_PAT }}'
         fetch-depth: '0'
     - id: 'step-1'
       name: 'Set up JDK'
@@ -42,7 +43,7 @@ jobs:
     - id: 'step-4'
       name: 'Auto-commit regen if drift'
       env:
-        GH_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+        GH_TOKEN: '${{ secrets.WORKFLOW_BOT_PAT }}'
         PR_BRANCH: '${{ github.event.pull_request.head.ref }}'
         PR_NUMBER: '${{ github.event.pull_request.number }}'
       run: |-
