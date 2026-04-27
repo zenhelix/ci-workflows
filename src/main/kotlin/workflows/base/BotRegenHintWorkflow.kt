@@ -82,6 +82,7 @@ object BotRegenHintWorkflow : GeneratableWorkflow {
                     action = Checkout_Untyped(
                         ref_Untyped = $$"${{ github.event.pull_request.head.ref }}",
                         fetchDepth_Untyped = "0",
+                        token_Untyped = $$"${{ secrets.WORKFLOW_BOT_PAT }}",
                     ),
                 )
                 uses(
@@ -97,7 +98,7 @@ object BotRegenHintWorkflow : GeneratableWorkflow {
                     name = "Auto-commit regen if drift",
                     command = AUTO_COMMIT_SCRIPT,
                     env = linkedMapOf(
-                        "GH_TOKEN" to $$"${{ secrets.GITHUB_TOKEN }}",
+                        "GH_TOKEN" to $$"${{ secrets.WORKFLOW_BOT_PAT }}",
                         "PR_BRANCH" to $$"${{ github.event.pull_request.head.ref }}",
                         "PR_NUMBER" to $$"${{ github.event.pull_request.number }}",
                     ),
