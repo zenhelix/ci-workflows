@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.3.20"
-github-workflows-kt = "3.7.0"
+github-workflows-kt = "4.0.0"
 kaml = "0.104.0"
 kotlinx-serialization-core = "1.11.0"
 
