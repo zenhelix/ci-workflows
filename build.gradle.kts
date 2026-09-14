@@ -23,7 +23,7 @@ dependencies {
     // mathieudutour:github-tag-action — not in bindings.krzeminski.it registry; see actions/GithubTagAction.kt
     implementation("mikepenz:release-changelog-builder-action:bcae7115752d4ed746ff92feb666574428a79415") // v6
     implementation("softprops:action-gh-release:3bb12739c298aeb8a4eeaf626c5b8d85266b0e65") // v2
-    implementation("actions:labeler:634933edcd8ababfe52f92936142cc22ac488b1b") // v6
+    implementation("actions:labeler:b8dd2d9be0f68b860e7dae5dae7d772984eacd6d") // v6
     implementation("actions:setup-java:be666c2fcd27ec809703dec50e508c2fdc7f6654") // v5
     // gradle/actions and github/codeql-action are multi-action repos. The root
     // `<owner>:<repo>:<sha>` coord only yields a stub `*_Untyped` binding for
